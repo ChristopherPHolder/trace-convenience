@@ -196,6 +196,84 @@ describe('TraceService', () => {
 
       expect(service.isEmpty()).toBe(true);
     });
+
+    it('should provide currentFile computed signal', () => {
+      expect(service.currentFile()).toBeNull();
+
+      const mockFile = new File(['{}'], 'test.json');
+      service.addFile(mockFile, {});
+
+      expect(service.currentFile()).toBeDefined();
+      expect(service.currentFile()?.name).toBe('test.json');
+    });
+
+    it('should provide currentParsedTrace computed signal', () => {
+      expect(service.currentParsedTrace()).toBeNull();
+
+      const mockFile = new File(['{}'], 'test.json');
+      const traceContent = {
+        traceEvents: [
+          {
+            name: 'Screenshot',
+            cat: 'disabled-by-default-devtools.screenshot',
+            ts: 1000000,
+            args: { snapshot: '/9j/test' },
+          },
+        ],
+      };
+      service.addFile(mockFile, traceContent);
+
+      const parsedTrace = service.currentParsedTrace();
+      expect(parsedTrace).toBeDefined();
+      expect(parsedTrace?.screenshots).toBeDefined();
+    });
+  });
+
+  describe('Trace Parsing', () => {
+    it('should parse trace data when adding a file', () => {
+      const mockFile = new File(['{}'], 'test.json');
+      const traceContent = {
+        traceEvents: [
+          {
+            name: 'Screenshot',
+            cat: 'disabled-by-default-devtools.screenshot',
+            ts: 1000000,
+            args: { snapshot: '/9j/testdata' },
+          },
+        ],
+      };
+
+      service.addFile(mockFile, traceContent);
+
+      const file = service.allFiles()[0];
+      expect(file.parsedData).toBeDefined();
+      expect(file.parsedData?.screenshots.length).toBe(1);
+      expect(file.parsedData?.metadata).toBeDefined();
+    });
+
+    it('should handle invalid trace data gracefully', () => {
+      const mockFile = new File(['{}'], 'test.json');
+      const invalidContent = { invalid: 'data' };
+
+      // Should not throw
+      expect(() => service.addFile(mockFile, invalidContent)).not.toThrow();
+
+      const file = service.allFiles()[0];
+      expect(file).toBeDefined();
+      expect(file.parsedData?.screenshots || []).toEqual([]);
+    });
+
+    it('should handle trace parsing errors', () => {
+      const mockFile = new File(['{}'], 'test.json');
+      const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+      service.addFile(mockFile, null);
+
+      expect(consoleWarnSpy).toHaveBeenCalled();
+      expect(service.allFiles()[0]).toBeDefined();
+      
+      consoleWarnSpy.mockRestore();
+    });
   });
 });
 

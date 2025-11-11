@@ -1,0 +1,277 @@
+<div class="film-strip-container">
+  @if (hasScreenshots()) {
+    <div class="film-strip-header">
+      <h3 class="film-strip-title">
+        <svg
+          class="icon icon-medium"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+          aria-hidden="true"
+        >
+          <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
+        </svg>
+        Film Strip
+      </h3>
+      <div class="film-strip-controls">
+        <div class="film-strip-meta">
+          <span class="meta-item">
+            <svg
+              class="icon icon-small"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" />
+            </svg>
+            @if (displayedCount() === totalCount()) {
+              {{ totalCount() }} screenshots
+            } @else {
+              {{ displayedCount() }} of {{ totalCount() }} screenshots
+            }
+          </span>
+          <span class="meta-item">
+            <svg
+              class="icon icon-small"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
+            </svg>
+            {{ totalDuration() }}
+          </span>
+        </div>
+        <div class="interval-selector">
+          <div class="toggle-container">
+            <span class="toggle-label">
+              <svg
+                class="icon icon-small"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path fill-rule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z" clip-rule="evenodd" />
+              </svg>
+              Fixed Intervals
+            </span>
+            <button
+              type="button"
+              role="switch"
+              [attr.aria-checked]="useIntervalFiltering()"
+              (click)="onToggleFiltering()"
+              class="toggle-switch"
+              [class.active]="useIntervalFiltering()"
+              aria-label="Toggle fixed intervals"
+            >
+              <span class="toggle-slider"></span>
+            </button>
+          </div>
+          @if (useIntervalFiltering()) {
+            <div class="range-container">
+              <input
+                type="range"
+                class="interval-range"
+                [min]="minInterval"
+                [max]="maxInterval"
+                [step]="intervalStep"
+                [value]="minIntervalMs()"
+                (input)="onIntervalChange($event)"
+                aria-label="Select screenshot interval"
+              />
+              <span class="interval-value">{{ intervalLabel() }}</span>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="film-strip-scroll">
+      <div class="film-strip-track">
+        @for (screenshot of screenshotsWithMetadata(); track trackByIndex($index)) {
+          <div
+            class="film-frame"
+            [class.selected]="selectedIndex() === screenshot.index"
+            (click)="onSelectScreenshot(screenshot.index)"
+            role="button"
+            tabindex="0"
+            [attr.aria-label]="'Screenshot at ' + screenshot.relativeTime"
+            (keydown.enter)="onSelectScreenshot(screenshot.index)"
+            (keydown.space)="onSelectScreenshot(screenshot.index)"
+          >
+            <div class="frame-image-wrapper">
+              <img
+                [src]="screenshot.dataUri"
+                [alt]="'Screenshot at ' + screenshot.relativeTime"
+                class="frame-image"
+                loading="lazy"
+              />
+            </div>
+            <div class="frame-info">
+              <span class="frame-time">{{ screenshot.relativeTime }}</span>
+              @if (screenshot.delta > 0) {
+                <span class="frame-delta">+{{ screenshot.delta }}ms</span>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    @if (selectedScreenshot(); as selected) {
+      <div
+        class="preview-overlay"
+        [class.fullscreen]="isFullscreen()"
+        (click)="onClosePreview()"
+        (keydown)="onKeydown($event)"
+        role="dialog"
+        aria-modal="true"
+        [attr.aria-label]="'Preview of screenshot at ' + selected.relativeTime"
+        tabindex="-1"
+      >
+        <div class="preview-content" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()" tabindex="0">
+          <div class="preview-header">
+            <div class="preview-title">
+              <span class="preview-time">{{ selected.relativeTime }}</span>
+              <span class="preview-index">
+                {{ selected.index + 1 }} / {{ displayedCount() }}
+              </span>
+            </div>
+            <div class="preview-actions">
+              <button
+                type="button"
+                class="btn btn-icon"
+                (click)="onToggleFullscreen()"
+                [attr.aria-label]="isFullscreen() ? 'Exit fullscreen' : 'Enter fullscreen'"
+                title="Toggle fullscreen (F)"
+              >
+                <svg
+                  class="icon icon-small"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  @if (isFullscreen()) {
+                    <path d="M3.707 2.293a1 1 0 00-1.414 1.414l6.921 6.922c.05.062.105.118.168.167l6.91 6.911a1 1 0 001.415-1.414l-.675-.675a9.001 9.001 0 00-.668-11.982A1 1 0 1014.95 5.05a7.002 7.002 0 01.657 9.143l-1.435-1.435a5.002 5.002 0 00-.636-6.294A1 1 0 0012.12 7.88c.924.923 1.12 2.3.587 3.415l-1.992-1.992a.922.922 0 00-.018-.018l-6.99-6.991zM3.238 8.187a1 1 0 00-1.933-.516c-.8 3-.025 6.336 2.331 8.693a1 1 0 001.414-1.415 6.997 6.997 0 01-1.812-6.762zM7.4 11.5a1 1 0 10-1.73 1c.214.371.48.72.785 1.024a1 1 0 001.414-1.414c-.191-.191-.357-.407-.469-.61z" />
+                  } @else {
+                    <path d="M3 4a1 1 0 011-1h3a1 1 0 010 2H6.414l2.293 2.293a1 1 0 11-1.414 1.414L5 6.414V7a1 1 0 01-2 0V4zm9 1a1 1 0 110-2h3a1 1 0 011 1v3a1 1 0 11-2 0V6.414l-2.293 2.293a1 1 0 11-1.414-1.414L12.586 5H12zm-9 7a1 1 0 112 0v.586l2.293-2.293a1 1 0 011.414 1.414L6.414 13H7a1 1 0 110 2H4a1 1 0 01-1-1v-3zm13-1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 110-2h.586l-2.293-2.293a1 1 0 011.414-1.414L13.586 13H13a1 1 0 011-1z" />
+                  }
+                </svg>
+              </button>
+              <button
+                type="button"
+                class="btn btn-icon"
+                (click)="onClosePreview()"
+                aria-label="Close preview"
+                title="Close (Esc)"
+              >
+                <svg
+                  class="icon icon-small"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="preview-image-container">
+            <button
+              type="button"
+              class="preview-nav preview-nav-prev"
+              (click)="onNavigatePrevious(); $event.stopPropagation()"
+              [disabled]="selected.index === 0"
+              aria-label="Previous screenshot"
+              title="Previous (←)"
+            >
+              <svg
+                class="icon icon-large"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </button>
+
+            <img
+              [src]="selected.dataUri"
+              [alt]="'Screenshot at ' + selected.relativeTime"
+              class="preview-image"
+            />
+
+            <button
+              type="button"
+              class="preview-nav preview-nav-next"
+              (click)="onNavigateNext(); $event.stopPropagation()"
+              [disabled]="selected.index === screenshots().length - 1"
+              aria-label="Next screenshot"
+              title="Next (→)"
+            >
+              <svg
+                class="icon icon-large"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </button>
+          </div>
+
+          @if (selected.delta > 0) {
+            <div class="preview-footer">
+              <span class="preview-meta">
+                Time since previous: {{ selected.delta }}ms
+              </span>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  } @else {
+    <div class="film-strip-empty">
+      <svg
+        class="icon icon-large"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        aria-hidden="true"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
+        />
+      </svg>
+      <p class="empty-text">No screenshots found in trace</p>
+      <p class="empty-hint">
+        Make sure your trace was captured with screenshots enabled
+      </p>
+    </div>
+  }
+</div>
+

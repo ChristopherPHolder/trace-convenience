@@ -324,7 +324,7 @@ describe('FileUploadComponent', () => {
       const compiled = fixture.nativeElement as HTMLElement;
       const fileInput = compiled.querySelector('input[type="file"]');
 
-      expect(fileInput?.getAttribute('aria-label')).toBe('Select JSON files to upload');
+      expect(fileInput?.getAttribute('aria-label')).toBe('Select a JSON file to upload');
     });
 
     it('should have aria-live regions for status updates', () => {
@@ -364,10 +364,8 @@ describe('FileUploadComponent', () => {
       fixture.detectChanges();
 
       const compiled = fixture.nativeElement as HTMLElement;
-      const clearButton = compiled.querySelector('button[aria-label*="Clear all"]');
       const removeButton = compiled.querySelector('button[aria-label*="Remove"]');
 
-      expect(clearButton).toBeTruthy();
       expect(removeButton).toBeTruthy();
     });
   });
@@ -380,14 +378,14 @@ describe('FileUploadComponent', () => {
       const compiled = fixture.nativeElement as HTMLElement;
       const dragMessage = compiled.querySelector('.drag-active');
 
-      expect(dragMessage?.textContent).toContain('Drop your JSON files here');
+      expect(dragMessage?.textContent).toContain('Drop your JSON file here');
     });
 
     it('should show idle message when not dragging', () => {
       const compiled = fixture.nativeElement as HTMLElement;
       const idleMessage = compiled.querySelector('.drop-zone-idle');
 
-      expect(idleMessage?.textContent).toContain('Drag and drop JSON files here');
+      expect(idleMessage?.textContent).toContain('Drag and drop a JSON file here');
     });
 
     it('should show files section when files are uploaded', async () => {
@@ -396,7 +394,7 @@ describe('FileUploadComponent', () => {
       fixture.detectChanges();
 
       const compiled = fixture.nativeElement as HTMLElement;
-      const filesSection = compiled.querySelector('.files-section');
+      const filesSection = compiled.querySelector('.file-widget');
 
       expect(filesSection).toBeTruthy();
     });

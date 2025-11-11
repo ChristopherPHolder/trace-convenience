@@ -7,6 +7,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TraceService } from '../../services/trace.service';
+import { FilmStripComponent } from '../film-strip/film-strip';
 
 interface UploadedFileDisplay {
   id: string;
@@ -22,7 +23,7 @@ interface FileError {
 
 @Component({
   selector: 'app-file-upload',
-  imports: [CommonModule],
+  imports: [CommonModule, FilmStripComponent],
   templateUrl: './file-upload.html',
   styleUrl: './file-upload.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -48,6 +49,12 @@ export class FileUploadComponent {
 
   protected readonly hasFiles = computed(() => this.uploadedFiles().length > 0);
   protected readonly fileCount = computed(() => this.uploadedFiles().length);
+  
+  // Film strip data
+  protected readonly parsedTrace = computed(() => this.traceService.currentParsedTrace());
+  protected readonly screenshots = computed(() => this.parsedTrace()?.screenshots || []);
+  protected readonly traceStartTime = computed(() => this.parsedTrace()?.metadata.startTime || 0);
+  protected readonly traceEndTime = computed(() => this.parsedTrace()?.metadata.endTime || 0);
 
   protected onDragOver(event: DragEvent): void {
     event.preventDefault();
@@ -67,16 +74,18 @@ export class FileUploadComponent {
     this.isDragging.set(false);
 
     const files = event.dataTransfer?.files;
-    if (files) {
-      this.processFiles(Array.from(files));
+    if (files && files.length > 0) {
+      // Only process the first file
+      this.processFiles([files[0]]);
     }
   }
 
   protected onFileSelect(event: Event): void {
     const input = event.target as HTMLInputElement;
     const files = input.files;
-    if (files) {
-      this.processFiles(Array.from(files));
+    if (files && files.length > 0) {
+      // Only process the first file
+      this.processFiles([files[0]]);
     }
     // Reset input to allow selecting the same file again
     input.value = '';
@@ -111,6 +120,8 @@ export class FileUploadComponent {
   private async processFiles(files: File[]): Promise<void> {
     this.isProcessing.set(true);
     this.errors.set([]);
+
+    this.traceService.clearAll();
 
     const newErrors: FileError[] = [];
 
