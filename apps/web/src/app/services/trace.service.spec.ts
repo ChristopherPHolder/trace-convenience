@@ -265,7 +265,9 @@ describe('TraceService', () => {
 
     it('should handle trace parsing errors', () => {
       const mockFile = new File(['{}'], 'test.json');
-      const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {
+        // Mock implementation to suppress console warnings during test
+      });
 
       service.addFile(mockFile, null);
 

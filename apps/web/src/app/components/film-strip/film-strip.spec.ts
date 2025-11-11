@@ -1,12 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FilmStripComponent } from './film-strip';
-import { TraceParserService, Screenshot } from '../../services/trace-parser.service';
-import { signal } from '@angular/core';
+import { Screenshot } from '../../services/trace-parser.service';
 
 describe('FilmStripComponent', () => {
   let component: FilmStripComponent;
   let fixture: ComponentFixture<FilmStripComponent>;
-  let traceParser: TraceParserService;
 
   const mockScreenshots: Screenshot[] = [
     { timestamp: 1000000, data: 'base64data1', format: 'jpeg' },
@@ -21,7 +19,6 @@ describe('FilmStripComponent', () => {
 
     fixture = TestBed.createComponent(FilmStripComponent);
     component = fixture.componentInstance;
-    traceParser = TestBed.inject(TraceParserService);
     
     // Set required inputs
     fixture.componentRef.setInput('screenshots', mockScreenshots);
@@ -212,7 +209,7 @@ describe('FilmStripComponent', () => {
       const frameInfo = fixture.nativeElement.querySelectorAll('.frame-info');
       expect(frameInfo.length).toBe(3);
       
-      const times = Array.from(frameInfo).map((info: any) => 
+      const times = Array.from(frameInfo).map((info: Element) => 
         info.querySelector('.frame-time')?.textContent
       );
       expect(times.every((time: string) => time && time.length > 0)).toBe(true);

@@ -11,6 +11,10 @@ import { CommonModule } from '@angular/common';
 import { TraceParserService, Screenshot } from '../../services/trace-parser.service';
 import { FilmStripSettingsService } from '../../services/film-strip-settings.service';
 
+interface ScreenshotWithSyntheticTime extends Screenshot {
+  syntheticTimestamp?: number;
+}
+
 @Component({
   selector: 'app-film-strip',
   imports: [CommonModule],
@@ -131,10 +135,6 @@ export class FilmStripComponent {
       return shots;
     }
     
-    interface ScreenshotWithSyntheticTime extends Screenshot {
-      syntheticTimestamp?: number;
-    }
-    
     const filtered: ScreenshotWithSyntheticTime[] = [];
     
     // Use the intended start time (from time range filter) or the actual first screenshot time
@@ -169,7 +169,7 @@ export class FilmStripComponent {
     const nextIntervalTime = startTime + (currentTime * 1000);
     
     // If the last filtered screenshot doesn't represent the final actual screenshot, add it at the next interval
-    if (lastFiltered && shots[shots.length - 1].timestamp > lastFiltered.syntheticTimestamp!) {
+    if (lastFiltered && lastFiltered.syntheticTimestamp !== undefined && shots[shots.length - 1].timestamp > lastFiltered.syntheticTimestamp) {
       filtered.push({
         ...shots[shotIndex],
         syntheticTimestamp: nextIntervalTime,
@@ -180,7 +180,7 @@ export class FilmStripComponent {
   });
   
   protected readonly screenshotsWithMetadata = computed(() => {
-    const shots = this.filteredScreenshots();
+    const shots = this.filteredScreenshots() as ScreenshotWithSyntheticTime[];
     let base = this.startTime();
     
     // If time range filter is active, use the intended start time as the base
@@ -191,9 +191,9 @@ export class FilmStripComponent {
     
     return shots.map((screenshot, index) => {
       // Use synthetic timestamp if available (when interval filtering is active), otherwise use original
-      const displayTimestamp = (screenshot as any).syntheticTimestamp ?? screenshot.timestamp;
+      const displayTimestamp = screenshot.syntheticTimestamp ?? screenshot.timestamp;
       const prevDisplayTimestamp = index > 0 
-        ? ((shots[index - 1] as any).syntheticTimestamp ?? shots[index - 1].timestamp)
+        ? (shots[index - 1].syntheticTimestamp ?? shots[index - 1].timestamp)
         : displayTimestamp;
       
       return {

@@ -37,7 +37,8 @@
               "maximumError": "8kb"
             }
           ],
-          "outputHashing": "all"
+          "outputHashing": "all",
+          "baseHref": "/trace-convenience/"
         },
         "development": {
           "optimization": false,

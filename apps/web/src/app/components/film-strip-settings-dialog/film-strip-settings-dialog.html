@@ -7,7 +7,7 @@
     aria-modal="true"
     aria-labelledby="settings-title"
   >
-    <div class="settings-modal" (click)="$event.stopPropagation()" tabindex="0">
+    <div class="settings-modal" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()" tabindex="0">
       <div class="settings-header">
         <h3 id="settings-title" class="settings-title">Advanced Settings</h3>
         <button
