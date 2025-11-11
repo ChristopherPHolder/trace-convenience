@@ -1,0 +1,187 @@
+@if (isOpen()) {
+  <div
+    class="settings-overlay"
+    (click)="onClose()"
+    (keydown.escape)="onClose()"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="settings-title"
+  >
+    <div class="settings-modal" (click)="$event.stopPropagation()" tabindex="0">
+      <div class="settings-header">
+        <h3 id="settings-title" class="settings-title">Advanced Settings</h3>
+        <button
+          type="button"
+          class="btn btn-icon"
+          (click)="onClose()"
+          aria-label="Close settings"
+        >
+          <svg
+            class="icon icon-small"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            aria-hidden="true"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        </button>
+      </div>
+
+      <div class="settings-content">
+        <div class="settings-section">
+          <h4 class="settings-section-title">Film Strip Settings</h4>
+          
+          <div class="setting-item">
+            <div class="setting-toggle">
+              <span class="setting-label">Fixed Intervals</span>
+              <button
+                type="button"
+                role="switch"
+                [attr.aria-checked]="useIntervalFiltering()"
+                (click)="onToggleFiltering()"
+                class="toggle-switch"
+                [class.active]="useIntervalFiltering()"
+                aria-label="Toggle fixed intervals"
+              >
+                <span class="toggle-slider"></span>
+              </button>
+            </div>
+            <span class="setting-hint">Show screenshots at regular time intervals</span>
+          </div>
+
+          @if (useIntervalFiltering()) {
+            <div class="setting-item">
+              <label class="setting-label" for="interval-range">
+                Interval: {{ intervalLabel() }}
+              </label>
+              <input
+                id="interval-range"
+                type="range"
+                class="interval-range-slider"
+                [min]="minInterval"
+                [max]="maxInterval"
+                [step]="intervalStep"
+                [value]="minIntervalMs()"
+                (input)="onIntervalChange($event)"
+                aria-label="Select screenshot interval"
+              />
+              <span class="setting-hint">Time between each screenshot</span>
+            </div>
+          }
+
+          <div class="setting-item">
+            <div class="setting-toggle">
+              <span class="setting-label">Time Range Filter</span>
+              <button
+                type="button"
+                role="switch"
+                [attr.aria-checked]="useTimeRangeFilter()"
+                (click)="onToggleTimeRangeFilter()"
+                class="toggle-switch"
+                [class.active]="useTimeRangeFilter()"
+                aria-label="Toggle time range filter"
+              >
+                <span class="toggle-slider"></span>
+              </button>
+            </div>
+            <span class="setting-hint">Filter screenshots by time range</span>
+          </div>
+
+          @if (useTimeRangeFilter()) {
+            <div class="setting-item">
+              <label class="setting-label" for="start-time-input">
+                Start Time (ms)
+              </label>
+              <div class="setting-input-group">
+                <input
+                  id="start-time-input"
+                  type="number"
+                  class="setting-input"
+                  [value]="startTimeMs()"
+                  (input)="onStartTimeChange($event)"
+                  min="0"
+                  [max]="maxTimeMs()"
+                  step="1"
+                />
+                <input
+                  type="range"
+                  class="interval-range-slider"
+                  min="0"
+                  [max]="maxTimeMs()"
+                  step="1"
+                  [value]="startTimeMs()"
+                  (input)="onStartTimeChange($event)"
+                  aria-label="Select start time"
+                />
+              </div>
+              <span class="setting-hint">Beginning of time range</span>
+            </div>
+
+            <div class="setting-item">
+              <label class="setting-label" for="end-time-input">
+                End Time (ms)
+              </label>
+              <div class="setting-input-group">
+                <input
+                  id="end-time-input"
+                  type="number"
+                  class="setting-input"
+                  [value]="endTimeMs()"
+                  (input)="onEndTimeChange($event)"
+                  min="0"
+                  [max]="maxTimeMs()"
+                  step="1"
+                />
+                <input
+                  type="range"
+                  class="interval-range-slider"
+                  min="0"
+                  [max]="maxTimeMs()"
+                  step="1"
+                  [value]="endTimeMs()"
+                  (input)="onEndTimeChange($event)"
+                  aria-label="Select end time"
+                />
+              </div>
+              <span class="setting-hint">End of time range</span>
+            </div>
+          }
+
+          <div class="setting-item">
+            <div class="setting-toggle">
+              <span class="setting-label">Show Timestamps</span>
+              <button
+                type="button"
+                role="switch"
+                [attr.aria-checked]="exportShowTimestamps()"
+                (click)="onExportShowTimestampsToggle()"
+                class="toggle-switch"
+                [class.active]="exportShowTimestamps()"
+                aria-label="Toggle timestamp display"
+              >
+                <span class="toggle-slider"></span>
+              </button>
+            </div>
+            <span class="setting-hint">Show timestamps below screenshots</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-footer">
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="onClose()"
+        >
+          Done
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
