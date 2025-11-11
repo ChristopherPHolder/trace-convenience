@@ -1,10 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FilmStripComponent } from './film-strip';
 import { Screenshot } from '../../services/trace-parser.service';
+import { FilmStripSettingsService } from '../../services/film-strip-settings.service';
 
 describe('FilmStripComponent', () => {
   let component: FilmStripComponent;
   let fixture: ComponentFixture<FilmStripComponent>;
+  let settingsService: FilmStripSettingsService;
 
   const mockScreenshots: Screenshot[] = [
     { timestamp: 1000000, data: 'base64data1', format: 'jpeg' },
@@ -19,6 +21,10 @@ describe('FilmStripComponent', () => {
 
     fixture = TestBed.createComponent(FilmStripComponent);
     component = fixture.componentInstance;
+    settingsService = TestBed.inject(FilmStripSettingsService);
+    
+    // Disable interval filtering for tests to get predictable results
+    settingsService.setUseIntervalFiltering(false);
     
     // Set required inputs
     fixture.componentRef.setInput('screenshots', mockScreenshots);

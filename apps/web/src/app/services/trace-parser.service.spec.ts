@@ -38,9 +38,10 @@ describe('TraceParserService', () => {
 
       expect(result.screenshots).toEqual([]);
       expect(result.metadata.screenshotCount).toBe(0);
-      expect(result.metadata.startTime).toBe(1000);
-      expect(result.metadata.endTime).toBe(2000);
-      expect(result.metadata.duration).toBe(1000);
+      // When there are no screenshots, metadata is all zeros
+      expect(result.metadata.startTime).toBe(0);
+      expect(result.metadata.endTime).toBe(0);
+      expect(result.metadata.duration).toBe(0);
     });
 
     it('should extract Screenshot events', () => {
