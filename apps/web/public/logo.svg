@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e3a8a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="trace1" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#60a5fa;stop-opacity:0.8" />
+      <stop offset="50%" style="stop-color:#93c5fd;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#60a5fa;stop-opacity:0.8" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="0.5" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background with rounded corners -->
+  <rect width="32" height="32" rx="6" fill="url(#bg)"/>
+  
+  <!-- Grid lines for context -->
+  <line x1="0" y1="8" x2="32" y2="8" stroke="#3b82f6" stroke-width="0.3" opacity="0.3"/>
+  <line x1="0" y1="16" x2="32" y2="16" stroke="#3b82f6" stroke-width="0.3" opacity="0.5"/>
+  <line x1="0" y1="24" x2="32" y2="24" stroke="#3b82f6" stroke-width="0.3" opacity="0.3"/>
+  
+  <!-- Main trace line with gradient and glow -->
+  <path d="M 2 16 L 5 16 L 7 10 L 9 20 L 11 12 L 13 22 L 15 14 L 17 18 L 19 8 L 21 24 L 23 11 L 25 19 L 27 15 L 30 15" 
+        stroke="url(#trace1)" 
+        stroke-width="1.8" 
+        fill="none" 
+        stroke-linecap="round" 
+        stroke-linejoin="round"
+        filter="url(#glow)"/>
+  
+  <!-- Secondary trace line (lighter, for depth) -->
+  <path d="M 2 17 L 4 17 L 6 21 L 8 14 L 10 19 L 12 13 L 14 20 L 16 16 L 18 23 L 20 12 L 22 18 L 24 15 L 26 21 L 28 16 L 30 16" 
+        stroke="#60a5fa" 
+        stroke-width="1.2" 
+        fill="none" 
+        stroke-linecap="round" 
+        stroke-linejoin="round"
+        opacity="0.4"/>
+  
+  <!-- Event markers with glow -->
+  <circle cx="19" cy="8" r="1.8" fill="#fbbf24" opacity="0.9" filter="url(#glow)"/>
+  <circle cx="19" cy="8" r="1" fill="#fef3c7"/>
+  
+  <circle cx="21" cy="24" r="1.8" fill="#ef4444" opacity="0.9" filter="url(#glow)"/>
+  <circle cx="21" cy="24" r="1" fill="#fca5a5"/>
+  
+  <circle cx="11" cy="12" r="1.8" fill="#10b981" opacity="0.9" filter="url(#glow)"/>
+  <circle cx="11" cy="12" r="1" fill="#86efac"/>
+</svg>
+
