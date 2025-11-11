@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { NxWelcome } from './nx-welcome';
+import { FileUploadComponent } from './components/file-upload/file-upload';
 
 @Component({
-  imports: [NxWelcome, RouterModule],
+  imports: [RouterModule, FileUploadComponent],
   selector: 'app-root',
   templateUrl: './app.html',
   styleUrl: './app.scss',
