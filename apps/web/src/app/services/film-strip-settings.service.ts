@@ -19,7 +19,7 @@ export class FilmStripSettingsService {
   private readonly _exportImageHeight = signal<number>(200);
   private readonly _exportPadding = signal<number>(10);
   private readonly _exportShowTimestamps = signal<boolean>(true);
-  private readonly _useIntervalFiltering = signal<boolean>(false);
+  private readonly _useIntervalFiltering = signal<boolean>(true);
   private readonly _minIntervalMs = signal<number>(100);
   private readonly _useTimeRangeFilter = signal<boolean>(false);
   private readonly _startTimeMs = signal<number>(0);

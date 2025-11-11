@@ -30,6 +30,8 @@ export class FilmStripComponent {
   // State
   protected readonly selectedIndex = signal<number | null>(null);
   protected readonly isFullscreen = signal(false);
+  protected readonly selectedFormat = signal<'png' | 'gif'>('png');
+  protected readonly isFormatDropdownOpen = signal(false);
 
   // Get settings state from service
   protected readonly useIntervalFiltering = this.settingsService.useIntervalFiltering;
@@ -286,7 +288,29 @@ export class FilmStripComponent {
     return index;
   }
 
-  protected async onDownloadFilmStrip(): Promise<void> {
+  protected toggleFormatDropdown(): void {
+    this.isFormatDropdownOpen.update(open => !open);
+  }
+
+  protected closeFormatDropdown(): void {
+    this.isFormatDropdownOpen.set(false);
+  }
+
+  protected selectFormat(format: 'png' | 'gif'): void {
+    this.selectedFormat.set(format);
+    this.closeFormatDropdown();
+  }
+
+  protected async onDownload(): Promise<void> {
+    const format = this.selectedFormat();
+    if (format === 'gif') {
+      await this.onDownloadGif();
+    } else {
+      await this.onDownloadPng();
+    }
+  }
+
+  protected async onDownloadPng(): Promise<void> {
     const shots = this.screenshotsWithMetadata();
     if (shots.length === 0) return;
 
@@ -367,6 +391,134 @@ export class FilmStripComponent {
       
     } catch (error) {
       console.error('Failed to download film strip:', error);
+    }
+  }
+
+  protected async onDownloadGif(): Promise<void> {
+    const shots = this.screenshotsWithMetadata();
+    if (shots.length === 0) return;
+
+    try {
+      // Dynamic import of gifenc
+      const { GIFEncoder, quantize, applyPalette } = await import('gifenc');
+      
+      const settings = this.settingsService.getSettings();
+      const showTimestamps = settings.exportShowTimestamps;
+      // Use higher resolution for better quality (2x the export height)
+      const maxImageHeight = settings.exportImageHeight * 2;
+      
+      // Load all images
+      const imagePromises: Promise<HTMLImageElement>[] = [];
+      for (const shot of shots) {
+        const imgPromise = new Promise<HTMLImageElement>((resolve, reject) => {
+          const img = new Image();
+          img.onload = () => resolve(img);
+          img.onerror = reject;
+          img.src = shot.dataUri;
+        });
+        imagePromises.push(imgPromise);
+      }
+      const images = await Promise.all(imagePromises);
+      
+      // Use first image to determine dimensions
+      const firstImg = images[0];
+      const aspectRatio = firstImg.width / firstImg.height;
+      const scaledWidth = Math.round(maxImageHeight * aspectRatio);
+      const textHeight = showTimestamps ? 60 : 0;
+      const canvasHeight = maxImageHeight + textHeight;
+      
+      // Create GIF encoder
+      const gif = GIFEncoder();
+      
+      // Create a global palette from all frames for better color consistency
+      const allImageData: Uint8ClampedArray[] = [];
+      const frameCanvases: HTMLCanvasElement[] = [];
+      
+      // Pre-render all frames and collect image data
+      for (let i = 0; i < images.length; i++) {
+        const img = images[i];
+        const shot = shots[i];
+        
+        // Create canvas for this frame
+        const canvas = document.createElement('canvas');
+        canvas.width = scaledWidth;
+        canvas.height = canvasHeight;
+        const ctx = canvas.getContext('2d', { 
+          alpha: false,
+          willReadFrequently: true 
+        });
+        if (!ctx) continue;
+        
+        // Enable image smoothing for better quality
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        
+        // Fill background
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // Draw image with high quality scaling
+        ctx.drawImage(img, 0, 0, scaledWidth, maxImageHeight);
+        
+        // Draw timestamp if enabled
+        if (showTimestamps) {
+          ctx.fillStyle = '#1f2937';
+          ctx.font = 'bold 24px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText(shot.relativeTime, scaledWidth / 2, maxImageHeight + 40);
+        }
+        
+        // Store canvas and collect image data
+        frameCanvases.push(canvas);
+        const imageData = ctx.getImageData(0, 0, scaledWidth, canvasHeight);
+        allImageData.push(imageData.data);
+      }
+      
+      // Create a global palette from all frames for consistent colors
+      const combinedData = new Uint8ClampedArray(
+        allImageData.reduce((acc, data) => acc + data.length, 0)
+      );
+      let offset = 0;
+      for (const data of allImageData) {
+        combinedData.set(data, offset);
+        offset += data.length;
+      }
+      const globalPalette = quantize(combinedData, 256, { format: 'rgb444' });
+      
+      // Process each frame with the global palette
+      for (let i = 0; i < frameCanvases.length; i++) {
+        const canvas = frameCanvases[i];
+        const ctx = canvas.getContext('2d');
+        if (!ctx) continue;
+        
+        const imageData = ctx.getImageData(0, 0, scaledWidth, canvasHeight);
+        const index = applyPalette(imageData.data, globalPalette);
+        
+        // Add frame to GIF (500ms delay between frames)
+        gif.writeFrame(index, scaledWidth, canvasHeight, {
+          palette: globalPalette,
+          delay: 500,
+        });
+      }
+      
+      // Finish encoding
+      gif.finish();
+      
+      // Download GIF
+      const buffer = gif.bytes();
+      // Convert to proper Uint8Array for Blob
+      const blobData = new Uint8Array(buffer);
+      const blob = new Blob([blobData], { type: 'image/gif' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `film-strip-${Date.now()}.gif`;
+      link.click();
+      URL.revokeObjectURL(url);
+      
+    } catch (error) {
+      console.error('Failed to download GIF:', error);
+      alert('Failed to create GIF. Please try PNG format instead.');
     }
   }
 }
