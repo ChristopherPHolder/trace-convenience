@@ -110,12 +110,24 @@ export class FilmStripComponent {
         break;
       }
     }
-    
-    // Include the screenshot before the start time (if not already at the beginning)
-    // and all screenshots within the range
-    const filtered = shots.filter((shot, index) => 
-      (index === startScreenshotIndex || shot.timestamp >= filterStartTime) && 
-      shot.timestamp <= filterEndTime
+
+    // Find the first screenshot at or after the filter end time.
+    // Screenshots are captured at discrete moments, so the frame that shows the
+    // visual result of an event at the end boundary is often captured just after
+    // it. Mirror the start-boundary behavior and keep this closing context frame.
+    let endScreenshotIndex = shots.length - 1;
+    for (let i = 0; i < shots.length; i++) {
+      if (shots[i].timestamp >= filterEndTime) {
+        endScreenshotIndex = i;
+        break;
+      }
+    }
+
+    // Include the screenshot before the start time and after the end time (as
+    // context frames) plus all screenshots within the range
+    const filtered = shots.filter((shot, index) =>
+      (index === startScreenshotIndex || shot.timestamp >= filterStartTime) &&
+      (index === endScreenshotIndex || shot.timestamp <= filterEndTime)
     );
     
     return filtered;
@@ -136,11 +148,24 @@ export class FilmStripComponent {
     }
     
     const filtered: ScreenshotWithSyntheticTime[] = [];
-    
+
     // Use the intended start time (from time range filter) or the actual first screenshot time
+    const useTimeRange = this.useTimeRangeFilter();
     const intendedStartTime = this.filteredRangeStartTime();
     const startTime = intendedStartTime ?? shots[0].timestamp;
-    const endTime = shots[shots.length - 1].timestamp;
+
+    // Bound the synthetic timeline by the explicit window end when the range
+    // filter is active; otherwise run to the last actual screenshot. Using the
+    // last frame's timestamp here would ignore the requested end time and emit
+    // interval frames past the window (e.g. an 8400-8600 window running to the
+    // next real frame at 9118ms).
+    let endTime: number;
+    if (useTimeRange) {
+      const absoluteStartTime = this.screenshots()[0].timestamp;
+      endTime = absoluteStartTime + this.endTimeMs() * 1000; // Convert ms to microseconds
+    } else {
+      endTime = shots[shots.length - 1].timestamp;
+    }
     const durationMs = (endTime - startTime) / 1000; // Convert to milliseconds
     
     let shotIndex = 0;
@@ -164,16 +189,21 @@ export class FilmStripComponent {
       currentTime += intervalMs;
     }
     
-    // Check if we need to add one more screenshot at the next interval after the last actual screenshot
-    const lastFiltered = filtered[filtered.length - 1];
-    const nextIntervalTime = startTime + (currentTime * 1000);
-    
-    // If the last filtered screenshot doesn't represent the final actual screenshot, add it at the next interval
-    if (lastFiltered && lastFiltered.syntheticTimestamp !== undefined && shots[shots.length - 1].timestamp > lastFiltered.syntheticTimestamp) {
-      filtered.push({
-        ...shots[shotIndex],
-        syntheticTimestamp: nextIntervalTime,
-      });
+    // Check if we need to add one more screenshot at the next interval after the last actual screenshot.
+    // Only relevant without the range filter: there the timeline ends on the last
+    // actual frame and interval steps may not land on it. With the range filter the
+    // window end is explicit, so we must not append frames beyond it.
+    if (!useTimeRange) {
+      const lastFiltered = filtered[filtered.length - 1];
+      const nextIntervalTime = startTime + (currentTime * 1000);
+
+      // If the last filtered screenshot doesn't represent the final actual screenshot, add it at the next interval
+      if (lastFiltered && lastFiltered.syntheticTimestamp !== undefined && shots[shots.length - 1].timestamp > lastFiltered.syntheticTimestamp) {
+        filtered.push({
+          ...shots[shotIndex],
+          syntheticTimestamp: nextIntervalTime,
+        });
+      }
     }
     
     return filtered;
