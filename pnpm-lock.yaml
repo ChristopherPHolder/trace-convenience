@@ -6,18 +6,9 @@ settings:
 
 catalogs:
   default:
-    '@types/node':
-      specifier: 26.6.5
-      version: 26.6.5
-    '@vitest/coverage-v8':
-      specifier: 5.1.0
-      version: 5.1.0
     typescript:
       specifier: 6.0.3
       version: 6.0.3
-    vite:
-      specifier: npm:@voidzero-dev/vite-plus-core@1.6.0
-      version: 1.6.0
     vite-plus:
       specifier: 1.6.0
       version: 1.6.0
@@ -33,15 +24,12 @@ importers:
       '@angular-eslint/eslint-plugin':
         specifier: 22.6.0
         version: 22.6.0(@typescript-eslint/utils@8.72.2(eslint@9.39.5(jiti@2.4.2))(typescript@6.0.3))(eslint@9.39.5(jiti@2.4.2))(typescript@6.0.3)
-      '@types/node':
-        specifier: 'catalog:'
-        version: 26.6.5
       typescript:
         specifier: 'catalog:'
         version: 6.0.3
       vite-plus:
         specifier: 'catalog:'
-        version: 1.6.0(@types/node@26.6.5)(@vitest/coverage-v8@5.1.0)(@vitest/ui@5.1.0(vitest@5.1.0))(esbuild@0.28.2)(jiti@2.4.2)(jsdom@22.1.0)(sass-embedded@1.104.1)(sass@1.105.2)(typescript@6.0.3)(yaml@2.9.0)
+        version: 1.6.0(@types/node@26.6.5)(@vitest/coverage-v8@5.1.0(@vitest/browser@5.1.0)(vitest@5.1.0))(@vitest/ui@5.1.0(vitest@5.1.0))(esbuild@0.28.2)(jiti@2.4.2)(jsdom@22.1.0)(sass-embedded@1.104.1)(sass@1.105.2)(typescript@6.0.3)(yaml@2.9.0)
 
   apps/web:
     dependencies:
@@ -54,9 +42,6 @@ importers:
       '@angular/core':
         specifier: 22.3.0-next.4
         version: 22.3.0-next.4(@angular/compiler@22.3.0-next.4)(rxjs@7.8.2)(zone.js@0.16.3)
-      '@angular/forms':
-        specifier: 22.3.0-next.4
-        version: 22.3.0-next.4(@angular/common@22.3.0-next.4(@angular/core@22.3.0-next.4(@angular/compiler@22.3.0-next.4)(rxjs@7.8.2)(zone.js@0.16.3))(rxjs@7.8.2))(@angular/core@22.3.0-next.4(@angular/compiler@22.3.0-next.4)(rxjs@7.8.2)(zone.js@0.16.3))(@angular/platform-browser@22.3.0-next.4(@angular/common@22.3.0-next.4(@angular/core@22.3.0-next.4(@angular/compiler@22.3.0-next.4)(rxjs@7.8.2)(zone.js@0.16.3))(rxjs@7.8.2))(@angular/core@22.3.0-next.4(@angular/compiler@22.3.0-next.4)(rxjs@7.8.2)(zone.js@0.16.3)))(rxjs@7.8.2)
       '@angular/platform-browser':
         specifier: 22.3.0-next.4
         version: 22.3.0-next.4(@angular/common@22.3.0-next.4(@angular/core@22.3.0-next.4(@angular/compiler@22.3.0-next.4)(rxjs@7.8.2)(zone.js@0.16.3))(rxjs@7.8.2))(@angular/core@22.3.0-next.4(@angular/compiler@22.3.0-next.4)(rxjs@7.8.2)(zone.js@0.16.3))
@@ -78,9 +63,6 @@ importers:
       rxjs:
         specifier: ~7.8.0
         version: 7.8.2
-      tslib:
-        specifier: ^2.3.0
-        version: 2.9.1
       zone.js:
         specifier: 0.16.3
         version: 0.16.3
@@ -100,9 +82,6 @@ importers:
       '@vitest/coverage-v8':
         specifier: 'catalog:'
         version: 5.1.0(@vitest/browser@5.1.0)(vitest@5.1.0)
-      devtools-protocol:
-        specifier: ^0.0.1541592
-        version: 0.0.1541592
       jsdom:
         specifier: ~22.1.0
         version: 22.1.0
@@ -126,7 +105,7 @@ importers:
         version: 6.0.3
       vite-plus:
         specifier: 'catalog:'
-        version: 1.6.0(@types/node@26.6.5)(@vitest/coverage-v8@5.1.0(@vitest/browser@5.1.0)(vitest@5.1.0))(@vitest/ui@5.1.0(vitest@5.1.0))(esbuild@0.28.2)(jiti@2.4.2)(jsdom@22.1.0)(sass-embedded@1.104.1)(sass@1.105.2)(typescript@6.0.3)(yaml@2.9.0)
+        version: 1.6.0(@types/node@26.6.5)(@vitest/coverage-v8@5.1.0)(@vitest/ui@5.1.0(vitest@5.1.0))(esbuild@0.28.2)(jiti@2.4.2)(jsdom@22.1.0)(sass-embedded@1.104.1)(sass@1.105.2)(typescript@6.0.3)(yaml@2.9.0)
 
 packages:
 
@@ -181,15 +160,6 @@ packages:
         optional: true
       zone.js:
         optional: true
-
-  '@angular/forms@22.3.0-next.4':
-    resolution: {integrity: sha512-EG3iATrUBO+cZ3voZn1nJUX6IpAipF5fwL52NT5WhcE6JYfn06gKU7YfrPeQyp5eXL0aTm7l2XI1e/D39JSnYA==}
-    engines: {node: ^22.22.3 || ^24.15.0 || >=26.0.0}
-    peerDependencies:
-      '@angular/common': 22.3.0-next.4
-      '@angular/core': 22.3.0-next.4
-      '@angular/platform-browser': 22.3.0-next.4
-      rxjs: ^6.5.3 || ^7.4.0
 
   '@angular/language-service@22.3.0-next.4':
     resolution: {integrity: sha512-SHa+SJ9fdweogV8pNYI7IagJkWf4HURCmqKiDHlgzS0v7HtSF8+CJh8dY2Y3xWR8QEbZM4hfF1GNHHjzZyEuXA==}
@@ -1028,9 +998,6 @@ packages:
   '@rolldown/pluginutils@1.1.1':
     resolution: {integrity: sha512-glFIJDvLNDtJhT9qrMFWLPbvS+skxgt4L0K8Ei2YtnhPysAJnsI7nyxSJxKj4ADeKX0OLjC4ntRkwpLOoS3rwA==}
 
-  '@standard-schema/spec@1.1.0':
-    resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
-
   '@testing-library/dom@10.4.2':
     resolution: {integrity: sha512-yzr2S9HyAIdhz2/6qHgbs665Q7PKVcDF05vsOlHPxG1mo36gKVesdYVeDLnXgfjJ03CrKRk08knc6+E/9m8v2Q==}
     engines: {node: '>=18'}
@@ -1637,9 +1604,6 @@ packages:
   detect-libc@2.1.2:
     resolution: {integrity: sha512-Btj2BOOO83o3WyH59e8MgXsxEQVcarkUOpEYrubB0urwnN10yQ364rsiByU11nZlqWYZm05i/of7io4mzihBtQ==}
     engines: {node: '>=8'}
-
-  devtools-protocol@0.0.1541592:
-    resolution: {integrity: sha512-FUUSjWbtgaCWSQ9bDC7mXEM4pL/V6GZ9bv05E33+/7TD1DFg3rJVTw3kxx+NPyzrgFfwneOGLEJ7MYoLpcLm/g==}
 
   dom-accessibility-api@0.5.16:
     resolution: {integrity: sha512-X7BJ2yElsnOJ30pZF4uIIDfBEVgF4XEBxL9Bxhy6dnrm5hkzqmsWHGTiHqRiITNhMyFLyAiWndIJP7Z1NTteDg==}
@@ -2665,9 +2629,6 @@ packages:
     resolution: {integrity: sha512-XrBh9ZiQK5mJVRxZBAvD6LwRyAYrK3MFtH3+onyuxFL5hFD44EC3QOmIC1FjTj6H2MMwq46/NAI+NZxLZPZgxg==}
     engines: {node: '>=14.18.0'}
 
-  zod@4.6.6:
-    resolution: {integrity: sha512-4UmzQUF5fxvfcYHlbjBmejU+w+hbDnWFx4aS8kBx7nPBHcO2SqPbpAG8snbdg+Xse4pRefR98hgjFgIMCI/UhA==}
-
   zone.js@0.16.3:
     resolution: {integrity: sha512-ihXL9+vhYyEhXz4TDNpHeAOZN9FVrbog0Il64OIEI28UP/n5AaI6gsccRuOHBfx+206agzyoK527bYIO0Foy6A==}
 
@@ -2722,16 +2683,6 @@ snapshots:
     optionalDependencies:
       '@angular/compiler': 22.3.0-next.4
       zone.js: 0.16.3
-
-  '@angular/forms@22.3.0-next.4(@angular/common@22.3.0-next.4(@angular/core@22.3.0-next.4(@angular/compiler@22.3.0-next.4)(rxjs@7.8.2)(zone.js@0.16.3))(rxjs@7.8.2))(@angular/core@22.3.0-next.4(@angular/compiler@22.3.0-next.4)(rxjs@7.8.2)(zone.js@0.16.3))(@angular/platform-browser@22.3.0-next.4(@angular/common@22.3.0-next.4(@angular/core@22.3.0-next.4(@angular/compiler@22.3.0-next.4)(rxjs@7.8.2)(zone.js@0.16.3))(rxjs@7.8.2))(@angular/core@22.3.0-next.4(@angular/compiler@22.3.0-next.4)(rxjs@7.8.2)(zone.js@0.16.3)))(rxjs@7.8.2)':
-    dependencies:
-      '@angular/common': 22.3.0-next.4(@angular/core@22.3.0-next.4(@angular/compiler@22.3.0-next.4)(rxjs@7.8.2)(zone.js@0.16.3))(rxjs@7.8.2)
-      '@angular/core': 22.3.0-next.4(@angular/compiler@22.3.0-next.4)(rxjs@7.8.2)(zone.js@0.16.3)
-      '@angular/platform-browser': 22.3.0-next.4(@angular/common@22.3.0-next.4(@angular/core@22.3.0-next.4(@angular/compiler@22.3.0-next.4)(rxjs@7.8.2)(zone.js@0.16.3))(rxjs@7.8.2))(@angular/core@22.3.0-next.4(@angular/compiler@22.3.0-next.4)(rxjs@7.8.2)(zone.js@0.16.3))
-      '@standard-schema/spec': 1.1.0
-      rxjs: 7.8.2
-      tslib: 2.9.1
-      zod: 4.6.6
 
   '@angular/language-service@22.3.0-next.4': {}
 
@@ -3051,7 +3002,8 @@ snapshots:
 
   '@oxc-project/runtime@0.158.0': {}
 
-  '@oxc-project/types@0.156.0': {}
+  '@oxc-project/types@0.156.0':
+    optional: true
 
   '@oxc-project/types@0.158.0': {}
 
@@ -3311,9 +3263,8 @@ snapshots:
   '@rolldown/binding-win32-x64-msvc@1.2.19':
     optional: true
 
-  '@rolldown/pluginutils@1.1.1': {}
-
-  '@standard-schema/spec@1.1.0': {}
+  '@rolldown/pluginutils@1.1.1':
+    optional: true
 
   '@testing-library/dom@10.4.2':
     dependencies:
@@ -3474,7 +3425,7 @@ snapshots:
       '@testing-library/dom': 10.4.2
       '@testing-library/user-event': 14.6.10(@testing-library/dom@10.4.2)
       '@vitest/browser': 5.1.0(@voidzero-dev/vite-plus-core@1.6.0(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.4.2)(sass-embedded@1.104.1)(sass@1.105.2)(typescript@6.0.3)(yaml@2.9.0))(vitest@5.1.0)
-      vitest: 5.1.0(@types/node@26.6.5)(@vitest/browser-preview@5.1.0)(@vitest/coverage-v8@5.1.0)(@vitest/ui@5.1.0(vitest@5.1.0))(jsdom@22.1.0)(vite@8.3.8(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.4.2)(sass-embedded@1.104.1)(sass@1.105.2)(yaml@2.9.0))
+      vitest: 5.1.0(@types/node@26.6.5)(@vitest/browser-preview@5.1.0)(@vitest/coverage-v8@5.1.0(@vitest/browser@5.1.0)(vitest@5.1.0))(@vitest/ui@5.1.0(vitest@5.1.0))(@voidzero-dev/vite-plus-core@1.6.0(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.4.2)(sass-embedded@1.104.1)(sass@1.105.2)(typescript@6.0.3)(yaml@2.9.0))(jsdom@22.1.0)
     transitivePeerDependencies:
       - bufferutil
       - msw
@@ -3504,7 +3455,7 @@ snapshots:
       pngjs: 7.0.0
       sirv: 3.0.2
       tinyrainbow: 3.2.0
-      vitest: 5.1.0(@types/node@26.6.5)(@vitest/browser-preview@5.1.0)(@vitest/coverage-v8@5.1.0)(@vitest/ui@5.1.0(vitest@5.1.0))(jsdom@22.1.0)(vite@8.3.8(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.4.2)(sass-embedded@1.104.1)(sass@1.105.2)(yaml@2.9.0))
+      vitest: 5.1.0(@types/node@26.6.5)(@vitest/browser-preview@5.1.0)(@vitest/coverage-v8@5.1.0(@vitest/browser@5.1.0)(vitest@5.1.0))(@vitest/ui@5.1.0(vitest@5.1.0))(@voidzero-dev/vite-plus-core@1.6.0(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.4.2)(sass-embedded@1.104.1)(sass@1.105.2)(typescript@6.0.3)(yaml@2.9.0))(jsdom@22.1.0)
       ws: 8.23.0
     transitivePeerDependencies:
       - bufferutil
@@ -3541,9 +3492,9 @@ snapshots:
       obug: 3.0.0
       std-env: 4.3.0
       tinyrainbow: 3.2.0
-      vitest: 5.1.0(@types/node@26.6.5)(@vitest/browser-preview@5.1.0)(@vitest/coverage-v8@5.1.0)(@vitest/ui@5.1.0(vitest@5.1.0))(jsdom@22.1.0)(vite@8.3.8(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.4.2)(sass-embedded@1.104.1)(sass@1.105.2)(yaml@2.9.0))
+      vitest: 5.1.0(@types/node@26.6.5)(@vitest/browser-preview@5.1.0)(@vitest/coverage-v8@5.1.0(@vitest/browser@5.1.0)(vitest@5.1.0))(@vitest/ui@5.1.0(vitest@5.1.0))(@voidzero-dev/vite-plus-core@1.6.0(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.4.2)(sass-embedded@1.104.1)(sass@1.105.2)(typescript@6.0.3)(yaml@2.9.0))(jsdom@22.1.0)
     optionalDependencies:
-      '@vitest/browser': 5.1.0(vite@8.3.8(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.4.2)(sass-embedded@1.104.1)(sass@1.105.2)(yaml@2.9.0))(vitest@5.1.0)
+      '@vitest/browser': 5.1.0(@voidzero-dev/vite-plus-core@1.6.0(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.4.2)(sass-embedded@1.104.1)(sass@1.105.2)(typescript@6.0.3)(yaml@2.9.0))(vitest@5.1.0)
 
   '@vitest/istanbul-lib-coverage@2.1.0': {}
 
@@ -3568,6 +3519,7 @@ snapshots:
       magic-string: 1.4.3
     optionalDependencies:
       vite: 8.3.8(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.4.2)(sass-embedded@1.104.1)(sass@1.105.2)(yaml@2.9.0)
+    optional: true
 
   '@vitest/pretty-format@5.1.0':
     dependencies:
@@ -3590,7 +3542,7 @@ snapshots:
       pathe: 2.0.3
       sirv: 3.0.2
       tinyrainbow: 3.2.0
-      vitest: 5.1.0(@types/node@26.6.5)(@vitest/browser-preview@5.1.0)(@vitest/coverage-v8@5.1.0)(@vitest/ui@5.1.0(vitest@5.1.0))(jsdom@22.1.0)(vite@8.3.8(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.4.2)(sass-embedded@1.104.1)(sass@1.105.2)(yaml@2.9.0))
+      vitest: 5.1.0(@types/node@26.6.5)(@vitest/browser-preview@5.1.0)(@vitest/coverage-v8@5.1.0(@vitest/browser@5.1.0)(vitest@5.1.0))(@vitest/ui@5.1.0(vitest@5.1.0))(@voidzero-dev/vite-plus-core@1.6.0(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.4.2)(sass-embedded@1.104.1)(sass@1.105.2)(typescript@6.0.3)(yaml@2.9.0))(jsdom@22.1.0)
 
   '@vitest/utils@5.1.0':
     dependencies:
@@ -3835,8 +3787,6 @@ snapshots:
   dequal@2.0.3: {}
 
   detect-libc@2.1.2: {}
-
-  devtools-protocol@0.0.1541592: {}
 
   dom-accessibility-api@0.5.16: {}
 
@@ -4476,6 +4426,7 @@ snapshots:
       '@rolldown/binding-wasm32-wasi': 1.2.19
       '@rolldown/binding-win32-arm64-msvc': 1.2.19
       '@rolldown/binding-win32-x64-msvc': 1.2.19
+    optional: true
 
   rrweb-cssom@0.6.0: {}
 
@@ -4870,6 +4821,7 @@ snapshots:
       sass: 1.105.2
       sass-embedded: 1.104.1
       yaml: 2.9.0
+    optional: true
 
   vitest@5.1.0(@types/node@26.6.5)(@vitest/browser-preview@5.1.0)(@vitest/coverage-v8@5.1.0(@vitest/browser@5.1.0)(vitest@5.1.0))(@vitest/ui@5.1.0(vitest@5.1.0))(@voidzero-dev/vite-plus-core@1.6.0(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.4.2)(sass-embedded@1.104.1)(sass@1.105.2)(typescript@6.0.3)(yaml@2.9.0))(jsdom@22.1.0):
     dependencies:
@@ -4945,6 +4897,7 @@ snapshots:
       jsdom: 22.1.0
     transitivePeerDependencies:
       - msw
+    optional: true
 
   w3c-xmlserializer@4.0.0:
     dependencies:
@@ -5022,7 +4975,5 @@ snapshots:
     dependencies:
       '@yuku-toolchain/types': 0.19.0
       yuku-core: 0.19.0
-
-  zod@4.6.6: {}
 
   zone.js@0.16.3: {}
