@@ -2,12 +2,10 @@
 
 This guide explains how to deploy the trace-convenience application to GitHub Pages.
 
-## Setup Complete ✓
+## Overview
 
-The following changes have been made to enable GitHub Pages deployment:
-
-1. **Updated `apps/web/project.json`**: Added `baseHref: "/trace-convenience/"` to the production configuration
-2. **Created `.github/workflows/deploy.yml`**: GitHub Actions workflow for automatic deployment
+- **`apps/web/vite.config.ts`** sets `base: '/trace-convenience/'` for production builds.
+- **`.github/workflows/ci.yml`** checks, tests and builds every push and pull request. On `main` it also deploys the build to GitHub Pages.
 
 ## GitHub Repository Settings
 
@@ -21,38 +19,31 @@ To enable deployment, you need to configure GitHub Pages in your repository:
 4. Under "Build and deployment":
    - **Source**: Select "GitHub Actions" (not "Deploy from a branch")
 
-### Step 2: Commit and Push Changes
+### Step 2: Monitor Deployment
 
-```bash
-git add .
-git commit -m "Add GitHub Pages deployment workflow"
-git push origin main
-```
-
-### Step 3: Monitor Deployment
-
-1. Go to the **Actions** tab in your GitHub repository
-2. You should see the "Deploy to GitHub Pages" workflow running
+1. Push to `main` (or merge a pull request)
+2. Go to the **Actions** tab and open the "CI" run
 3. Once completed (green checkmark), your site will be live at:
    - **https://christopherpholder.github.io/trace-convenience/**
 
 ## How It Works
 
-The deployment workflow (`.github/workflows/deploy.yml`) will:
+The CI workflow (`.github/workflows/ci.yml`) will:
 
-1. **Trigger** automatically on every push to the `main` branch
-2. **Build** the application using `vp run build` (Vite+, production mode)
-3. **Upload** the built files from `apps/web/dist/`
-4. **Deploy** to GitHub Pages
+1. **Check, test and build** with `vp check`, `vp run -r test` and `vp run -r build` (Vite+, production mode)
+2. **Upload** the built files from `apps/web/dist/` (only on `main`)
+3. **Deploy** to GitHub Pages in a separate `deploy` job, which only runs once the `ci` job has passed
+
+A commit that fails checks or tests is never deployed.
 
 ## Manual Deployment
 
 You can also trigger deployment manually:
 
 1. Go to the **Actions** tab
-2. Select "Deploy to GitHub Pages" workflow
-3. Click "Run workflow" button
-4. Select the branch and click "Run workflow"
+2. Select the "CI" workflow
+3. Click "Run workflow"
+4. Select `main` and click "Run workflow" (other branches run checks only)
 
 ## Testing Locally
 
@@ -99,7 +90,7 @@ Simply push changes to the `main` branch, and GitHub Actions will automatically 
 
 ## Configuration Files
 
-- **`.github/workflows/deploy.yml`**: GitHub Actions workflow
+- **`.github/workflows/ci.yml`**: CI and GitHub Pages deployment
 - **`apps/web/vite.config.ts`**: Build configuration with the `base` path
 - **Output directory**: `apps/web/dist/`
 
@@ -109,7 +100,7 @@ If you need to add environment variables:
 
 1. Go to repository **Settings** > **Secrets and variables** > **Actions**
 2. Add your secrets
-3. Reference them in `.github/workflows/deploy.yml` using `${{ secrets.YOUR_SECRET }}`
+3. Reference them in `.github/workflows/ci.yml` using `${{ secrets.YOUR_SECRET }}`
 
 ## Cost
 
