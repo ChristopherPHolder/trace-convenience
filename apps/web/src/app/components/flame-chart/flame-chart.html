@@ -1,0 +1,314 @@
+<div class="flame-chart-container">
+  @if (hasEntries()) {
+  <div class="flame-chart-header">
+    <div class="header-left">
+      <h3 class="flame-chart-title">Flame chart</h3>
+      <div class="flame-chart-meta">
+        <pb-badge tone="brand">Main thread</pb-badge>
+        <pb-badge class="text-tabular">
+          <svg
+            class="icon"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            aria-hidden="true"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+              clip-rule="evenodd"
+            />
+          </svg>
+          @if (isWholeTrace()) { {{ traceDuration() }} } @else { {{ rangeDuration() }} of {{
+          traceDuration() }} }
+        </pb-badge>
+      </div>
+    </div>
+
+    <div class="flame-chart-actions">
+      <button
+        pbButton
+        variant="ghost"
+        type="button"
+        (click)="onDownload('png')"
+        [disabled]="exporting() !== null"
+        aria-label="Download flame chart as PNG"
+      >
+        PNG
+      </button>
+      <button
+        pbButton
+        type="button"
+        (click)="onDownload('svg')"
+        [disabled]="exporting() !== null"
+        aria-label="Download flame chart as SVG"
+      >
+        <svg
+          class="icon"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+          aria-hidden="true"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
+            clip-rule="evenodd"
+          />
+        </svg>
+        Download SVG
+      </button>
+    </div>
+  </div>
+
+  @if (exportError(); as message) {
+  <pb-notice kind="error" class="export-error" role="alert">{{ message }}</pb-notice>
+  }
+
+  <section class="range-panel" aria-label="Time range">
+    <p pbDescription id="flame-chart-range-hint">
+      Drag across the overview to choose the part of the trace to keep, or double-click a bar in the
+      chart to cut to it.
+    </p>
+
+    @if (overview(); as mini) {
+    <div
+      #overviewElement
+      class="overview"
+      (pointerdown)="onDragStart($event, 'new')"
+      (pointermove)="onDragMove($event)"
+      (pointerup)="onDragEnd()"
+      (pointercancel)="onDragEnd()"
+    >
+      <div class="overview-track">
+        <svg
+          class="overview-chart"
+          [attr.viewBox]="'0 0 ' + mini.width + ' ' + mini.height"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          @for (bar of mini.bars; track $index) {
+          <rect
+            [attr.x]="bar.x"
+            [attr.y]="bar.y"
+            [attr.width]="bar.width"
+            [attr.height]="bar.height"
+            [attr.fill]="bar.color"
+          />
+          }
+        </svg>
+        <div class="overview-shade" [style.width.%]="selection().left"></div>
+        <div class="overview-shade overview-shade-end" [style.left.%]="selection().right"></div>
+      </div>
+      <div
+        class="overview-selection"
+        [style.left.%]="selection().left"
+        [style.width.%]="selection().width"
+      >
+        @if (!isWholeTrace()) {
+        <div
+          class="overview-grip"
+          title="Drag to move the range"
+          aria-hidden="true"
+          (pointerdown)="onDragStart($event, 'move')"
+        ></div>
+        }
+        <div
+          class="overview-handle overview-handle-start"
+          role="slider"
+          tabindex="0"
+          aria-label="Start of the time range"
+          aria-describedby="flame-chart-range-hint"
+          aria-valuemin="0"
+          [attr.aria-valuemax]="formatMs(timeRange().endMs)"
+          [attr.aria-valuenow]="formatMs(timeRange().startMs)"
+          [attr.aria-valuetext]="formatMs(timeRange().startMs) + ' milliseconds'"
+          (pointerdown)="onDragStart($event, 'start')"
+          (keydown)="onHandleKeydown($event, 'start')"
+        ></div>
+        <div
+          class="overview-handle overview-handle-end"
+          role="slider"
+          tabindex="0"
+          aria-label="End of the time range"
+          aria-describedby="flame-chart-range-hint"
+          [attr.aria-valuemin]="formatMs(timeRange().startMs)"
+          [attr.aria-valuemax]="formatMs(durationMs())"
+          [attr.aria-valuenow]="formatMs(timeRange().endMs)"
+          [attr.aria-valuetext]="formatMs(timeRange().endMs) + ' milliseconds'"
+          (pointerdown)="onDragStart($event, 'end')"
+          (keydown)="onHandleKeydown($event, 'end')"
+        ></div>
+      </div>
+    </div>
+    }
+
+    <div class="range-controls">
+      <label class="range-field">
+        <span class="range-label">Start (ms)</span>
+        <input
+          type="number"
+          class="pb-input text-tabular"
+          min="0"
+          [max]="durationMs()"
+          step="any"
+          [value]="formatMs(timeRange().startMs)"
+          (change)="onStartInput($event)"
+        />
+      </label>
+      <label class="range-field">
+        <span class="range-label">End (ms)</span>
+        <input
+          type="number"
+          class="pb-input text-tabular"
+          min="0"
+          [max]="durationMs()"
+          step="any"
+          [value]="formatMs(timeRange().endMs)"
+          (change)="onEndInput($event)"
+        />
+      </label>
+
+      <div class="range-buttons">
+        <button
+          pbButton
+          variant="ghost"
+          type="button"
+          (click)="onSnapToTasks()"
+          title="Widen the range so that no task is cut off at an edge"
+        >
+          Snap to tasks
+        </button>
+        <button
+          pbButton
+          variant="ghost"
+          type="button"
+          (click)="onResetRange()"
+          [disabled]="isWholeTrace()"
+        >
+          Whole trace
+        </button>
+      </div>
+
+      <label class="durations-toggle">
+        <button
+          pbSwitch
+          [checked]="showDurations()"
+          (checkedChange)="onToggleDurations($event)"
+          aria-labelledby="flame-chart-durations-label"
+        ></button>
+        <span id="flame-chart-durations-label" class="range-label">Durations on bars</span>
+      </label>
+    </div>
+  </section>
+
+  @if (layout(); as chart) {
+  <div class="chart-scroll">
+    <svg
+      class="chart"
+      xmlns="http://www.w3.org/2000/svg"
+      [attr.viewBox]="'0 0 ' + chart.width + ' ' + chart.height"
+      [attr.font-family]="style.fontFamily"
+      [attr.font-size]="chart.fontSize"
+      role="img"
+      [attr.aria-label]="chartLabel()"
+      (dblclick)="onCutToBar($event)"
+    >
+      <defs>
+        <pattern
+          [attr.id]="style.longTaskPatternId"
+          width="5"
+          height="5"
+          patternUnits="userSpaceOnUse"
+          patternTransform="rotate(45)"
+        >
+          <rect width="2" height="5" [attr.fill]="style.longTask" />
+        </pattern>
+      </defs>
+      <rect
+        [attr.width]="chart.width"
+        [attr.height]="chart.height"
+        [attr.fill]="style.background"
+      />
+
+      <path [attr.d]="gridPath()" fill="none" [attr.stroke]="style.gridLine" />
+      <g [attr.fill]="style.axisText">
+        @for (tick of chart.ticks; track $index) {
+        <text [attr.x]="tick.x + style.tickLabelOffset" [attr.y]="chart.axisHeight - 7">
+          {{ tick.label }}
+        </text>
+        }
+      </g>
+
+      <g class="bars">
+        @for (bar of chart.bars; track $index) {
+        <rect
+          [attr.x]="bar.x"
+          [attr.y]="bar.y"
+          [attr.width]="bar.width"
+          [attr.height]="bar.height"
+          [attr.fill]="bar.color"
+          [attr.data-entry]="bar.entryIndex"
+        >
+          <title>{{ bar.title }}</title>
+        </rect>
+        }
+      </g>
+
+      <g pointer-events="none">
+        @for (overrun of chart.longTaskOverruns; track $index) {
+        <rect
+          [attr.x]="overrun.x"
+          [attr.y]="overrun.y"
+          [attr.width]="overrun.width"
+          [attr.height]="overrun.height"
+          [attr.fill]="'url(#' + style.longTaskPatternId + ')'"
+          fill-opacity="0.5"
+        />
+        }
+        <g [attr.fill]="style.text">
+          @for (bar of labelledBars(); track $index) {
+          <!-- Bound as text content, so the template's own whitespace never reaches the label. -->
+          <text
+            [attr.x]="bar.x + style.textPadding"
+            [attr.y]="bar.y + bar.height - style.textBaseline"
+          >
+            <tspan [textContent]="bar.label"></tspan>
+            @if (bar.detail) {
+            <tspan
+              [attr.dx]="style.textPadding"
+              [attr.fill-opacity]="style.detailOpacity"
+              [textContent]="bar.detail"
+            ></tspan>
+            }
+          </text>
+          }
+        </g>
+      </g>
+    </svg>
+  </div>
+  } } @else {
+  <div class="flame-chart-empty">
+    <svg
+      class="empty-icon"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      aria-hidden="true"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M4 6h16M4 10h12M4 14h8M4 18h5"
+      />
+    </svg>
+    <p class="empty-text">No main thread activity found in this trace</p>
+    <p pbDescription>
+      Record the trace in the Performance panel of Chrome DevTools, so that it includes the page's
+      main thread.
+    </p>
+  </div>
+  }
+</div>

@@ -1,6 +1,9 @@
 # Trace Convenience
 
-Turn a Chrome DevTools performance trace into a film strip of its screenshots, then download the strip as a PNG or an animated GIF.
+Turn a Chrome DevTools performance trace into images you can share:
+
+- **Film strip**: every screenshot the trace captured, as a PNG or an animated GIF.
+- **Flame chart**: the main thread's flame chart, cut down to the tasks you choose, as an SVG or a PNG.
 
 [![CI](https://github.com/ChristopherPHolder/trace-convenience/actions/workflows/ci.yml/badge.svg)](https://github.com/ChristopherPHolder/trace-convenience/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -15,7 +18,9 @@ The trace never leaves your browser. It is parsed and rendered locally, and noth
 2. Record, stop, and save the trace as JSON.
 3. Drop the file on the app.
 
-The film strip shows every captured frame with its timestamp. Click a frame to preview it, re-sample the strip at a fixed interval or narrow it to a time range, and download the result.
+The **Film strip** tab shows every captured frame with its timestamp. Click a frame to preview it, re-sample the strip at a fixed interval or narrow it to a time range, and download the result.
+
+The **Flame chart** tab shows the main thread as the Performance panel draws it. Drag across the overview to keep one part of the trace, or double-click a task to cut to it, and download exactly that piece.
 
 The [usage guide](docs/usage.md) covers the settings, keyboard shortcuts and export formats.
 
@@ -49,15 +54,15 @@ vp run dev   # http://localhost:5173
 
 A pnpm workspace managed by Vite+:
 
-| Package                                                                        | What it is                                                                                       |
-| ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
-| [`apps/web`](apps/web)                                                         | The Angular app: upload, film strip, preview and export                                          |
-| [`packages/trace-core`](packages/trace-core) (`@trace-convenience/trace-core`) | Framework-agnostic trace parsing and frame selection, shared with the planned CLI and MCP server |
+| Package                                                                        | What it is                                                                                    |
+| ------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------- |
+| [`apps/web`](apps/web)                                                         | The Angular app: upload, film strip, flame chart and export                                   |
+| [`packages/trace-core`](packages/trace-core) (`@trace-convenience/trace-core`) | Framework-agnostic trace parsing and chart layout, shared with the planned CLI and MCP server |
 
 ## Documentation
 
-- [Usage](docs/usage.md): capturing a trace and working with the film strip
-- [Architecture](docs/architecture.md): how the packages fit together and how a trace becomes a film strip
+- [Usage](docs/usage.md): capturing a trace and working with the film strip and the flame chart
+- [Architecture](docs/architecture.md): how the packages fit together and how a trace becomes an image
 - [Development](docs/development.md): setup, commands, conventions and testing
 - [Deployment](docs/deployment.md): CI and GitHub Pages
 - [Architecture decision records](docs/adr/README.md): why the project is built the way it is

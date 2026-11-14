@@ -1,0 +1,32 @@
+<div class="tool-tabs" role="tablist" aria-label="Trace tools" (keydown)="onTabKeydown($event)">
+  @for (tool of tools; track tool.id) {
+  <button
+    type="button"
+    class="tool-tab"
+    role="tab"
+    [id]="'tool-tab-' + tool.id"
+    [attr.aria-selected]="activeTool() === tool.id"
+    [attr.aria-controls]="'tool-panel-' + tool.id"
+    [attr.tabindex]="activeTool() === tool.id ? 0 : -1"
+    (click)="onSelectTool(tool.id)"
+  >
+    {{ tool.label }}
+  </button>
+  }
+</div>
+
+<div
+  role="tabpanel"
+  [id]="'tool-panel-' + activeTool()"
+  [attr.aria-labelledby]="'tool-tab-' + activeTool()"
+>
+  @switch (activeTool()) { @case ("film-strip") {
+  <app-film-strip
+    [screenshots]="screenshots()"
+    [startTime]="traceStartTime()"
+    [endTime]="traceEndTime()"
+  />
+  } @case ("flame-chart") {
+  <app-flame-chart />
+  } }
+</div>

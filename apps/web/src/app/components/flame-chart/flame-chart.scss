@@ -1,0 +1,270 @@
+// Breaks out of the narrow upload column, as the film strip does.
+.flame-chart-container {
+  --chart-width: min(95vw, 90rem);
+  // The chart keeps the light colours of DevTools in both themes, like a screenshot.
+  --chart-paper: #ffffff;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  width: var(--chart-width);
+  margin-top: var(--space-4);
+  margin-inline: calc((100% - var(--chart-width)) / 2);
+}
+
+.flame-chart-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.header-left {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.flame-chart-title {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+  color: var(--text-heading);
+}
+
+.flame-chart-meta,
+.flame-chart-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.icon {
+  flex-shrink: 0;
+  width: 1rem;
+  height: 1rem;
+}
+
+pb-badge .icon {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+// Range
+.range-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  background: var(--surface-subtle);
+}
+
+.overview {
+  position: relative;
+  height: 4.5rem;
+  cursor: crosshair;
+  // The drag is handled here, so the browser must not scroll or select instead.
+  touch-action: none;
+  user-select: none;
+}
+
+// Clips the miniature to the rounded corners. The handles sit outside it, so
+// they can reach past the edges.
+.overview-track {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  background: var(--chart-paper);
+}
+
+.overview-chart {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.overview-shade {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  background: var(--backdrop);
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.overview-shade-end {
+  right: 0;
+}
+
+// Lets a press through to the overview, so a drag inside the range starts a new one.
+.overview-selection {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  min-width: 2px;
+  border-inline: 2px solid var(--accent);
+  pointer-events: none;
+}
+
+// A tab on the top edge that moves the range without resizing it.
+.overview-grip {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: var(--space-7);
+  height: var(--space-2-5);
+  border-radius: 0 0 var(--radius-base) var(--radius-base);
+  background: var(--accent);
+  transform: translateX(-50%);
+  cursor: grab;
+  pointer-events: auto;
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+// Wider than the line it sits on, so it is easy to grab. It stops short of
+// the grip, which stays reachable on a narrow range.
+.overview-handle {
+  position: absolute;
+  top: var(--space-2-5);
+  bottom: 0;
+  width: var(--space-3);
+  cursor: ew-resize;
+  pointer-events: auto;
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: var(--space-1-5);
+    height: var(--space-6);
+    border-radius: var(--radius-full);
+    background: var(--accent);
+    transform: translate(-50%, -50%);
+  }
+
+  &:focus-visible {
+    outline: none;
+
+    &::after {
+      box-shadow: var(--shadow-focus);
+      outline: 2px solid var(--chart-paper);
+    }
+  }
+}
+
+.overview-handle-start {
+  left: calc(var(--space-3) / -2 - 1px);
+}
+
+.overview-handle-end {
+  right: calc(var(--space-3) / -2 - 1px);
+}
+
+.range-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-3) var(--space-4);
+}
+
+.range-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  width: 8.5rem;
+}
+
+.range-label {
+  font-size: 0.8125rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.range-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.durations-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 2.375rem;
+  margin-left: auto;
+  cursor: pointer;
+}
+
+// Chart
+.chart-scroll {
+  max-height: 70vh;
+  overflow: auto;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-xl);
+  background: var(--chart-paper);
+  scrollbar-color: var(--border-control) transparent;
+}
+
+.chart {
+  display: block;
+  width: 100%;
+  // Below this the labels are too small to read, so the chart scrolls sideways.
+  min-width: 56rem;
+  height: auto;
+  // A double-click cuts to a bar. It should not select the bar's text as well.
+  user-select: none;
+}
+
+.bars rect:hover {
+  filter: brightness(0.92);
+}
+
+// Empty state
+.flame-chart-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-16) var(--space-8);
+  border: 2px dashed var(--border-control);
+  border-radius: var(--radius-xl);
+  background: var(--surface-subtle);
+  text-align: center;
+}
+
+.empty-icon {
+  width: var(--space-12);
+  height: var(--space-12);
+  margin-bottom: var(--space-2);
+  color: var(--text-subtle);
+}
+
+.empty-text {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+  color: var(--text-heading);
+}
+
+@media (max-width: 640px) {
+  .flame-chart-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .durations-toggle {
+    margin-left: 0;
+  }
+}

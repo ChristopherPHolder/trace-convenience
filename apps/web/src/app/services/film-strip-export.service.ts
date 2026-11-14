@@ -1,5 +1,6 @@
 import { Injectable, inject } from "@angular/core";
 import { toDataUri, type FilmStripFrame } from "@trace-convenience/trace-core";
+import { downloadBlob } from "./download";
 import { FilmStripSettingsService } from "./film-strip-settings.service";
 
 export type FilmStripExportFormat = "png" | "gif";
@@ -93,7 +94,7 @@ export class FilmStripExportService {
     if (!blob) throw new Error("The browser could not encode the PNG.");
 
     return {
-      fileName: downloadBlob(blob, "png"),
+      fileName: save(blob, "png"),
       format: "png",
       frameCount: frames.length,
       width: canvas.width,
@@ -200,7 +201,7 @@ export class FilmStripExportService {
     const blob = new Blob([new Uint8Array(gif.bytes())], { type: "image/gif" });
 
     return {
-      fileName: downloadBlob(blob, "gif"),
+      fileName: save(blob, "gif"),
       format: "gif",
       frameCount: frameCanvases.length,
       width: scaledWidth,
@@ -224,14 +225,9 @@ function loadImages(frames: readonly FilmStripFrame[]): Promise<HTMLImageElement
   );
 }
 
-/** Saves `blob` through a temporary link and returns the file name it used. */
-function downloadBlob(blob: Blob, extension: FilmStripExportFormat): string {
+/** Saves `blob` and returns the file name it used. */
+function save(blob: Blob, extension: FilmStripExportFormat): string {
   const fileName = `film-strip-${Date.now()}.${extension}`;
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = fileName;
-  link.click();
-  URL.revokeObjectURL(url);
+  downloadBlob(blob, fileName);
   return fileName;
 }

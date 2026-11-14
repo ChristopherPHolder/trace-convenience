@@ -2,10 +2,10 @@
 
 Trace Convenience is a pnpm workspace managed by [Vite+](https://viteplus.dev). It has two packages:
 
-| Package               | Name                            | Role                                                             |
-| --------------------- | ------------------------------- | ---------------------------------------------------------------- |
-| `packages/trace-core` | `@trace-convenience/trace-core` | Trace parsing and film-strip frame selection, in pure TypeScript |
-| `apps/web`            | `web`                           | The Angular app: UI state, rendering and export                  |
+| Package               | Name                            | Role                                                                |
+| --------------------- | ------------------------------- | ------------------------------------------------------------------- |
+| `packages/trace-core` | `@trace-convenience/trace-core` | Trace parsing, frame selection and chart layout, in pure TypeScript |
+| `apps/web`            | `web`                           | The Angular app: UI state, rendering and export                     |
 
 The split exists so that other front ends can reuse the trace logic. A CLI and an MCP server are planned. See [ADR 0009](adr/0009-framework-agnostic-trace-core-package.md).
 
@@ -30,6 +30,34 @@ FilmStripFrame[]                              apps/web  FilmStripService
 
 Everything runs in the browser. There is no backend and no persistence. See [ADR 0001](adr/0001-process-traces-in-the-browser.md).
 
+## From trace file to flame chart
+
+The flame chart reads the same loaded file, the first time its tab is opened.
+
+```
+TraceService.currentFile().content            apps/web  the decoded trace
+        │  parseFlameChart(json)              trace-core
+        ▼
+FlameChart { entries, startTime, endTime }    the main thread, in call-tree order
+        │  layoutFlameChart(chart, { timeRange, width })   trace-core
+        ▼
+FlameChartLayout { bars, ticks, ... }         apps/web  FlameChartService
+        │
+        ├─ rendered as inline SVG                         FlameChartComponent
+        └─ renderFlameChartSvg(layout)        trace-core
+                ├─ downloaded as the SVG                  FlameChartExportService
+                └─ drawn on a canvas for the PNG          FlameChartExportService
+```
+
+`parseFlameChart` does what the Performance panel of Chrome DevTools does for its main-thread track. See [ADR 0011](adr/0011-flame-chart-laid-out-in-trace-core.md).
+
+1. It picks the busiest `CrRendererMain` thread among the processes that host the page's outermost frame.
+2. It keeps the trace events DevTools draws and gives them its labels and category colours. `flame-chart/event-styles.ts` holds the table.
+3. It joins the `Profile` and `ProfileChunk` events into a CPU profile and turns the samples into JavaScript calls that fit inside the trace events. `flame-chart/cpu-profile.ts` holds the rules.
+4. It nests everything by time and gives each entry a depth and a self time.
+
+`layoutFlameChart` decides where everything goes: the position and colour of each bar, the label cut to fit it, the axis ticks and the marks on long tasks. `renderFlameChartSvg` and the component's template only draw what the layout says, so the page and the export agree.
+
 ## trace-core
 
 Source: `packages/trace-core/src`.
@@ -43,6 +71,20 @@ Source: `packages/trace-core/src`.
 | `formatTimestamp(timestamp, base?)`            | Formats a microsecond timestamp as `123ms` or `1.23s`                                                                                                          |
 | `getTimeDelta(current, previous)`              | Milliseconds between two screenshots                                                                                                                           |
 | `Screenshot`, `ParsedTrace`, `FilmStripFrame`  | The data types. Timestamps are in microseconds, as in the trace. Image data is base64 without a data-URI prefix.                                               |
+
+The flame chart exports are in `src/flame-chart`:
+
+| Export                                                               | Purpose                                                                                                                                      |
+| -------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `parseFlameChart(traceContent)`                                      | Builds the main thread's flame chart from an already JSON-decoded trace. Throws on input that is not a trace; an empty chart has no entries. |
+| `flameChartDurationMs(chart)`                                        | Length of the trace, in milliseconds                                                                                                         |
+| `layoutFlameChart(chart, options?)`                                  | Places the entries of a `timeRange` in a chart `width` px wide. Options turn off the axis, the labels or the durations and limit the depth.  |
+| `renderFlameChartSvg(layout)`                                        | Draws a layout as a standalone SVG document                                                                                                  |
+| `snapTimeRangeToTasks(chart, timeRange)`                             | Widens a range to the top-level tasks it touches                                                                                             |
+| `clampTimeRange(chart, timeRange?)`                                  | Keeps a range inside the trace and in order                                                                                                  |
+| `formatDuration(microseconds)`                                       | Formats a duration as `450 μs`, `12.3 ms` or `1.25 s`                                                                                        |
+| `FLAME_CHART_STYLE`                                                  | The font and colours a renderer needs to draw a layout                                                                                       |
+| `FlameChart`, `FlameChartEntry`, `FlameChartLayout`, `FlameChartBar` | The data types. A chart's times are in microseconds; a layout's positions are in px and its time range in milliseconds.                      |
 
 `parseTrace` reads three kinds of trace events. See [ADR 0003](adr/0003-film-strip-from-trace-screenshot-events.md).
 
@@ -69,14 +111,19 @@ apps/web/src/
 └── app/
     ├── app.ts, app.html         Shell: header and the upload screen
     ├── components/
-    │   ├── file-upload/                  Drop zone, validation, file card; hosts the film strip
+    │   ├── file-upload/                  Drop zone, validation, file card; hosts the tools
+    │   ├── trace-tools/                  One tab per tool; renders the selected one
     │   ├── film-strip/                   Strip, preview, PNG and GIF export
-    │   └── film-strip-settings-dialog/   Interval, time range and timestamp settings
+    │   ├── film-strip-settings-dialog/   Interval, time range and timestamp settings
+    │   └── flame-chart/                  Overview with the range selection, chart, SVG and PNG export
     ├── services/
     │   ├── trace.service.ts              The loaded trace and its parsed data
     │   ├── film-strip-settings.service.ts   Settings shared by the strip and the dialog
     │   ├── film-strip.service.ts         The frames the settings select
-    │   └── film-strip-export.service.ts  PNG and GIF download
+    │   ├── film-strip-export.service.ts  PNG and GIF download
+    │   ├── flame-chart.service.ts        The main thread's chart, its time range and its layout
+    │   ├── flame-chart-export.service.ts SVG and PNG download
+    │   └── download.ts                   Saves a blob as a file
     ├── webmcp/
     │   └── film-strip-tools.ts           The tools published to in-browser agents
     └── design-system/           PushBased components (pbButton, pb-card, pbSwitch, ...)
@@ -87,6 +134,10 @@ apps/web/src/
 **Frames.** `FilmStripService` applies the interval and time-range settings to the loaded trace's screenshots. The strip component and the WebMCP tools both go through it, so they always show the same frames.
 
 **Export.** `FilmStripExportService` draws the frames on a canvas and downloads the result. The PNG is one image with the frames side by side. The GIF is encoded with [gifenc](https://github.com/mattdesl/gifenc), which is loaded with a dynamic `import()` so it stays out of the initial bundle.
+
+**Tools.** `TraceToolsComponent` shows one tab per tool and renders only the selected one. The selected tool is a signal in the component; there is no router.
+
+**Flame chart.** `FlameChartService` parses the main thread when the flame chart is first shown, holds the time range and computes two layouts: the chart, cut to the range, and an overview of the whole trace to choose the range on. Loading another trace resets the range. `FlameChartComponent` renders both as inline SVG. The chart is always laid out 1200 px wide and scaled to the page, so an export does not depend on the window's size.
 
 **Styling.** The UI uses the PushBased design system. `tokens.scss` holds the raw tokens and `styles.scss` maps them to semantic roles such as `--surface`, `--text` and `--accent`, each with a light and a dark value. Components read the semantic roles only. See [ADR 0006](adr/0006-pushbased-design-system.md).
 

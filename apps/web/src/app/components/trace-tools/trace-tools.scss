@@ -1,0 +1,56 @@
+:host {
+  display: block;
+}
+
+// A segmented control: the tabs share one track and the selected one is raised.
+.tool-tabs {
+  display: flex;
+  gap: var(--space-1);
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: var(--space-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  background: var(--surface-sunken);
+}
+
+.tool-tab {
+  appearance: none;
+  cursor: pointer;
+  padding: var(--space-1-5) var(--space-4);
+  border: 1px solid transparent;
+  border-radius: var(--radius-lg);
+  background: transparent;
+  color: var(--text-muted);
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  white-space: nowrap;
+  transition:
+    background-color var(--duration-fast) ease-out,
+    color var(--duration-fast) ease-out,
+    box-shadow var(--duration-fast) ease-out;
+
+  &:hover {
+    color: var(--text-heading);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-focus);
+  }
+
+  &[aria-selected="true"] {
+    border-color: var(--border);
+    background: var(--surface-raised);
+    color: var(--text-heading);
+    font-weight: 600;
+    box-shadow: var(--shadow-sm);
+
+    &:focus-visible {
+      box-shadow: var(--shadow-focus);
+    }
+  }
+}
