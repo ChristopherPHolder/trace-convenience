@@ -1,27 +1,16 @@
-import { TestBed } from "@angular/core/testing";
-import { TraceParserService } from "./trace-parser.service";
+import { describe, expect, it } from "vite-plus/test";
+import { formatTimestamp, getTimeDelta, parseTrace, toDataUri } from "./index";
 
-describe("TraceParserService", () => {
-  let service: TraceParserService;
-
-  beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(TraceParserService);
-  });
-
-  it("should be created", () => {
-    expect(service).toBeTruthy();
-  });
-
+describe("trace-core", () => {
   describe("parseTrace", () => {
     it("should throw error for invalid trace format", () => {
-      expect(() => service.parseTrace(null)).toThrow("Invalid trace format");
-      expect(() => service.parseTrace(undefined)).toThrow("Invalid trace format");
-      expect(() => service.parseTrace("string")).toThrow("Invalid trace format");
+      expect(() => parseTrace(null)).toThrow("Invalid trace format");
+      expect(() => parseTrace(undefined)).toThrow("Invalid trace format");
+      expect(() => parseTrace("string")).toThrow("Invalid trace format");
     });
 
     it("should throw error for trace without events array", () => {
-      expect(() => service.parseTrace({ traceEvents: "not-an-array" })).toThrow(
+      expect(() => parseTrace({ traceEvents: "not-an-array" })).toThrow(
         "Trace events must be an array",
       );
     });
@@ -34,7 +23,7 @@ describe("TraceParserService", () => {
         ],
       };
 
-      const result = service.parseTrace(trace);
+      const result = parseTrace(trace);
 
       expect(result.screenshots).toEqual([]);
       expect(result.metadata.screenshotCount).toBe(0);
@@ -62,7 +51,7 @@ describe("TraceParserService", () => {
         ],
       };
 
-      const result = service.parseTrace(trace);
+      const result = parseTrace(trace);
 
       expect(result.screenshots.length).toBe(2);
       expect(result.screenshots[0].data).toBe("/9j/base64data");
@@ -83,7 +72,7 @@ describe("TraceParserService", () => {
         ],
       };
 
-      const result = service.parseTrace(trace);
+      const result = parseTrace(trace);
 
       expect(result.screenshots.length).toBe(1);
       expect(result.screenshots[0].data).toBe("/9j/test123");
@@ -114,7 +103,7 @@ describe("TraceParserService", () => {
         ],
       };
 
-      const result = service.parseTrace(trace);
+      const result = parseTrace(trace);
 
       expect(result.screenshots.length).toBe(3);
       expect(result.screenshots[0].data).toBe("first");
@@ -124,7 +113,7 @@ describe("TraceParserService", () => {
 
     it("should handle empty trace events array", () => {
       const trace = { traceEvents: [] };
-      const result = service.parseTrace(trace);
+      const result = parseTrace(trace);
 
       expect(result.screenshots).toEqual([]);
       expect(result.metadata.screenshotCount).toBe(0);
@@ -133,15 +122,15 @@ describe("TraceParserService", () => {
     });
   });
 
-  describe("getDataUri", () => {
+  describe("toDataUri", () => {
     it("should create JPEG data URI", () => {
       const screenshot = {
         timestamp: 1000,
         data: "base64data",
-        format: "jpeg",
+        format: "jpeg" as const,
       };
 
-      const result = service.getDataUri(screenshot);
+      const result = toDataUri(screenshot);
 
       expect(result).toBe("data:image/jpeg;base64,base64data");
     });
@@ -150,10 +139,10 @@ describe("TraceParserService", () => {
       const screenshot = {
         timestamp: 1000,
         data: "base64data",
-        format: "png",
+        format: "png" as const,
       };
 
-      const result = service.getDataUri(screenshot);
+      const result = toDataUri(screenshot);
 
       expect(result).toBe("data:image/png;base64,base64data");
     });
@@ -161,28 +150,36 @@ describe("TraceParserService", () => {
 
   describe("formatTimestamp", () => {
     it("should format milliseconds", () => {
-      expect(service.formatTimestamp(500, 0)).toBe("1ms");
-      expect(service.formatTimestamp(500000, 0)).toBe("500ms");
+      expect(formatTimestamp(500, 0)).toBe("1ms");
+      expect(formatTimestamp(500000, 0)).toBe("500ms");
     });
 
     it("should format seconds", () => {
-      expect(service.formatTimestamp(1000000, 0)).toBe("1.00s");
-      expect(service.formatTimestamp(1500000, 0)).toBe("1.50s");
-      expect(service.formatTimestamp(10000000, 0)).toBe("10.00s");
+      expect(formatTimestamp(1000000, 0)).toBe("1.00s");
+      expect(formatTimestamp(1500000, 0)).toBe("1.50s");
+      expect(formatTimestamp(10000000, 0)).toBe("10.00s");
     });
 
     it("should handle relative timestamps", () => {
-      expect(service.formatTimestamp(2000000, 1000000)).toBe("1.00s");
-      expect(service.formatTimestamp(1500000, 1000000)).toBe("500ms");
+      expect(formatTimestamp(2000000, 1000000)).toBe("1.00s");
+      expect(formatTimestamp(1500000, 1000000)).toBe("500ms");
     });
   });
 
   describe("getTimeDelta", () => {
     it("should calculate time difference in milliseconds", () => {
-      const screenshot1 = { timestamp: 1000000, data: "", format: "jpeg" };
-      const screenshot2 = { timestamp: 2000000, data: "", format: "jpeg" };
+      const screenshot1 = {
+        timestamp: 1000000,
+        data: "",
+        format: "jpeg" as const,
+      };
+      const screenshot2 = {
+        timestamp: 2000000,
+        data: "",
+        format: "jpeg" as const,
+      };
 
-      const delta = service.getTimeDelta(screenshot2, screenshot1);
+      const delta = getTimeDelta(screenshot2, screenshot1);
 
       expect(delta).toBe(1000);
     });

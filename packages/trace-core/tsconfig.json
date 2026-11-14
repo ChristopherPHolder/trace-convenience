@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "es2022",
+    // No DOM and no Node types: trace-core must run in the browser and in Node.
+    "lib": ["es2022"],
+    "types": [],
+    "module": "preserve",
+    "moduleResolution": "bundler",
+    "moduleDetection": "force",
+    "strict": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+    "skipLibCheck": true,
+    "noEmit": true
+  },
+  "include": ["src"]
+}

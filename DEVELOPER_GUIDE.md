@@ -49,7 +49,21 @@ To test the feature, you need a Chrome DevTools trace with screenshots:
 
 ## Project Structure
 
+The repo is a pnpm workspace managed by Vite+:
+
+- `packages/trace-core` (`@trace-convenience/trace-core`): framework-agnostic trace parsing and film-strip frame selection, shared by every front end. It must not use Angular, the DOM or Node APIs. A `no-restricted-imports` lint override and the package's `lib: ["es2022"]` tsconfig enforce this.
+- `apps/web`: the Angular UI. It holds UI state and rendering and calls into `trace-core` for the logic.
+
+Inside the workspace, `trace-core`'s `exports` point at its TypeScript source (tsdown `devExports`), so the app, tests and type checks use it without a build step. `vp run trace-core#build` (`vp pack`) produces `dist` with type declarations for Node consumers.
+
 ```
+packages/trace-core/src/
+├── parse-trace.ts         # Screenshot extraction from trace events
+├── film-strip.ts          # Time-range filtering and interval sampling
+├── image.ts               # Format detection, data URIs
+├── time.ts                # Timestamp formatting
+└── types.ts               # Screenshot, ParsedTrace
+
 apps/web/src/
 ├── styles.scss                # Semantic colour roles (light + dark) and global .pb-* classes
 ├── styles/tokens.scss         # PushBased design tokens
@@ -61,7 +75,6 @@ apps/web/src/
     │   └── film-strip-settings-dialog/
     └── services/
         ├── trace.service.ts       # Trace file management
-        ├── trace-parser.service.ts # Screenshot extraction
         └── film-strip-settings.service.ts
 ```
 
@@ -113,7 +126,7 @@ Services are injected using the modern `inject()` function:
 ```typescript
 export class MyComponent {
   private readonly traceService = inject(TraceService);
-  private readonly parser = inject(TraceParserService);
+  private readonly settings = inject(FilmStripSettingsService);
 }
 ```
 
@@ -121,8 +134,8 @@ export class MyComponent {
 
 To support additional screenshot event types:
 
-1. Open `trace-parser.service.ts`
-2. Locate the `parseTrace()` method
+1. Open `packages/trace-core/src/parse-trace.ts`
+2. Locate the `parseTrace()` function
 3. Add a new condition in the event loop:
 
 ```typescript
@@ -132,14 +145,14 @@ if (event.name === "NewScreenshotType") {
   if (imageData && typeof imageData === "string") {
     screenshots.push({
       timestamp,
-      data: this.extractBase64FromDataUri(imageData),
-      format: this.detectImageFormat(imageData),
+      data: extractBase64FromDataUri(imageData),
+      format: detectImageFormat(imageData),
     });
   }
 }
 ```
 
-4. Add tests in `trace-parser.service.spec.ts`
+4. Add tests in `packages/trace-core/src/parse-trace.spec.ts`
 
 ## Customizing the Film Strip UI
 
@@ -169,7 +182,7 @@ Reach for a component from `apps/web/src/app/design-system` (`button[pbButton]`,
 
 To display additional information about screenshots:
 
-1. Update the `Screenshot` interface in `trace-parser.service.ts`
+1. Update the `Screenshot` interface in `packages/trace-core/src/types.ts`
 2. Extract the data in `parseTrace()`
 3. Add UI elements in `film-strip.html`
 
@@ -183,10 +196,11 @@ Run all tests:
 vp test
 ```
 
-Run specific test file:
+Run one package's tests, or one file:
 
 ```bash
-vp test trace-parser.service.spec.ts
+vp run trace-core#test
+vp test film-strip
 ```
 
 ### Writing New Tests
@@ -247,11 +261,11 @@ describe("MyComponent", () => {
 
 ### Enabling Trace Parsing Logs
 
-Uncomment console logs in `trace-parser.service.ts`:
+Add a log in `packages/trace-core/src/parse-trace.ts`:
 
 ```typescript
-parseTrace(traceContent: unknown): ParsedTrace {
-  console.log('Parsing trace:', traceContent); // Debug log
+export function parseTrace(traceContent: unknown): ParsedTrace {
+  console.log("Parsing trace:", traceContent); // Debug log
 
   // ... rest of the code
 }
@@ -345,16 +359,22 @@ worker.onmessage = ({ data }) => {
 
 ## API Reference
 
-### TraceParserService
+### trace-core (`@trace-convenience/trace-core`)
 
-**Methods:**
+**Functions:**
 
 - `parseTrace(traceContent: unknown): ParsedTrace`
   - Parses a Chrome DevTools trace and extracts screenshots
   - Returns: ParsedTrace object with screenshots and metadata
   - Throws: Error if trace format is invalid
 
-- `getDataUri(screenshot: Screenshot): string`
+- `selectFilmStripFrames(screenshots: Screenshot[], options?: FrameSelectionOptions): FilmStripFrame[]`
+  - Picks film-strip frames: `options.timeRange` restricts to a window (plus one context frame on each side), `options.intervalMs` re-samples onto a fixed timeline
+
+- `screenshotSpanMs(screenshots: Screenshot[]): number`
+  - Time between the first and last screenshot, in milliseconds
+
+- `toDataUri(screenshot: Screenshot): string`
   - Converts a screenshot to a displayable data URI
   - Returns: data:image/[type];base64,[data]
 

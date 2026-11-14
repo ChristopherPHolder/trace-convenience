@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { FilmStripComponent } from "./film-strip";
-import { Screenshot } from "../../services/trace-parser.service";
+import type { Screenshot } from "@trace-convenience/trace-core";
 import { FilmStripSettingsService } from "../../services/film-strip-settings.service";
 
 describe("FilmStripComponent", () => {
