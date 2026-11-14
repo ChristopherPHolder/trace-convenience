@@ -30,7 +30,7 @@ Trace Convenience is a powerful browser-based tool that helps developers analyze
 
 ### Prerequisites
 
-- Node.js 20.x or higher
+- Node.js 26.x (required by the Vite build; see `package.json#engines`)
 - pnpm 10.x (the exact version is pinned in `package.json#packageManager`; see [pnpm installation](https://pnpm.io/installation))
 
 ### Installation
@@ -81,12 +81,12 @@ The application will be available at `http://localhost:4200`
 
 Built with modern web technologies and best practices:
 
-- **Framework**: Angular 20.3 with standalone components
+- **Framework**: Angular 22.3 with standalone components
 - **State Management**: Angular Signals for reactive data flow
-- **Build System**: Nx monorepo with optimized build configuration
+- **Build System**: Nx monorepo, built and served by Vite with [vite-plugin-ngp](https://push-based.github.io/vite-plugin-ngp/) (Angular compiled per module by ngp)
 - **Testing**: Vitest with comprehensive test coverage (98 tests passing)
 - **Styling**: Modern CSS with component-scoped SCSS
-- **Type Safety**: TypeScript 5.9 in strict mode
+- **Type Safety**: TypeScript 6.0 in strict mode, templates type-checked on every build
 
 ### Key Components
 
@@ -113,14 +113,11 @@ Current test coverage: **98 tests passing** across all components and services.
 ## 🔨 Building
 
 ```bash
-# Development build
+# Production build (outputs to dist/apps/web/browser, served from /trace-convenience/)
 pnpm nx build web
 
-# Production build
-pnpm nx build web --configuration=production
-
-# Serve production build locally
-pnpm nx serve-static web
+# Serve the production build locally at http://localhost:4173/trace-convenience/
+pnpm nx preview web
 ```
 
 ## 🌐 Browser Support

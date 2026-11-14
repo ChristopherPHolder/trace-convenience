@@ -41,7 +41,7 @@ git push origin main
 The deployment workflow (`.github/workflows/deploy.yml`) will:
 
 1. **Trigger** automatically on every push to the `main` branch
-2. **Build** the application using `nx build web --configuration=production`
+2. **Build** the application using `nx build web` (Vite, production mode)
 3. **Upload** the built files from `dist/apps/web/browser/`
 4. **Deploy** to GitHub Pages
 
@@ -59,14 +59,11 @@ You can also trigger deployment manually:
 Before deploying, you can test the production build locally:
 
 ```bash
-# Build for production
-pnpm nx build web --configuration=production
-
-# Serve the built files
-pnpm nx serve-static web
+# Build for production and serve the built files
+pnpm nx preview web
 ```
 
-Then open http://localhost:4200 to test the production build.
+Then open http://localhost:4173/trace-convenience/ to test the production build.
 
 ## Troubleshooting
 
@@ -74,7 +71,7 @@ Then open http://localhost:4200 to test the production build.
 
 - Check the Actions tab for error logs
 - Ensure all dependencies are listed in `package.json`
-- Try building locally first: `pnpm nx build web --configuration=production`
+- Try building locally first: `pnpm nx build web`
 
 ### Site Shows 404
 
@@ -84,9 +81,9 @@ Then open http://localhost:4200 to test the production build.
 
 ### Assets Not Loading
 
-- Verify `baseHref` is set correctly in `apps/web/project.json`
+- Verify `base` is set correctly in `apps/web/vite.config.mts`
 - Should be `/trace-convenience/` for this repository
-- If you rename the repository, update the `baseHref` value
+- If you rename the repository, update the `base` value
 
 ### Router Issues
 
@@ -103,7 +100,7 @@ Simply push changes to the `main` branch, and GitHub Actions will automatically 
 ## Configuration Files
 
 - **`.github/workflows/deploy.yml`**: GitHub Actions workflow
-- **`apps/web/project.json`**: Build configuration with baseHref
+- **`apps/web/vite.config.mts`**: Build configuration with the `base` path
 - **Output directory**: `dist/apps/web/browser/`
 
 ## Environment Variables

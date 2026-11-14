@@ -1,15 +1,38 @@
 /// <reference types='vitest' />
 import { defineConfig } from 'vite';
-import angular from '@analogjs/vite-plugin-angular';
+import { ngp } from '@push-based/vite-plugin-ngp';
 import { nxReadySignal } from '@nx/vite/plugins/nx-ready-signal.plugin';
 
-export default defineConfig(() => ({
+export default defineConfig(({ mode }) => ({
   resolve: {
     tsconfigPaths: true,
   },
   root: import.meta.dirname,
   cacheDir: '../../node_modules/.vite/apps/web',
-  plugins: [angular(), nxReadySignal()],
+  // GitHub Pages serves the app from /trace-convenience/.
+  base: mode === 'production' ? '/trace-convenience/' : '/',
+  server: {
+    port: 4200,
+  },
+  build: {
+    outDir: '../../dist/apps/web/browser',
+    emptyOutDir: true,
+    sourcemap: mode !== 'production',
+  },
+  plugins: [
+    ngp({
+      polyfills: ['zone.js'],
+      budgets: [
+        { type: 'initial', maximumWarning: '500kb', maximumError: '1mb' },
+        {
+          type: 'anyComponentStyle',
+          maximumWarning: '8kb',
+          maximumError: '12kb',
+        },
+      ],
+    }),
+    nxReadySignal(),
+  ],
   test: {
     name: 'web',
     watch: false,
