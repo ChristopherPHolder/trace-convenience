@@ -1,3 +1,6 @@
 {
-  "recommendations": ["angular.ng-template", "oxc.oxc-vscode"]
+  "recommendations": [
+    "VoidZero.vite-plus-extension-pack",
+    "angular.ng-template"
+  ]
 }

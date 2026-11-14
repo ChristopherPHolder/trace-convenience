@@ -1,46 +1,26 @@
 {
-  "name": "@trace-convenience/source",
+  "name": "trace-convenience",
   "version": "0.0.0",
-  "license": "MIT",
-  "scripts": {
-    "dev": "vp dev apps/web",
-    "preview": "vp preview apps/web",
-    "test": "vp test",
-    "lint": "vp lint",
-    "fmt": "vp fmt",
-    "check": "vp check"
-  },
   "private": true,
-  "packageManager": "pnpm@10.15.0",
-  "dependencies": {
-    "@angular/common": "22.3.0-next.4",
-    "@angular/compiler": "22.3.0-next.4",
-    "@angular/core": "22.3.0-next.4",
-    "@angular/forms": "22.3.0-next.4",
-    "@angular/platform-browser": "22.3.0-next.4",
-    "@angular/router": "22.3.0-next.4",
-    "@fontsource/geist": "5.3.0",
-    "@fontsource/geist-mono": "5.3.0",
-    "gifenc": "^1.0.3",
-    "rxjs": "~7.8.0",
-    "zone.js": "0.16.3"
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "ready": "vp check && vp run -r test && vp run -r build",
+    "dev": "vp run web#dev",
+    "prepare": "vp config"
   },
   "devDependencies": {
     "@angular-eslint/eslint-plugin": "22.6.0",
-    "@angular/compiler-cli": "22.3.0-next.4",
-    "@angular/language-service": "22.3.0-next.4",
-    "@push-based/vite-plugin-ngp": "0.3.0",
-    "@types/node": "26.6.5",
-    "@vitest/coverage-v8": "catalog:",
-    "@vitest/ui": "catalog:",
-    "devtools-protocol": "^0.0.1541592",
-    "jsdom": "~22.1.0",
-    "sass": "1.105.2",
-    "tslib": "^2.3.0",
-    "typescript": "6.0.3",
-    "vite": "catalog:",
-    "vite-plus": "catalog:",
-    "vitest": "catalog:"
+    "@types/node": "catalog:",
+    "typescript": "catalog:",
+    "vite-plus": "catalog:"
+  },
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "10.15.0",
+      "onFail": "download"
+    }
   },
   "engines": {
     "node": ">=26.0.0"

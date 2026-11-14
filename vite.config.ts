@@ -75,13 +75,16 @@ const recommendedRules = {
 } as const;
 
 export default defineConfig({
+  // `vp test` from the root runs every workspace package's tests.
   test: {
-    projects: ['apps/*/vite.config.mts'],
+    projects: ['apps/*'],
   },
   run: {
-    tasks: {
-      build: 'vp build apps/web',
-    },
+    cache: true,
+  },
+  // Pre-commit hook (.vite-hooks/pre-commit) runs `vp staged`.
+  staged: {
+    '*': 'vp check --fix',
   },
   lint: {
     plugins: ['oxc', 'typescript', 'unicorn'],

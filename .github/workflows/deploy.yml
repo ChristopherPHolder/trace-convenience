@@ -25,16 +25,15 @@ jobs:
       - name: Setup Vite+
         uses: voidzero-dev/setup-vp@v1.22.0
         with:
-          node-version: 26
           cache: true
 
       - name: Build application
-        run: vp run build
+        run: vp run web#build
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './dist/apps/web/browser'
+          path: './apps/web/dist'
 
   deploy:
     environment:

@@ -15,13 +15,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Installs Vite+ (version from pnpm-workspace.yaml catalog), Node, and
-      # runs `vp install` with a cached pnpm store.
+      # Installs Vite+ (version from the pnpm catalog), Node.js (.node-version)
+      # and pnpm (devEngines), then runs `vp install` with a cached store.
       - uses: voidzero-dev/setup-vp@v1.22.0
         with:
-          node-version: 26
           cache: true
 
+      # Same steps as `vp run ready`, split up for readable logs.
       - run: vp check
-      - run: vp test
-      - run: vp run build
+      - run: vp run -r test
+      - run: vp run -r build

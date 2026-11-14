@@ -5,7 +5,7 @@
 ### 1. Start the Development Server
 
 ```bash
-pnpm dev
+vp run dev
 ```
 
 The application will be available at: `http://localhost:4200`
@@ -121,13 +121,13 @@ Create test files to try the feature:
 
 ```bash
 # Run all tests
-pnpm test
+vp test
 
 # Run tests in watch mode
-pnpm test --watch
+vp test --watch
 
 # Run with coverage
-pnpm test --coverage
+vp test --coverage
 ```
 
 ## 💻 Accessing Uploaded Files Programmatically

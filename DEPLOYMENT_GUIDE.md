@@ -42,7 +42,7 @@ The deployment workflow (`.github/workflows/deploy.yml`) will:
 
 1. **Trigger** automatically on every push to the `main` branch
 2. **Build** the application using `vp run build` (Vite+, production mode)
-3. **Upload** the built files from `dist/apps/web/browser/`
+3. **Upload** the built files from `apps/web/dist/`
 4. **Deploy** to GitHub Pages
 
 ## Manual Deployment
@@ -60,7 +60,7 @@ Before deploying, you can test the production build locally:
 
 ```bash
 # Build for production and serve the built files
-pnpm vp run build && pnpm preview
+vp run web#build && vp run web#preview
 ```
 
 Then open http://localhost:4173/trace-convenience/ to test the production build.
@@ -71,7 +71,7 @@ Then open http://localhost:4173/trace-convenience/ to test the production build.
 
 - Check the Actions tab for error logs
 - Ensure all dependencies are listed in `package.json`
-- Try building locally first: `pnpm vp run build`
+- Try building locally first: `vp run web#build`
 
 ### Site Shows 404
 
@@ -81,7 +81,7 @@ Then open http://localhost:4173/trace-convenience/ to test the production build.
 
 ### Assets Not Loading
 
-- Verify `base` is set correctly in `apps/web/vite.config.mts`
+- Verify `base` is set correctly in `apps/web/vite.config.ts`
 - Should be `/trace-convenience/` for this repository
 - If you rename the repository, update the `base` value
 
@@ -100,8 +100,8 @@ Simply push changes to the `main` branch, and GitHub Actions will automatically 
 ## Configuration Files
 
 - **`.github/workflows/deploy.yml`**: GitHub Actions workflow
-- **`apps/web/vite.config.mts`**: Build configuration with the `base` path
-- **Output directory**: `dist/apps/web/browser/`
+- **`apps/web/vite.config.ts`**: Build configuration with the `base` path
+- **Output directory**: `apps/web/dist/`
 
 ## Environment Variables
 
