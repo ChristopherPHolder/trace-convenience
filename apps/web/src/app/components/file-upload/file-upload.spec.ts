@@ -295,16 +295,19 @@ describe('FileUploadComponent', () => {
         };
 
         const originalFileReader = window.FileReader;
-        window.FileReader = vi.fn().mockImplementation(() => mockReader) as unknown as typeof FileReader;
+        window.FileReader = vi.fn().mockImplementation(function () {
+          return mockReader;
+        }) as unknown as typeof FileReader;
 
         const readPromise = component['readFileAsText'](file);
-        
-        // Trigger the error callback
-        if (mockReader.onerror) {
-          mockReader.onerror({} as ProgressEvent<FileReader>);
-        }
 
-        await expect(readPromise).rejects.toThrow();
+        // Trigger the error callback
+        expect(mockReader.onerror).toBeTypeOf('function');
+        (mockReader.onerror as unknown as (e: ProgressEvent<FileReader>) => void)(
+          {} as ProgressEvent<FileReader>
+        );
+
+        await expect(readPromise).rejects.toThrow('Read failed');
 
         window.FileReader = originalFileReader;
       });
