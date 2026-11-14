@@ -41,7 +41,7 @@ export class PbButton {
       inject(ElementRef).nativeElement,
       'click',
       (event: Event) => this.swallowWhileDisabled(event),
-      { capture: true }
+      { capture: true },
     );
 
     inject(DestroyRef).onDestroy(stopListening);

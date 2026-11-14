@@ -3,7 +3,7 @@
 > A modern web application for visualizing Chrome DevTools performance traces with an interactive film strip viewer
 
 [![Built with Angular](https://img.shields.io/badge/Angular-20.3-DD0031?logo=angular)](https://angular.dev)
-[![Built with Nx](https://img.shields.io/badge/Nx-22.0-143055?logo=nx)](https://nx.dev)
+[![Built with Vite+](https://img.shields.io/badge/Vite%2B-1.5-646CFF?logo=vite)](https://viteplus.dev)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Overview
@@ -13,6 +13,7 @@ Trace Convenience is a powerful browser-based tool that helps developers analyze
 ## ✨ Features
 
 ### 🎬 Interactive Film Strip
+
 - **Visual Timeline**: View all captured screenshots from your trace in a horizontal scrollable film strip
 - **Full Preview**: Click any frame to view it full-size with navigation controls
 - **Keyboard Navigation**: Use arrow keys to move between frames quickly
@@ -20,11 +21,11 @@ Trace Convenience is a powerful browser-based tool that helps developers analyze
 - **Timestamp Display**: See precise timing information for each frame
 
 ### 📁 Smart File Handling
+
 - **Drag & Drop**: Simply drag trace files onto the upload zone
 - **Automatic Parsing**: Traces are automatically analyzed on upload
 - **Multiple Format Support**: Handles various Chrome DevTools screenshot event types
 - **Error Recovery**: Graceful handling of invalid or incomplete traces
-
 
 ## 🚀 Quick Start
 
@@ -46,7 +47,7 @@ cd trace-convenience
 pnpm install
 
 # Start the development server
-pnpm nx serve web
+pnpm dev
 ```
 
 The application will be available at `http://localhost:4200`
@@ -83,7 +84,7 @@ Built with modern web technologies and best practices:
 
 - **Framework**: Angular 22.3 with standalone components
 - **State Management**: Angular Signals for reactive data flow
-- **Build System**: Nx monorepo, built and served by Vite with [vite-plugin-ngp](https://push-based.github.io/vite-plugin-ngp/) (Angular compiled per module by ngp)
+- **Toolchain**: [Vite+](https://viteplus.dev) (`vp`) for dev, build, test, lint (Oxlint) and format (Oxfmt); Angular compiled by [vite-plugin-ngp](https://push-based.github.io/vite-plugin-ngp/) (Angular compiled per module by ngp)
 - **Testing**: Vitest with comprehensive test coverage (98 tests passing)
 - **Styling**: Modern CSS with component-scoped SCSS
 - **Type Safety**: TypeScript 6.0 in strict mode, templates type-checked on every build
@@ -99,13 +100,16 @@ Built with modern web technologies and best practices:
 
 ```bash
 # Run all tests
-pnpm nx test web
+pnpm test
 
 # Run tests in watch mode
-pnpm nx test web --watch
+pnpm test --watch
 
 # Run with coverage report
-pnpm nx test web --coverage
+pnpm test --coverage
+
+# Format, lint and type-check
+pnpm check
 ```
 
 Current test coverage: **98 tests passing** across all components and services.
@@ -114,21 +118,23 @@ Current test coverage: **98 tests passing** across all components and services.
 
 ```bash
 # Production build (outputs to dist/apps/web/browser, served from /trace-convenience/)
-pnpm nx build web
+pnpm vp run build
 
 # Serve the production build locally at http://localhost:4173/trace-convenience/
-pnpm nx preview web
+pnpm preview
 ```
 
 ## 🌐 Browser Support
 
 Works in all modern browsers supporting:
+
 - ES2020+
 - CSS Grid and Flexbox
 - File API and FileReader
 - Base64 image decoding
 
 Tested on:
+
 - Chrome/Edge (latest)
 - Firefox (latest)
 - Safari (latest)
@@ -143,7 +149,7 @@ Contributions are welcome! Please read our [Developer Guide](DEVELOPER_GUIDE.md)
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
 3. Make your changes
-4. Run tests (`pnpm nx test web`)
+4. Run checks and tests (`pnpm check && pnpm test`)
 5. Commit your changes (`git commit -m 'Add amazing feature'`)
 6. Push to the branch (`git push origin feature/amazing-feature`)
 7. Open a Pull Request
@@ -155,13 +161,14 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🙏 Acknowledgments
 
 - Built with [Angular](https://angular.dev) - The modern web developer's platform
-- Powered by [Nx](https://nx.dev) - Smart monorepos for faster builds
+- Powered by [Vite+](https://viteplus.dev) - The unified toolchain for the web
 - Uses [gifenc](https://github.com/mattdesl/gifenc) for potential GIF export features
 - Chrome DevTools Protocol types from [devtools-protocol](https://github.com/ChromeDevTools/devtools-protocol)
 
 ## 📧 Support
 
 For questions, issues, or feature requests:
+
 - Open an [issue](https://github.com/ChristopherPHolder/trace-convenience/issues)
 - Check existing [documentation](CHROME_TRACE_FEATURE.md)
 - Review the [troubleshooting guide](QUICK_START.md#-troubleshooting)

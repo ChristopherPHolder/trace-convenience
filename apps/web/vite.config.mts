@@ -1,7 +1,6 @@
-/// <reference types='vitest' />
-import { defineConfig } from 'vite';
+/// <reference types='vite-plus/test' />
+import { defineConfig } from 'vite-plus';
 import { ngp } from '@push-based/vite-plugin-ngp';
-import { nxReadySignal } from '@nx/vite/plugins/nx-ready-signal.plugin';
 
 export default defineConfig(({ mode }) => ({
   resolve: {
@@ -31,7 +30,6 @@ export default defineConfig(({ mode }) => ({
         },
       ],
     }),
-    nxReadySignal(),
   ],
   test: {
     name: 'web',

@@ -4,7 +4,11 @@ import { FilmStripSettingsDialogComponent } from './components/film-strip-settin
 import { PbIconButton } from './design-system';
 
 @Component({
-  imports: [FileUploadComponent, FilmStripSettingsDialogComponent, PbIconButton],
+  imports: [
+    FileUploadComponent,
+    FilmStripSettingsDialogComponent,
+    PbIconButton,
+  ],
   selector: 'app-root',
   templateUrl: './app.html',
   styleUrl: './app.scss',

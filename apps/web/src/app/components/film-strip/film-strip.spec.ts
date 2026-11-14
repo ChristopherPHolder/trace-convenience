@@ -22,15 +22,15 @@ describe('FilmStripComponent', () => {
     fixture = TestBed.createComponent(FilmStripComponent);
     component = fixture.componentInstance;
     settingsService = TestBed.inject(FilmStripSettingsService);
-    
+
     // Disable interval filtering for tests to get predictable results
     settingsService.setUseIntervalFiltering(false);
-    
+
     // Set required inputs
     fixture.componentRef.setInput('screenshots', mockScreenshots);
     fixture.componentRef.setInput('startTime', 0);
     fixture.componentRef.setInput('endTime', 3000000);
-    
+
     fixture.detectChanges();
   });
 
@@ -48,7 +48,8 @@ describe('FilmStripComponent', () => {
       fixture.componentRef.setInput('screenshots', []);
       fixture.detectChanges();
 
-      const emptyState = fixture.nativeElement.querySelector('.film-strip-empty');
+      const emptyState =
+        fixture.nativeElement.querySelector('.film-strip-empty');
       expect(emptyState).toBeTruthy();
       expect(emptyState.textContent).toContain('No screenshots found');
     });
@@ -81,7 +82,9 @@ describe('FilmStripComponent', () => {
       component['onSelectScreenshot'](0);
       fixture.detectChanges();
 
-      const closeBtn = fixture.nativeElement.querySelector('button[aria-label="Close preview"]');
+      const closeBtn = fixture.nativeElement.querySelector(
+        'button[aria-label="Close preview"]',
+      );
       closeBtn.click();
       fixture.detectChanges();
 
@@ -137,17 +140,17 @@ describe('FilmStripComponent', () => {
   describe('fullscreen mode', () => {
     it('should toggle fullscreen mode', () => {
       expect(component['isFullscreen']()).toBe(false);
-      
+
       component['onToggleFullscreen']();
       expect(component['isFullscreen']()).toBe(true);
-      
+
       component['onToggleFullscreen']();
       expect(component['isFullscreen']()).toBe(false);
     });
 
     it('should toggle fullscreen with F key', () => {
       component['onSelectScreenshot'](0);
-      
+
       const event = new KeyboardEvent('keydown', { key: 'f' });
       component['onKeydown'](event);
       expect(component['isFullscreen']()).toBe(true);
@@ -157,14 +160,14 @@ describe('FilmStripComponent', () => {
   describe('computed properties', () => {
     it('should compute hasScreenshots correctly', () => {
       expect(component['hasScreenshots']()).toBe(true);
-      
+
       fixture.componentRef.setInput('screenshots', []);
       expect(component['hasScreenshots']()).toBe(false);
     });
 
     it('should compute screenshotsWithMetadata', () => {
       const metadata = component['screenshotsWithMetadata']();
-      
+
       expect(metadata.length).toBe(3);
       expect(metadata[0].index).toBe(0);
       expect(metadata[0].dataUri).toContain('data:image/jpeg;base64,');
@@ -173,10 +176,10 @@ describe('FilmStripComponent', () => {
 
     it('should compute selectedScreenshot', () => {
       expect(component['selectedScreenshot']()).toBeNull();
-      
+
       component['onSelectScreenshot'](1);
       const selected = component['selectedScreenshot']();
-      
+
       expect(selected).toBeTruthy();
       expect(selected?.index).toBe(1);
     });
@@ -192,11 +195,11 @@ describe('FilmStripComponent', () => {
 
     it('should handle keyboard events on frames', () => {
       const frame = fixture.nativeElement.querySelector('.film-frame');
-      
+
       const enterEvent = new KeyboardEvent('keydown', { key: 'Enter' });
       frame.dispatchEvent(enterEvent);
       fixture.detectChanges();
-      
+
       expect(component['selectedIndex']()).toBe(0);
     });
 
@@ -212,13 +215,14 @@ describe('FilmStripComponent', () => {
 
   describe('metadata display', () => {
     it('should display relative time for each screenshot', () => {
-      const frameInfo = fixture.nativeElement.querySelectorAll('.frame-info');
+      const frameInfo: NodeListOf<Element> =
+        fixture.nativeElement.querySelectorAll('.frame-info');
       expect(frameInfo.length).toBe(3);
-      
-      const times = Array.from(frameInfo).map((info: Element) => 
-        info.querySelector('.frame-time')?.textContent
+
+      const times = Array.from(frameInfo).map(
+        (info: Element) => info.querySelector('.frame-time')?.textContent,
       );
-      expect(times.every((time: string) => time && time.length > 0)).toBe(true);
+      expect(times.every((time) => !!time && time.length > 0)).toBe(true);
     });
 
     it('should display time delta for screenshots after the first', () => {
@@ -233,4 +237,3 @@ describe('FilmStripComponent', () => {
     });
   });
 });
-

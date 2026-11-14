@@ -20,7 +20,7 @@ export class TraceService {
   readonly allFiles = this.files.asReadonly();
   readonly fileCount = computed(() => this.files().length);
   readonly isEmpty = computed(() => this.files().length === 0);
-  
+
   readonly currentFile = computed(() => {
     const files = this.files();
     return files.length > 0 ? files[0] : null;
@@ -32,7 +32,7 @@ export class TraceService {
 
   addFile(file: File, content: unknown): void {
     let parsedData: ParsedTrace | undefined;
-    
+
     // Try to parse the trace file to extract screenshots
     try {
       parsedData = this.traceParser.parseTrace(content);
@@ -65,4 +65,3 @@ export class TraceService {
     return this.files().find((file) => file.id === id);
   }
 }
-

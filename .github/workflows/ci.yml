@@ -7,7 +7,6 @@ on:
   pull_request:
 
 permissions:
-  actions: read
   contents: read
 
 jobs:
@@ -15,27 +14,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          filter: tree:0
-          fetch-depth: 0
 
-      # This enables task distribution via Nx Cloud
-      # Run this command as early as possible, before dependencies are installed
-      # Learn more at https://nx.dev/ci/reference/nx-cloud-cli#npx-nxcloud-startcirun
-      # Uncomment this line to enable task distribution
-      # - run: pnpm dlx nx start-ci-run --distribute-on="3 linux-medium-js" --stop-agents-after="build"
-
-      # Installs the pnpm version pinned in package.json#packageManager
-      - uses: pnpm/action-setup@v4
-
-      # Cache the pnpm store
-      - uses: actions/setup-node@v4
+      # Installs Vite+ (version from pnpm-workspace.yaml catalog), Node, and
+      # runs `vp install` with a cached pnpm store.
+      - uses: voidzero-dev/setup-vp@v1.22.0
         with:
           node-version: 26
-          cache: 'pnpm'
+          cache: true
 
-      - run: pnpm install --frozen-lockfile
-
-      # Prepend any command with "nx-cloud record --" to record its logs to Nx Cloud
-      # - run: pnpm dlx nx-cloud record -- echo Hello World
-      - run: pnpm nx run-many -t lint test build
+      - run: vp check
+      - run: vp test
+      - run: vp run build

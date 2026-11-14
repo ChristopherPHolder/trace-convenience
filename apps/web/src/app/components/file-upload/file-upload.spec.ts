@@ -95,7 +95,7 @@ describe('FileUploadComponent', () => {
       expect(event.preventDefault).toHaveBeenCalled();
 
       // Wait for async file processing
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
       fixture.detectChanges();
 
       expect(traceService.fileCount()).toBe(1);
@@ -103,7 +103,7 @@ describe('FileUploadComponent', () => {
 
     it('should add drag-over class when dragging', () => {
       const compiled = fixture.nativeElement as HTMLElement;
-      
+
       component['isDragging'].set(true);
       fixture.detectChanges();
 
@@ -140,7 +140,7 @@ describe('FileUploadComponent', () => {
       component['onFileSelect'](event);
 
       // Wait for async file processing
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
       fixture.detectChanges();
 
       expect(traceService.fileCount()).toBe(1);
@@ -185,7 +185,9 @@ describe('FileUploadComponent', () => {
       fixture.detectChanges();
 
       expect(component['errors']().length).toBe(1);
-      expect(component['errors']()[0].message).toBe('Only JSON files are accepted');
+      expect(component['errors']()[0].message).toBe(
+        'Only JSON files are accepted',
+      );
       expect(traceService.fileCount()).toBe(0);
     });
 
@@ -203,7 +205,10 @@ describe('FileUploadComponent', () => {
     });
 
     it('should process multiple files and show all errors', async () => {
-      const validFile = new File([JSON.stringify({ valid: true })], 'valid.json');
+      const validFile = new File(
+        [JSON.stringify({ valid: true })],
+        'valid.json',
+      );
       const invalidFile = new File(['invalid'], 'invalid.json');
       const txtFile = new File(['text'], 'file.txt');
 
@@ -285,7 +290,7 @@ describe('FileUploadComponent', () => {
 
       it('should reject on FileReader error', async () => {
         const file = new File([], 'test.txt');
-        
+
         // Mock FileReader to simulate error
         const mockReader = {
           readAsText: vi.fn(),
@@ -303,9 +308,11 @@ describe('FileUploadComponent', () => {
 
         // Trigger the error callback
         expect(mockReader.onerror).toBeTypeOf('function');
-        (mockReader.onerror as unknown as (e: ProgressEvent<FileReader>) => void)(
-          {} as ProgressEvent<FileReader>
-        );
+        (
+          mockReader.onerror as unknown as (
+            e: ProgressEvent<FileReader>,
+          ) => void
+        )({} as ProgressEvent<FileReader>);
 
         await expect(readPromise).rejects.toThrow('Read failed');
 
@@ -320,14 +327,18 @@ describe('FileUploadComponent', () => {
       const dropZone = compiled.querySelector('.drop-zone');
 
       expect(dropZone?.getAttribute('role')).toBe('region');
-      expect(dropZone?.getAttribute('aria-label')).toBe('File upload drop zone');
+      expect(dropZone?.getAttribute('aria-label')).toBe(
+        'File upload drop zone',
+      );
     });
 
     it('should have proper ARIA label on file input', () => {
       const compiled = fixture.nativeElement as HTMLElement;
       const fileInput = compiled.querySelector('input[type="file"]');
 
-      expect(fileInput?.getAttribute('aria-label')).toBe('Select a JSON file to upload');
+      expect(fileInput?.getAttribute('aria-label')).toBe(
+        'Select a JSON file to upload',
+      );
     });
 
     it('should have aria-live regions for status updates', () => {
@@ -367,7 +378,9 @@ describe('FileUploadComponent', () => {
       fixture.detectChanges();
 
       const compiled = fixture.nativeElement as HTMLElement;
-      const removeButton = compiled.querySelector('button[aria-label*="Remove"]');
+      const removeButton = compiled.querySelector(
+        'button[aria-label*="Remove"]',
+      );
 
       expect(removeButton).toBeTruthy();
     });
@@ -388,7 +401,9 @@ describe('FileUploadComponent', () => {
       const compiled = fixture.nativeElement as HTMLElement;
       const idleMessage = compiled.querySelector('.drop-zone-idle');
 
-      expect(idleMessage?.textContent).toContain('Drag and drop a JSON file here');
+      expect(idleMessage?.textContent).toContain(
+        'Drag and drop a JSON file here',
+      );
     });
 
     it('should show files section when files are uploaded', async () => {
@@ -421,4 +436,3 @@ describe('FileUploadComponent', () => {
     });
   });
 });
-

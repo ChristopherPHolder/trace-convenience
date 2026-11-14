@@ -5,7 +5,7 @@
 ### 1. Start the Development Server
 
 ```bash
-pnpm nx serve web
+pnpm dev
 ```
 
 The application will be available at: `http://localhost:4200`
@@ -13,12 +13,14 @@ The application will be available at: `http://localhost:4200`
 ### 2. Use the File Upload
 
 **Option A: Drag & Drop**
+
 1. Open the application in your browser
 2. Drag one or more JSON files onto the drop zone
 3. The zone will highlight when you hover over it
 4. Drop the files to upload them
 
 **Option B: Browse Files**
+
 1. Click the "Browse Files" button
 2. Select one or more JSON files from your computer
 3. Files will be uploaded automatically
@@ -42,6 +44,7 @@ The application will be available at: `http://localhost:4200`
 Create test files to try the feature:
 
 ### Simple Test File (`test.json`):
+
 ```json
 {
   "message": "Hello, World!",
@@ -50,6 +53,7 @@ Create test files to try the feature:
 ```
 
 ### Complex Test File (`trace-data.json`):
+
 ```json
 {
   "traceId": "abc-123",
@@ -72,6 +76,7 @@ Create test files to try the feature:
 ```
 
 ### Array Test File (`items.json`):
+
 ```json
 [
   { "id": 1, "name": "Item 1" },
@@ -84,20 +89,20 @@ Create test files to try the feature:
 
 ### ✅ Valid Scenarios
 
-| Action | Result |
-|--------|--------|
-| Drop `.json` file | File uploads and appears in list |
+| Action                       | Result                           |
+| ---------------------------- | -------------------------------- |
+| Drop `.json` file            | File uploads and appears in list |
 | Click "Browse" + select JSON | File uploads and appears in list |
-| Multiple files at once | All valid files upload |
-| Valid JSON content | File is parsed and stored |
+| Multiple files at once       | All valid files upload           |
+| Valid JSON content           | File is parsed and stored        |
 
 ### ❌ Error Scenarios
 
-| Action | Result |
-|--------|--------|
-| Drop `.txt` file | Error: "Only JSON files are accepted" |
-| Drop `.json` with invalid content | Error: "Invalid JSON format" |
-| Drop mix of valid/invalid | Valid files upload, errors shown for invalid |
+| Action                            | Result                                       |
+| --------------------------------- | -------------------------------------------- |
+| Drop `.txt` file                  | Error: "Only JSON files are accepted"        |
+| Drop `.json` with invalid content | Error: "Invalid JSON format"                 |
+| Drop mix of valid/invalid         | Valid files upload, errors shown for invalid |
 
 ## 🧪 Testing the Feature
 
@@ -116,13 +121,13 @@ Create test files to try the feature:
 
 ```bash
 # Run all tests
-pnpm nx test web
+pnpm test
 
 # Run tests in watch mode
-pnpm nx test web --watch
+pnpm test --watch
 
 # Run with coverage
-pnpm nx test web --coverage
+pnpm test --coverage
 ```
 
 ## 💻 Accessing Uploaded Files Programmatically
@@ -142,17 +147,17 @@ import { TraceService } from './services/trace.service';
         <li>{{ file.name }}</li>
       }
     </ul>
-  `
+  `,
 })
 export class MyComponent {
   private traceService = inject(TraceService);
-  
+
   // Access files
   files = this.traceService.allFiles;
   fileCount = this.traceService.fileCount;
-  
+
   processFiles() {
-    this.files().forEach(file => {
+    this.files().forEach((file) => {
       console.log('File:', file.name);
       console.log('Content:', file.content);
     });
@@ -169,14 +174,14 @@ import { TraceService } from './trace.service';
 @Injectable({ providedIn: 'root' })
 export class DataProcessorService {
   private traceService = inject(TraceService);
-  
+
   processAllTraces() {
     const files = this.traceService.allFiles();
-    
-    return files.map(file => ({
+
+    return files.map((file) => ({
       name: file.name,
       data: file.content,
-      processedAt: new Date()
+      processedAt: new Date(),
     }));
   }
 }
@@ -185,21 +190,25 @@ export class DataProcessorService {
 ## 🎨 UI Overview
 
 ### Header
+
 - **Gradient background** (purple to pink)
 - **Title:** "Trace File Upload"
 - **Subtitle:** "Upload your JSON trace files for processing"
 
 ### Upload Zone
+
 - **Default state:** Shows upload icon, instructions, and "Browse Files" button
 - **Drag state:** Blue highlight with "Drop your JSON files here" message
 - **Processing state:** Spinner with "Processing files..." message
 
 ### File List
+
 - **Card layout** with file icons
 - **File info:** Name, size, upload time
 - **Actions:** Individual remove button, bulk "Clear All" button
 
 ### Errors
+
 - **Red background** with error icon
 - **Grouped list** of all errors with file names
 - **Dismissible** when new files are uploaded or cleared
@@ -211,6 +220,7 @@ export class DataProcessorService {
 **Problem:** Files don't appear after dropping
 
 **Solutions:**
+
 1. Check browser console for errors
 2. Verify file has `.json` extension
 3. Try using "Browse Files" button instead
@@ -221,6 +231,7 @@ export class DataProcessorService {
 **Problem:** Getting "Invalid JSON format" error
 
 **Solutions:**
+
 1. Validate JSON at https://jsonlint.com
 2. Check for:
    - Missing commas
@@ -234,6 +245,7 @@ export class DataProcessorService {
 **Problem:** Drag & drop has no effect
 
 **Solutions:**
+
 1. Try a different browser
 2. Check browser permissions
 3. Use "Browse Files" as alternative
@@ -260,6 +272,7 @@ The interface is fully responsive:
 ### Screen Readers
 
 All elements have proper labels:
+
 - "File upload drop zone"
 - "Select JSON files to upload"
 - "Remove [filename]"
@@ -272,10 +285,10 @@ All elements have proper labels:
 
 1. **TraceService** - Signal-based state management
    - `apps/web/src/app/services/trace.service.ts`
-   
+
 2. **FileUploadComponent** - Drag & drop implementation
    - `apps/web/src/app/components/file-upload/file-upload.ts`
-   
+
 3. **Tests** - Usage examples
    - `apps/web/src/app/services/trace.service.spec.ts`
    - `apps/web/src/app/components/file-upload/file-upload.spec.ts`
@@ -303,11 +316,11 @@ After trying the basic functionality:
 1. **Integrate with your data processing logic**
    - Access files via `TraceService`
    - Process JSON content as needed
-   
+
 2. **Customize the UI**
    - Modify styles in `file-upload.component.scss`
    - Update colors, fonts, layouts
-   
+
 3. **Add new features**
    - File preview
    - Server upload
@@ -315,4 +328,3 @@ After trying the basic functionality:
    - Advanced filtering
 
 Happy coding! 🚀
-

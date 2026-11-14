@@ -7,7 +7,14 @@ import {
 } from '@angular/core';
 import { TraceService } from '../../services/trace.service';
 import { FilmStripComponent } from '../film-strip/film-strip';
-import { PbBadge, PbCard, PbEyebrow, PbIconButton, PbNotice, PbSpinner } from '../../design-system';
+import {
+  PbBadge,
+  PbCard,
+  PbEyebrow,
+  PbIconButton,
+  PbNotice,
+  PbSpinner,
+} from '../../design-system';
 
 interface UploadedFileDisplay {
   id: string;
@@ -23,7 +30,15 @@ interface FileError {
 
 @Component({
   selector: 'app-file-upload',
-  imports: [FilmStripComponent, PbBadge, PbCard, PbEyebrow, PbIconButton, PbNotice, PbSpinner],
+  imports: [
+    FilmStripComponent,
+    PbBadge,
+    PbCard,
+    PbEyebrow,
+    PbIconButton,
+    PbNotice,
+    PbSpinner,
+  ],
   templateUrl: './file-upload.html',
   styleUrl: './file-upload.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -44,17 +59,25 @@ export class FileUploadComponent {
       name: file.name,
       size: file.size,
       uploadedAt: file.uploadedAt,
-    }))
+    })),
   );
 
   protected readonly hasFiles = computed(() => this.uploadedFiles().length > 0);
   protected readonly fileCount = computed(() => this.uploadedFiles().length);
-  
+
   // Film strip data
-  protected readonly parsedTrace = computed(() => this.traceService.currentParsedTrace());
-  protected readonly screenshots = computed(() => this.parsedTrace()?.screenshots || []);
-  protected readonly traceStartTime = computed(() => this.parsedTrace()?.metadata.startTime || 0);
-  protected readonly traceEndTime = computed(() => this.parsedTrace()?.metadata.endTime || 0);
+  protected readonly parsedTrace = computed(() =>
+    this.traceService.currentParsedTrace(),
+  );
+  protected readonly screenshots = computed(
+    () => this.parsedTrace()?.screenshots || [],
+  );
+  protected readonly traceStartTime = computed(
+    () => this.parsedTrace()?.metadata.startTime || 0,
+  );
+  protected readonly traceEndTime = computed(
+    () => this.parsedTrace()?.metadata.endTime || 0,
+  );
 
   protected onDragOver(event: DragEvent): void {
     event.preventDefault();
@@ -76,7 +99,7 @@ export class FileUploadComponent {
     const files = event.dataTransfer?.files;
     if (files && files.length > 0) {
       // Only process the first file
-      this.processFiles([files[0]]);
+      void this.processFiles([files[0]]);
     }
   }
 
@@ -85,7 +108,7 @@ export class FileUploadComponent {
     const files = input.files;
     if (files && files.length > 0) {
       // Only process the first file
-      this.processFiles([files[0]]);
+      void this.processFiles([files[0]]);
     }
     // Reset input to allow selecting the same file again
     input.value = '';
@@ -169,4 +192,3 @@ export class FileUploadComponent {
     });
   }
 }
-

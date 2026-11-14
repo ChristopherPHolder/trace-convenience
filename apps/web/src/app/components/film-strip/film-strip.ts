@@ -7,9 +7,17 @@ import {
   inject,
   effect,
 } from '@angular/core';
-import { TraceParserService, Screenshot } from '../../services/trace-parser.service';
+import {
+  TraceParserService,
+  Screenshot,
+} from '../../services/trace-parser.service';
 import { FilmStripSettingsService } from '../../services/film-strip-settings.service';
-import { PbBadge, PbButton, PbDescription, PbIconButton } from '../../design-system';
+import {
+  PbBadge,
+  PbButton,
+  PbDescription,
+  PbIconButton,
+} from '../../design-system';
 
 interface ScreenshotWithSyntheticTime extends Screenshot {
   syntheticTimestamp?: number;
@@ -38,10 +46,12 @@ export class FilmStripComponent {
   protected readonly isFormatDropdownOpen = signal(false);
 
   // Get settings state from service
-  protected readonly useIntervalFiltering = this.settingsService.useIntervalFiltering;
+  protected readonly useIntervalFiltering =
+    this.settingsService.useIntervalFiltering;
   protected readonly minIntervalMs = this.settingsService.minIntervalMs;
   protected readonly showTimestamps = this.settingsService.exportShowTimestamps;
-  protected readonly useTimeRangeFilter = this.settingsService.useTimeRangeFilter;
+  protected readonly useTimeRangeFilter =
+    this.settingsService.useTimeRangeFilter;
   protected readonly startTimeMs = this.settingsService.startTimeMs;
   protected readonly endTimeMs = this.settingsService.endTimeMs;
 
@@ -59,8 +69,10 @@ export class FilmStripComponent {
   }
 
   // Computed properties
-  protected readonly hasScreenshots = computed(() => this.screenshots().length > 0);
-  
+  protected readonly hasScreenshots = computed(
+    () => this.screenshots().length > 0,
+  );
+
   // Calculate the total duration in milliseconds
   protected readonly totalDurationMs = computed(() => {
     const shots = this.screenshots();
@@ -69,38 +81,38 @@ export class FilmStripComponent {
     const endTime = shots[shots.length - 1].timestamp;
     return (endTime - startTime) / 1000; // Convert microseconds to milliseconds
   });
-  
+
   // Track the intended start time for the filtered range (used for interval calculations)
   protected readonly filteredRangeStartTime = computed(() => {
     const useTimeRange = this.useTimeRangeFilter();
     const shots = this.screenshots();
-    
+
     if (!useTimeRange || shots.length === 0) {
       return null;
     }
-    
+
     const startTimeMs = this.startTimeMs();
     const absoluteStartTime = shots[0].timestamp;
-    return absoluteStartTime + (startTimeMs * 1000); // Convert ms to microseconds
+    return absoluteStartTime + startTimeMs * 1000; // Convert ms to microseconds
   });
-  
+
   // First, filter by time range if enabled
   protected readonly timeRangeFilteredScreenshots = computed(() => {
     const shots = this.screenshots();
     const useTimeRange = this.useTimeRangeFilter();
-    
+
     if (!useTimeRange || shots.length === 0) {
       return shots;
     }
-    
+
     const startTimeMs = this.startTimeMs();
     const endTimeMs = this.endTimeMs();
-    
+
     const absoluteStartTime = shots[0].timestamp;
-    
-    const filterStartTime = absoluteStartTime + (startTimeMs * 1000); // Convert ms to microseconds
-    const filterEndTime = absoluteStartTime + (endTimeMs * 1000); // Convert ms to microseconds
-    
+
+    const filterStartTime = absoluteStartTime + startTimeMs * 1000; // Convert ms to microseconds
+    const filterEndTime = absoluteStartTime + endTimeMs * 1000; // Convert ms to microseconds
+
     // Find the most recent screenshot at or before the filter start time
     let startScreenshotIndex = 0;
     for (let i = 0; i < shots.length; i++) {
@@ -125,28 +137,29 @@ export class FilmStripComponent {
 
     // Include the screenshot before the start time and after the end time (as
     // context frames) plus all screenshots within the range
-    const filtered = shots.filter((shot, index) =>
-      (index === startScreenshotIndex || shot.timestamp >= filterStartTime) &&
-      (index === endScreenshotIndex || shot.timestamp <= filterEndTime)
+    const filtered = shots.filter(
+      (shot, index) =>
+        (index === startScreenshotIndex || shot.timestamp >= filterStartTime) &&
+        (index === endScreenshotIndex || shot.timestamp <= filterEndTime),
     );
-    
+
     return filtered;
   });
-  
+
   // Then, apply interval filtering if enabled
   protected readonly filteredScreenshots = computed(() => {
     const shots = this.timeRangeFilteredScreenshots();
     const intervalMs = this.minIntervalMs();
     const useFiltering = this.useIntervalFiltering();
-    
+
     if (!useFiltering || shots.length === 0) {
       return shots;
     }
-    
+
     if (shots.length === 1) {
       return shots;
     }
-    
+
     const filtered: ScreenshotWithSyntheticTime[] = [];
 
     // Use the intended start time (from time range filter) or the actual first screenshot time
@@ -167,73 +180,83 @@ export class FilmStripComponent {
       endTime = shots[shots.length - 1].timestamp;
     }
     const durationMs = (endTime - startTime) / 1000; // Convert to milliseconds
-    
+
     let shotIndex = 0;
     let currentTime = 0; // milliseconds from intended start
-    
+
     // Generate screenshots at regular intervals starting from 0
     while (currentTime <= durationMs) {
-      const syntheticTimestamp = startTime + (currentTime * 1000); // Convert back to microseconds
-      
+      const syntheticTimestamp = startTime + currentTime * 1000; // Convert back to microseconds
+
       // Find the most recent screenshot at or before this time
-      while (shotIndex < shots.length - 1 && shots[shotIndex + 1].timestamp <= syntheticTimestamp) {
+      while (
+        shotIndex < shots.length - 1 &&
+        shots[shotIndex + 1].timestamp <= syntheticTimestamp
+      ) {
         shotIndex++;
       }
-      
+
       // Add the screenshot with a synthetic timestamp for display
       filtered.push({
         ...shots[shotIndex],
         syntheticTimestamp,
       });
-      
+
       currentTime += intervalMs;
     }
-    
+
     // Check if we need to add one more screenshot at the next interval after the last actual screenshot.
     // Only relevant without the range filter: there the timeline ends on the last
     // actual frame and interval steps may not land on it. With the range filter the
     // window end is explicit, so we must not append frames beyond it.
     if (!useTimeRange) {
       const lastFiltered = filtered[filtered.length - 1];
-      const nextIntervalTime = startTime + (currentTime * 1000);
+      const nextIntervalTime = startTime + currentTime * 1000;
 
       // If the last filtered screenshot doesn't represent the final actual screenshot, add it at the next interval
-      if (lastFiltered && lastFiltered.syntheticTimestamp !== undefined && shots[shots.length - 1].timestamp > lastFiltered.syntheticTimestamp) {
+      if (
+        lastFiltered &&
+        lastFiltered.syntheticTimestamp !== undefined &&
+        shots[shots.length - 1].timestamp > lastFiltered.syntheticTimestamp
+      ) {
         filtered.push({
           ...shots[shotIndex],
           syntheticTimestamp: nextIntervalTime,
         });
       }
     }
-    
+
     return filtered;
   });
-  
+
   protected readonly screenshotsWithMetadata = computed(() => {
     const shots = this.filteredScreenshots() as ScreenshotWithSyntheticTime[];
     let base = this.startTime();
-    
+
     // If time range filter is active, use the intended start time as the base
     const intendedStartTime = this.filteredRangeStartTime();
     if (intendedStartTime !== null) {
       base = intendedStartTime;
     }
-    
+
     return shots.map((screenshot, index) => {
       // Use synthetic timestamp if available (when interval filtering is active), otherwise use original
-      const displayTimestamp = screenshot.syntheticTimestamp ?? screenshot.timestamp;
-      const prevDisplayTimestamp = index > 0 
-        ? (shots[index - 1].syntheticTimestamp ?? shots[index - 1].timestamp)
-        : displayTimestamp;
-      
+      const displayTimestamp =
+        screenshot.syntheticTimestamp ?? screenshot.timestamp;
+      const prevDisplayTimestamp =
+        index > 0
+          ? (shots[index - 1].syntheticTimestamp ?? shots[index - 1].timestamp)
+          : displayTimestamp;
+
       return {
         ...screenshot,
         index,
         relativeTime: this.traceParser.formatTimestamp(displayTimestamp, base),
         dataUri: this.traceParser.getDataUri(screenshot),
-        delta: index > 0 
-          ? (displayTimestamp - prevDisplayTimestamp) / 1000 // Convert to milliseconds
-          : 0,
+        delta:
+          index > 0
+            ? (displayTimestamp - prevDisplayTimestamp) / 1000 // Convert to milliseconds
+            : 0,
       };
     });
   });
@@ -250,8 +273,10 @@ export class FilmStripComponent {
     return this.traceParser.formatTimestamp(end, start);
   });
 
-  protected readonly displayedCount = computed(() => this.filteredScreenshots().length);
-  
+  protected readonly displayedCount = computed(
+    () => this.filteredScreenshots().length,
+  );
+
   protected readonly totalCount = computed(() => this.screenshots().length);
 
   protected readonly intervalLabel = computed(() => {
@@ -272,7 +297,7 @@ export class FilmStripComponent {
   }
 
   protected onToggleFullscreen(): void {
-    this.isFullscreen.update(current => !current);
+    this.isFullscreen.update((current) => !current);
   }
 
   protected onNavigatePrevious(): void {
@@ -319,7 +344,7 @@ export class FilmStripComponent {
   }
 
   protected toggleFormatDropdown(): void {
-    this.isFormatDropdownOpen.update(open => !open);
+    this.isFormatDropdownOpen.update((open) => !open);
   }
 
   protected closeFormatDropdown(): void {
@@ -358,7 +383,7 @@ export class FilmStripComponent {
       const maxImageHeight = settings.exportImageHeight;
       let totalWidth = 0;
       const imagePromises: Promise<HTMLImageElement>[] = [];
-      
+
       // Load all images first
       for (const shot of shots) {
         const imgPromise = new Promise<HTMLImageElement>((resolve, reject) => {
@@ -371,21 +396,21 @@ export class FilmStripComponent {
       }
 
       const images = await Promise.all(imagePromises);
-      
+
       // Calculate total width and set canvas size
       for (const img of images) {
         const aspectRatio = img.width / img.height;
         const scaledWidth = maxImageHeight * aspectRatio;
         totalWidth += scaledWidth + padding;
       }
-      
+
       canvas.width = totalWidth + padding;
       canvas.height = maxImageHeight + textHeight + padding * 2;
-      
+
       // Fill background
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-      
+
       // Draw each screenshot with its timestamp
       let xOffset = padding;
       for (let i = 0; i < images.length; i++) {
@@ -393,21 +418,25 @@ export class FilmStripComponent {
         const shot = shots[i];
         const aspectRatio = img.width / img.height;
         const scaledWidth = maxImageHeight * aspectRatio;
-        
+
         // Draw image
         ctx.drawImage(img, xOffset, padding, scaledWidth, maxImageHeight);
-        
+
         // Draw timestamp below if enabled
         if (showTimestamps) {
           ctx.fillStyle = '#1f2937';
           ctx.font = '14px sans-serif';
           ctx.textAlign = 'center';
-          ctx.fillText(shot.relativeTime, xOffset + scaledWidth / 2, maxImageHeight + padding + 20);
+          ctx.fillText(
+            shot.relativeTime,
+            xOffset + scaledWidth / 2,
+            maxImageHeight + padding + 20,
+          );
         }
-        
+
         xOffset += scaledWidth + padding;
       }
-      
+
       // Convert canvas to blob and download
       canvas.toBlob((blob) => {
         if (!blob) return;
@@ -418,7 +447,6 @@ export class FilmStripComponent {
         link.click();
         URL.revokeObjectURL(url);
       }, 'image/png');
-      
     } catch (error) {
       console.error('Failed to download film strip:', error);
     }
@@ -431,12 +459,12 @@ export class FilmStripComponent {
     try {
       // Dynamic import of gifenc
       const { GIFEncoder, quantize, applyPalette } = await import('gifenc');
-      
+
       const settings = this.settingsService.getSettings();
       const showTimestamps = settings.exportShowTimestamps;
       // Use higher resolution for better quality (2x the export height)
       const maxImageHeight = settings.exportImageHeight * 2;
-      
+
       // Load all images
       const imagePromises: Promise<HTMLImageElement>[] = [];
       for (const shot of shots) {
@@ -449,47 +477,47 @@ export class FilmStripComponent {
         imagePromises.push(imgPromise);
       }
       const images = await Promise.all(imagePromises);
-      
+
       // Use first image to determine dimensions
       const firstImg = images[0];
       const aspectRatio = firstImg.width / firstImg.height;
       const scaledWidth = Math.round(maxImageHeight * aspectRatio);
       const textHeight = showTimestamps ? 60 : 0;
       const canvasHeight = maxImageHeight + textHeight;
-      
+
       // Create GIF encoder
       const gif = GIFEncoder();
-      
+
       // Create a global palette from all frames for better color consistency
       const allImageData: Uint8ClampedArray[] = [];
       const frameCanvases: HTMLCanvasElement[] = [];
-      
+
       // Pre-render all frames and collect image data
       for (let i = 0; i < images.length; i++) {
         const img = images[i];
         const shot = shots[i];
-        
+
         // Create canvas for this frame
         const canvas = document.createElement('canvas');
         canvas.width = scaledWidth;
         canvas.height = canvasHeight;
-        const ctx = canvas.getContext('2d', { 
+        const ctx = canvas.getContext('2d', {
           alpha: false,
-          willReadFrequently: true 
+          willReadFrequently: true,
         });
         if (!ctx) continue;
-        
+
         // Enable image smoothing for better quality
         ctx.imageSmoothingEnabled = true;
         ctx.imageSmoothingQuality = 'high';
-        
+
         // Fill background
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-        
+
         // Draw image with high quality scaling
         ctx.drawImage(img, 0, 0, scaledWidth, maxImageHeight);
-        
+
         // Draw timestamp if enabled
         if (showTimestamps) {
           ctx.fillStyle = '#1f2937';
@@ -497,16 +525,16 @@ export class FilmStripComponent {
           ctx.textAlign = 'center';
           ctx.fillText(shot.relativeTime, scaledWidth / 2, maxImageHeight + 40);
         }
-        
+
         // Store canvas and collect image data
         frameCanvases.push(canvas);
         const imageData = ctx.getImageData(0, 0, scaledWidth, canvasHeight);
         allImageData.push(imageData.data);
       }
-      
+
       // Create a global palette from all frames for consistent colors
       const combinedData = new Uint8ClampedArray(
-        allImageData.reduce((acc, data) => acc + data.length, 0)
+        allImageData.reduce((acc, data) => acc + data.length, 0),
       );
       let offset = 0;
       for (const data of allImageData) {
@@ -514,26 +542,26 @@ export class FilmStripComponent {
         offset += data.length;
       }
       const globalPalette = quantize(combinedData, 256, { format: 'rgb444' });
-      
+
       // Process each frame with the global palette
       for (let i = 0; i < frameCanvases.length; i++) {
         const canvas = frameCanvases[i];
         const ctx = canvas.getContext('2d');
         if (!ctx) continue;
-        
+
         const imageData = ctx.getImageData(0, 0, scaledWidth, canvasHeight);
         const index = applyPalette(imageData.data, globalPalette);
-        
+
         // Add frame to GIF (500ms delay between frames)
         gif.writeFrame(index, scaledWidth, canvasHeight, {
           palette: globalPalette,
           delay: 500,
         });
       }
-      
+
       // Finish encoding
       gif.finish();
-      
+
       // Download GIF
       const buffer = gif.bytes();
       // Convert to proper Uint8Array for Blob
@@ -545,11 +573,9 @@ export class FilmStripComponent {
       link.download = `film-strip-${Date.now()}.gif`;
       link.click();
       URL.revokeObjectURL(url);
-      
     } catch (error) {
       console.error('Failed to download GIF:', error);
       alert('Failed to create GIF. Please try PNG format instead.');
     }
   }
 }
-

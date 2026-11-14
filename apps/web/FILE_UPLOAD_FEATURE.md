@@ -9,12 +9,14 @@ The file upload feature provides a drag-and-drop interface for uploading JSON fi
 ### Components
 
 #### FileUploadComponent
+
 - **Location:** `apps/web/src/app/components/file-upload/`
 - **Files:** `file-upload.ts`, `file-upload.html`, `file-upload.scss`
 - **Selector:** `app-file-upload`
 - **Purpose:** Reusable component for uploading JSON files via drag-and-drop or file picker
 
 **Key Features:**
+
 - Drag-and-drop file upload with visual feedback
 - Click-to-browse file selection
 - JSON file validation (extension and content)
@@ -28,10 +30,12 @@ The file upload feature provides a drag-and-drop interface for uploading JSON fi
 ### Services
 
 #### TraceService
+
 - **Location:** `apps/web/src/app/services/trace.service.ts`
 - **Purpose:** In-memory storage and management of uploaded JSON files
 
 **Features:**
+
 - Signal-based reactive state management
 - CRUD operations for files
 - Computed properties for derived state (count, isEmpty)
@@ -46,7 +50,7 @@ import { FileUploadComponent } from './components/file-upload/file-upload';
 
 @Component({
   imports: [FileUploadComponent],
-  template: `<app-file-upload />`
+  template: `<app-file-upload />`,
 })
 export class MyComponent {}
 ```
@@ -61,7 +65,7 @@ export class MyComponent {
 
   processFiles() {
     const files = this.traceService.allFiles();
-    files.forEach(file => {
+    files.forEach((file) => {
       console.log(file.name, file.content);
     });
   }
@@ -89,11 +93,11 @@ apps/web/src/app/
 
 ```typescript
 interface TraceFile {
-  id: string;           // UUID generated via crypto.randomUUID()
-  name: string;         // Original file name
-  content: unknown;     // Parsed JSON content
-  uploadedAt: Date;     // Upload timestamp
-  size: number;         // File size in bytes
+  id: string; // UUID generated via crypto.randomUUID()
+  name: string; // Original file name
+  content: unknown; // Parsed JSON content
+  uploadedAt: Date; // Upload timestamp
+  size: number; // File size in bytes
 }
 ```
 
@@ -146,13 +150,13 @@ The component follows WCAG AA standards:
 
 ```bash
 # Run all tests
-pnpm nx test web
+pnpm test
 
 # Run tests in watch mode
-pnpm nx test web --watch
+pnpm test --watch
 
 # Run tests with coverage
-pnpm nx test web --coverage
+pnpm test --coverage
 ```
 
 ### Test Coverage
@@ -162,6 +166,7 @@ pnpm nx test web --coverage
 - ✅ Total: 55 tests, all passing
 
 **Coverage Areas:**
+
 - Service CRUD operations
 - File validation logic
 - Drag-and-drop functionality
@@ -204,6 +209,7 @@ The component styles can be customized by:
 - Mobile browsers (iOS Safari, Chrome Mobile)
 
 **Required APIs:**
+
 - File API
 - FileReader API
 - Crypto API (for UUID generation)
@@ -218,6 +224,7 @@ The component styles can be customized by:
 ## Future Enhancements
 
 Potential improvements:
+
 - Add file size limits with validation
 - Implement server upload functionality
 - Add progress bars for large files
@@ -232,19 +239,16 @@ Potential improvements:
 
 ```bash
 # Serve the application
-pnpm nx serve web
+pnpm dev
 
 # Build for production
-pnpm nx build web
+pnpm vp run build
 
-# Run linter
-pnpm nx lint web
+# Format, lint and type-check
+pnpm check
 
 # Run tests
-pnpm nx test web
-
-# View dependency graph
-pnpm nx graph
+pnpm test
 ```
 
 ## Troubleshooting
@@ -252,25 +256,28 @@ pnpm nx graph
 ### Common Issues
 
 **Files not uploading:**
+
 - Check browser console for errors
 - Verify file is valid JSON
 - Ensure file has `.json` extension
 
 **Drag-and-drop not working:**
+
 - Check browser permissions
 - Verify component is properly rendered
 - Try using file picker as alternative
 
 **Tests failing:**
+
 - Run `pnpm install` to ensure dependencies are up to date
-- Clear Nx cache: `pnpm nx reset`
+- Clear the task cache: `pnpm vp cache clean`
 - Check Node version compatibility
 
 ## Support
 
 For issues or questions:
+
 1. Check the test files for usage examples
 2. Review the component source code
 3. Check browser console for errors
 4. Verify file format and content
-
