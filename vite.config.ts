@@ -1,79 +1,5 @@
 import { defineConfig } from 'vite-plus';
 
-// Ports of `eslint:recommended` + `typescript-eslint/recommended`, which the
-// previous Nx ESLint presets enabled.
-const recommendedRules = {
-  'for-direction': 'error',
-  'no-async-promise-executor': 'error',
-  'no-case-declarations': 'error',
-  'no-compare-neg-zero': 'error',
-  'no-cond-assign': 'error',
-  'no-constant-binary-expression': 'error',
-  'no-constant-condition': 'error',
-  'no-control-regex': 'error',
-  'no-debugger': 'error',
-  'no-delete-var': 'error',
-  'no-dupe-else-if': 'error',
-  'no-duplicate-case': 'error',
-  'no-empty': 'error',
-  'no-empty-character-class': 'error',
-  'no-empty-pattern': 'error',
-  'no-empty-static-block': 'error',
-  'no-ex-assign': 'error',
-  'no-extra-boolean-cast': 'error',
-  'no-fallthrough': 'error',
-  'no-global-assign': 'error',
-  'no-invalid-regexp': 'error',
-  'no-irregular-whitespace': 'error',
-  'no-loss-of-precision': 'error',
-  'no-misleading-character-class': 'error',
-  'no-nonoctal-decimal-escape': 'error',
-  'no-prototype-builtins': 'error',
-  'no-regex-spaces': 'error',
-  'no-self-assign': 'error',
-  'no-shadow-restricted-names': 'error',
-  'no-sparse-arrays': 'error',
-  'no-unexpected-multiline': 'error',
-  'no-unsafe-finally': 'error',
-  'no-unsafe-optional-chaining': 'error',
-  'no-unused-labels': 'error',
-  'no-unused-private-class-members': 'error',
-  'no-unused-vars': 'warn',
-  'no-useless-backreference': 'error',
-  'no-useless-catch': 'error',
-  'no-useless-escape': 'error',
-  'require-yield': 'error',
-  'use-isnan': 'error',
-  'valid-typeof': 'error',
-  'no-var': 'error',
-  'prefer-const': 'error',
-  'prefer-rest-params': 'error',
-  'prefer-spread': 'error',
-  'no-array-constructor': 'error',
-  'no-unused-expressions': 'error',
-  'no-empty-function': 'error',
-  'typescript/adjacent-overload-signatures': 'error',
-  'typescript/ban-ts-comment': 'error',
-  'typescript/no-duplicate-enum-values': 'error',
-  'typescript/no-empty-interface': 'error',
-  'typescript/no-empty-object-type': 'error',
-  'typescript/no-explicit-any': 'warn',
-  'typescript/no-extra-non-null-assertion': 'error',
-  'typescript/no-inferrable-types': 'error',
-  'typescript/no-misused-new': 'error',
-  'typescript/no-namespace': 'error',
-  'typescript/no-non-null-asserted-optional-chain': 'error',
-  'typescript/no-non-null-assertion': 'warn',
-  'typescript/no-this-alias': 'error',
-  'typescript/no-unnecessary-type-constraint': 'error',
-  'typescript/no-unsafe-declaration-merging': 'error',
-  'typescript/no-unsafe-function-type': 'error',
-  'typescript/no-wrapper-object-types': 'error',
-  'typescript/prefer-as-const': 'error',
-  'typescript/prefer-namespace-keyword': 'error',
-  'typescript/triple-slash-reference': 'error',
-} as const;
-
 export default defineConfig({
   // `vp test` from the root runs every workspace package's tests.
   test: {
@@ -87,14 +13,6 @@ export default defineConfig({
     '*': 'vp check --fix',
   },
   lint: {
-    plugins: ['oxc', 'typescript', 'unicorn'],
-    categories: {
-      correctness: 'warn',
-    },
-    env: {
-      builtin: true,
-    },
-    ignorePatterns: ['**/dist', '**/coverage'],
     jsPlugins: [
       { name: 'vite-plus', specifier: 'vite-plus/oxlint-plugin' },
       { name: '@angular-eslint', specifier: '@angular-eslint/eslint-plugin' },
@@ -103,15 +21,6 @@ export default defineConfig({
       'vite-plus/prefer-vite-plus-imports': 'error',
     },
     overrides: [
-      {
-        files: ['**/*.{ts,tsx,cts,mts,js,jsx,cjs,mjs}'],
-        env: { es2020: true },
-        rules: recommendedRules,
-      },
-      {
-        files: ['**/*.{js,jsx,cjs,mjs}'],
-        env: { browser: true, node: true },
-      },
       {
         files: ['apps/web/src/**/*.ts'],
         rules: {

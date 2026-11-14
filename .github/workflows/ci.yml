@@ -30,7 +30,7 @@ jobs:
           cache-toolchain: true
 
       # Same steps as `vp run ready`, split up for readable logs.
-      - run: vp check
+      - run: vp check --deny-warnings
       - run: vp run -r test
       - run: vp run -r build
 

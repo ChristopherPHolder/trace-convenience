@@ -404,7 +404,7 @@ worker.onmessage = ({ data }) => {
 - Use TypeScript strict mode
 - Follow Angular style guide
 - Use Oxfmt for formatting (`vp fmt`)
-- Use Oxlint for linting (`vp lint`, or `vp check` for format + lint + types)
+- Use Oxlint for linting (`vp lint`, or `vp check` for format + lint + types). CI runs `vp check --deny-warnings`, so lint warnings fail the build.
 
 ### Commit Messages
 

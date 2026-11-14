@@ -30,7 +30,7 @@ To enable deployment, you need to configure GitHub Pages in your repository:
 
 The CI workflow (`.github/workflows/ci.yml`) will:
 
-1. **Check, test and build** with `vp check`, `vp run -r test` and `vp run -r build` (Vite+, production mode)
+1. **Check, test and build** with `vp check --deny-warnings`, `vp run -r test` and `vp run -r build` (Vite+, production mode)
 2. **Upload** the built files from `apps/web/dist/` (only on `main`)
 3. **Deploy** to GitHub Pages in a separate `deploy` job, which only runs once the `ci` job has passed
 
