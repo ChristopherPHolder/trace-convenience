@@ -21,8 +21,19 @@ export default [
           allow: ['^.*/eslint(\\.base)?\\.config\\.[cm]?[jt]s$'],
           depConstraints: [
             {
-              sourceTag: '*',
-              onlyDependOnLibsWithTags: ['*'],
+              sourceTag: 'type:app',
+              onlyDependOnLibsWithTags: ['type:core'],
+            },
+            {
+              // Shared by web, CLI and MCP: must stay framework- and runtime-agnostic.
+              sourceTag: 'type:core',
+              onlyDependOnLibsWithTags: ['type:core'],
+              bannedExternalImports: [
+                '@angular/*',
+                'rxjs',
+                'zone.js',
+                'node:*',
+              ],
             },
           ],
         },

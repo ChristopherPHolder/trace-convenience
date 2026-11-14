@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FilmStripComponent } from './film-strip';
-import { Screenshot } from '../../services/trace-parser.service';
+import { Screenshot } from '@trace-convenience/trace-core';
 import { FilmStripSettingsService } from '../../services/film-strip-settings.service';
 
 describe('FilmStripComponent', () => {
@@ -212,13 +212,11 @@ describe('FilmStripComponent', () => {
 
   describe('metadata display', () => {
     it('should display relative time for each screenshot', () => {
-      const frameInfo = fixture.nativeElement.querySelectorAll('.frame-info');
+      const frameInfo: NodeListOf<Element> = fixture.nativeElement.querySelectorAll('.frame-info');
       expect(frameInfo.length).toBe(3);
-      
-      const times = Array.from(frameInfo).map((info: Element) => 
-        info.querySelector('.frame-time')?.textContent
-      );
-      expect(times.every((time: string) => time && time.length > 0)).toBe(true);
+
+      const times = Array.from(frameInfo).map((info) => info.querySelector('.frame-time')?.textContent ?? '');
+      expect(times.every((time) => time.length > 0)).toBe(true);
     });
 
     it('should display time delta for screenshots after the first', () => {

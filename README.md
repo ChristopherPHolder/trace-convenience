@@ -83,14 +83,19 @@ Built with modern web technologies and best practices:
 
 - **Framework**: Angular 20.3 with standalone components
 - **State Management**: Angular Signals for reactive data flow
-- **Build System**: Nx monorepo with optimized build configuration
-- **Testing**: Vitest with comprehensive test coverage (98 tests passing)
+- **Build System**: Nx monorepo (`apps/web` + shared `libs/trace-core`)
+- **Testing**: Vitest
 - **Styling**: Modern CSS with component-scoped SCSS
 - **Type Safety**: TypeScript 5.9 in strict mode
 
+### Workspace Layout
+
+- **`libs/trace-core`**: Framework-agnostic trace parsing and film-strip frame selection, shared across front ends (web today, CLI and MCP next)
+- **`apps/web`**: The Angular UI
+
 ### Key Components
 
-- **TraceParserService**: Extracts screenshots from Chrome DevTools trace events
+- **trace-core `parseTrace`**: Extracts screenshots from Chrome DevTools trace events
 - **FilmStripComponent**: Interactive UI for displaying and navigating screenshots
 - **TraceService**: Manages uploaded trace files with signal-based state
 - **FileUploadComponent**: Drag-and-drop interface for trace file uploads
@@ -99,7 +104,7 @@ Built with modern web technologies and best practices:
 
 ```bash
 # Run all tests
-pnpm nx test web
+pnpm nx run-many -t test
 
 # Run tests in watch mode
 pnpm nx test web --watch
@@ -107,8 +112,6 @@ pnpm nx test web --watch
 # Run with coverage report
 pnpm nx test web --coverage
 ```
-
-Current test coverage: **98 tests passing** across all components and services.
 
 ## 🔨 Building
 
@@ -146,7 +149,7 @@ Contributions are welcome! Please read our [Developer Guide](DEVELOPER_GUIDE.md)
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
 3. Make your changes
-4. Run tests (`pnpm nx test web`)
+4. Run checks (`pnpm nx run-many -t lint test typecheck build`)
 5. Commit your changes (`git commit -m 'Add amazing feature'`)
 6. Push to the branch (`git push origin feature/amazing-feature`)
 7. Open a Pull Request

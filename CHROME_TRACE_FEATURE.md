@@ -38,7 +38,7 @@ This feature allows you to upload Chrome DevTools trace files and automatically 
 
 ### Components
 
-- **TraceParserService**: Extracts screenshots from Chrome DevTools trace events
+- **`parseTrace` (`@trace-convenience/trace-core`)**: Extracts screenshots from Chrome DevTools trace events
   - Supports multiple screenshot event types:
     - `Screenshot` events with `disabled-by-default-devtools.screenshot` category
     - `ScreencastFrame` events

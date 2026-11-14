@@ -38,4 +38,4 @@ jobs:
 
       # Prepend any command with "nx-cloud record --" to record its logs to Nx Cloud
       # - run: pnpm dlx nx-cloud record -- echo Hello World
-      - run: pnpm nx run-many -t lint test build
+      - run: pnpm nx run-many -t lint test typecheck build

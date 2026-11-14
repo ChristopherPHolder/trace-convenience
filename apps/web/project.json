@@ -4,7 +4,7 @@
   "projectType": "application",
   "prefix": "app",
   "sourceRoot": "apps/web/src",
-  "tags": [],
+  "tags": ["type:app", "scope:web"],
   "targets": {
     "build": {
       "executor": "@angular/build:application",
@@ -104,6 +104,19 @@
         "signal": true
       },
       "dependsOn": ["build"]
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "inputs": ["default", "^production"],
+      "options": {
+        "cwd": "{projectRoot}",
+        "commands": [
+          "tsc --noEmit -p tsconfig.app.json",
+          "tsc --noEmit -p tsconfig.spec.json"
+        ],
+        "parallel": false
+      }
     }
   }
 }

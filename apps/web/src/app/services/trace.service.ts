@@ -1,5 +1,5 @@
-import { Injectable, signal, computed, inject } from '@angular/core';
-import { TraceParserService, ParsedTrace } from './trace-parser.service';
+import { Injectable, signal, computed } from '@angular/core';
+import { parseTrace, ParsedTrace } from '@trace-convenience/trace-core';
 
 export interface TraceFile {
   id: string;
@@ -14,13 +14,12 @@ export interface TraceFile {
   providedIn: 'root',
 })
 export class TraceService {
-  private readonly traceParser = inject(TraceParserService);
   private files = signal<TraceFile[]>([]);
 
   readonly allFiles = this.files.asReadonly();
   readonly fileCount = computed(() => this.files().length);
   readonly isEmpty = computed(() => this.files().length === 0);
-  
+
   readonly currentFile = computed(() => {
     const files = this.files();
     return files.length > 0 ? files[0] : null;
@@ -32,10 +31,10 @@ export class TraceService {
 
   addFile(file: File, content: unknown): void {
     let parsedData: ParsedTrace | undefined;
-    
+
     // Try to parse the trace file to extract screenshots
     try {
-      parsedData = this.traceParser.parseTrace(content);
+      parsedData = parseTrace(content);
     } catch (error) {
       console.warn('Failed to parse trace file:', error);
       // Continue anyway - we still want to store the file even if parsing fails
@@ -65,4 +64,3 @@ export class TraceService {
     return this.files().find((file) => file.id === id);
   }
 }
-

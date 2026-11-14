@@ -47,7 +47,19 @@ To test the feature, you need a Chrome DevTools trace with screenshots:
 
 ## Project Structure
 
+The workspace is an Nx monorepo:
+
+- `libs/trace-core` (`@trace-convenience/trace-core`): framework-agnostic trace parsing and film-strip frame selection, shared by every front end. No Angular, DOM or Node imports allowed (enforced by `@nx/enforce-module-boundaries`).
+- `apps/web`: the Angular UI. It holds UI state and rendering only and calls into `trace-core` for the logic.
+
 ```
+libs/trace-core/src/lib/
+├── parse-trace.ts        # Screenshot extraction from trace events
+├── film-strip.ts         # Time-range filtering and interval sampling
+├── image.ts              # Format detection, data URIs
+├── time.ts               # Timestamp formatting
+└── types.ts              # Screenshot, ParsedTrace
+
 apps/web/src/app/
 ├── components/
 │   ├── file-upload/          # Main upload component
@@ -63,8 +75,7 @@ apps/web/src/app/
 └── services/
     ├── trace.service.ts       # Trace file management
     ├── trace.service.spec.ts
-    ├── trace-parser.service.ts # Screenshot extraction
-    └── trace-parser.service.spec.ts
+    └── film-strip-settings.service.ts
 ```
 
 ## Key Concepts
@@ -115,7 +126,6 @@ Services are injected using the modern `inject()` function:
 ```typescript
 export class MyComponent {
   private readonly traceService = inject(TraceService);
-  private readonly parser = inject(TraceParserService);
 }
 ```
 
@@ -123,8 +133,8 @@ export class MyComponent {
 
 To support additional screenshot event types:
 
-1. Open `trace-parser.service.ts`
-2. Locate the `parseTrace()` method
+1. Open `libs/trace-core/src/lib/parse-trace.ts`
+2. Locate the `parseTrace()` function
 3. Add a new condition in the event loop:
 
 ```typescript
@@ -134,14 +144,14 @@ if (event.name === 'NewScreenshotType') {
   if (imageData && typeof imageData === 'string') {
     screenshots.push({
       timestamp,
-      data: this.extractBase64FromDataUri(imageData),
-      format: this.detectImageFormat(imageData),
+      data: extractBase64FromDataUri(imageData),
+      format: detectImageFormat(imageData),
     });
   }
 }
 ```
 
-4. Add tests in `trace-parser.service.spec.ts`
+4. Add tests in `libs/trace-core/src/lib/parse-trace.spec.ts`
 
 ## Customizing the Film Strip UI
 
@@ -180,7 +190,7 @@ $text-gray: #6b7280;
 
 To display additional information about screenshots:
 
-1. Update the `Screenshot` interface in `trace-parser.service.ts`
+1. Update the `Screenshot` interface in `libs/trace-core/src/lib/types.ts`
 2. Extract the data in `parseTrace()`
 3. Add UI elements in `film-strip.html`
 
@@ -190,12 +200,13 @@ To display additional information about screenshots:
 
 Run all tests:
 ```bash
-pnpm nx test web
+pnpm nx run-many -t test
 ```
 
-Run specific test file:
+Run one project's tests, or one file:
 ```bash
-pnpm nx test web --testFile=trace-parser.service.spec.ts
+pnpm nx test trace-core
+pnpm nx test web --testFiles=film-strip
 ```
 
 ### Writing New Tests
@@ -256,7 +267,7 @@ describe('MyComponent', () => {
 
 ### Enabling Trace Parsing Logs
 
-Uncomment console logs in `trace-parser.service.ts`:
+Add a log in `libs/trace-core/src/lib/parse-trace.ts`:
 
 ```typescript
 parseTrace(traceContent: unknown): ParsedTrace {
@@ -347,15 +358,18 @@ worker.onmessage = ({ data }) => {
 
 ## API Reference
 
-### TraceParserService
+### trace-core (`@trace-convenience/trace-core`)
 
-**Methods:**
+**Functions:**
 - `parseTrace(traceContent: unknown): ParsedTrace`
   - Parses a Chrome DevTools trace and extracts screenshots
   - Returns: ParsedTrace object with screenshots and metadata
   - Throws: Error if trace format is invalid
 
-- `getDataUri(screenshot: Screenshot): string`
+- `selectFilmStripFrames(screenshots: Screenshot[], options?: FrameSelectionOptions): FilmStripFrame[]`
+  - Picks film-strip frames; `options.timeRange` restricts to a window, `options.intervalMs` re-samples on a fixed timeline
+
+- `toDataUri(screenshot: Screenshot): string`
   - Converts a screenshot to a displayable data URI
   - Returns: data:image/[type];base64,[data]
 
