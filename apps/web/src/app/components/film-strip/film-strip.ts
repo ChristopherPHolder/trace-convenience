@@ -10,11 +10,12 @@ import {
 import {
   formatTimestamp,
   screenshotSpanMs,
-  selectFilmStripFrames,
   toDataUri,
   type Screenshot,
 } from "@trace-convenience/trace-core";
+import { FilmStripExportService } from "../../services/film-strip-export.service";
 import { FilmStripSettingsService } from "../../services/film-strip-settings.service";
+import { FilmStripService } from "../../services/film-strip.service";
 import { PbBadge, PbButton, PbDescription, PbIconButton } from "../../design-system";
 
 @Component({
@@ -26,6 +27,8 @@ import { PbBadge, PbButton, PbDescription, PbIconButton } from "../../design-sys
 })
 export class FilmStripComponent {
   private readonly settingsService = inject(FilmStripSettingsService);
+  private readonly filmStripService = inject(FilmStripService);
+  private readonly exportService = inject(FilmStripExportService);
 
   // Input properties
   readonly screenshots = input.required<Screenshot[]>();
@@ -42,9 +45,6 @@ export class FilmStripComponent {
   protected readonly useIntervalFiltering = this.settingsService.useIntervalFiltering;
   protected readonly minIntervalMs = this.settingsService.minIntervalMs;
   protected readonly showTimestamps = this.settingsService.exportShowTimestamps;
-  protected readonly useTimeRangeFilter = this.settingsService.useTimeRangeFilter;
-  protected readonly startTimeMs = this.settingsService.startTimeMs;
-  protected readonly endTimeMs = this.settingsService.endTimeMs;
 
   // Range slider configuration
   protected readonly minInterval = 10; // 10ms minimum
@@ -65,15 +65,11 @@ export class FilmStripComponent {
   // Calculate the total duration in milliseconds
   protected readonly totalDurationMs = computed(() => screenshotSpanMs(this.screenshots()));
 
-  // Time-range filtering and interval sampling live in trace-core.
+  // FilmStripService applies the time-range and interval settings.
   protected readonly screenshotsWithMetadata = computed(() =>
-    selectFilmStripFrames(this.screenshots(), {
-      timeRange: this.useTimeRangeFilter()
-        ? { startMs: this.startTimeMs(), endMs: this.endTimeMs() }
-        : undefined,
-      intervalMs: this.useIntervalFiltering() ? this.minIntervalMs() : undefined,
-      baseTimestamp: this.startTime(),
-    }).map((frame) => ({ ...frame, dataUri: toDataUri(frame) })),
+    this.filmStripService
+      .selectFrames(this.screenshots(), this.startTime())
+      .map((frame) => ({ ...frame, dataUri: toDataUri(frame) })),
   );
 
   protected readonly selectedScreenshot = computed(() => {
@@ -170,221 +166,17 @@ export class FilmStripComponent {
   }
 
   protected async onDownload(): Promise<void> {
+    const frames = this.screenshotsWithMetadata();
+    if (frames.length === 0) return;
+
     const format = this.selectedFormat();
-    if (format === "gif") {
-      await this.onDownloadGif();
-    } else {
-      await this.onDownloadPng();
-    }
-  }
-
-  protected async onDownloadPng(): Promise<void> {
-    const shots = this.screenshotsWithMetadata();
-    if (shots.length === 0) return;
-
     try {
-      // Create a canvas to composite all screenshots
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
-      if (!ctx) return;
-
-      // Use settings from service
-      const settings = this.settingsService.getSettings();
-      const padding = settings.exportPadding;
-      const showTimestamps = settings.exportShowTimestamps;
-      const textHeight = showTimestamps ? 30 : 0;
-      const maxImageHeight = settings.exportImageHeight;
-      let totalWidth = 0;
-      const imagePromises: Promise<HTMLImageElement>[] = [];
-
-      // Load all images first
-      for (const shot of shots) {
-        const imgPromise = new Promise<HTMLImageElement>((resolve, reject) => {
-          const img = new Image();
-          img.onload = () => resolve(img);
-          img.onerror = reject;
-          img.src = shot.dataUri;
-        });
-        imagePromises.push(imgPromise);
-      }
-
-      const images = await Promise.all(imagePromises);
-
-      // Calculate total width and set canvas size
-      for (const img of images) {
-        const aspectRatio = img.width / img.height;
-        const scaledWidth = maxImageHeight * aspectRatio;
-        totalWidth += scaledWidth + padding;
-      }
-
-      canvas.width = totalWidth + padding;
-      canvas.height = maxImageHeight + textHeight + padding * 2;
-
-      // Fill background
-      ctx.fillStyle = "#ffffff";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      // Draw each screenshot with its timestamp
-      let xOffset = padding;
-      for (let i = 0; i < images.length; i++) {
-        const img = images[i];
-        const shot = shots[i];
-        const aspectRatio = img.width / img.height;
-        const scaledWidth = maxImageHeight * aspectRatio;
-
-        // Draw image
-        ctx.drawImage(img, xOffset, padding, scaledWidth, maxImageHeight);
-
-        // Draw timestamp below if enabled
-        if (showTimestamps) {
-          ctx.fillStyle = "#1f2937";
-          ctx.font = "14px sans-serif";
-          ctx.textAlign = "center";
-          ctx.fillText(shot.relativeTime, xOffset + scaledWidth / 2, maxImageHeight + padding + 20);
-        }
-
-        xOffset += scaledWidth + padding;
-      }
-
-      // Convert canvas to blob and download
-      canvas.toBlob((blob) => {
-        if (!blob) return;
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = `film-strip-${Date.now()}.png`;
-        link.click();
-        URL.revokeObjectURL(url);
-      }, "image/png");
+      await this.exportService.download(format, frames);
     } catch (error) {
-      console.error("Failed to download film strip:", error);
-    }
-  }
-
-  protected async onDownloadGif(): Promise<void> {
-    const shots = this.screenshotsWithMetadata();
-    if (shots.length === 0) return;
-
-    try {
-      // Dynamic import of gifenc
-      const { GIFEncoder, quantize, applyPalette } = await import("gifenc");
-
-      const settings = this.settingsService.getSettings();
-      const showTimestamps = settings.exportShowTimestamps;
-      // Use higher resolution for better quality (2x the export height)
-      const maxImageHeight = settings.exportImageHeight * 2;
-
-      // Load all images
-      const imagePromises: Promise<HTMLImageElement>[] = [];
-      for (const shot of shots) {
-        const imgPromise = new Promise<HTMLImageElement>((resolve, reject) => {
-          const img = new Image();
-          img.onload = () => resolve(img);
-          img.onerror = reject;
-          img.src = shot.dataUri;
-        });
-        imagePromises.push(imgPromise);
+      console.error(`Failed to download the film strip as ${format}:`, error);
+      if (format === "gif") {
+        alert("Failed to create GIF. Please try PNG format instead.");
       }
-      const images = await Promise.all(imagePromises);
-
-      // Use first image to determine dimensions
-      const firstImg = images[0];
-      const aspectRatio = firstImg.width / firstImg.height;
-      const scaledWidth = Math.round(maxImageHeight * aspectRatio);
-      const textHeight = showTimestamps ? 60 : 0;
-      const canvasHeight = maxImageHeight + textHeight;
-
-      // Create GIF encoder
-      const gif = GIFEncoder();
-
-      // Create a global palette from all frames for better color consistency
-      const allImageData: Uint8ClampedArray[] = [];
-      const frameCanvases: HTMLCanvasElement[] = [];
-
-      // Pre-render all frames and collect image data
-      for (let i = 0; i < images.length; i++) {
-        const img = images[i];
-        const shot = shots[i];
-
-        // Create canvas for this frame
-        const canvas = document.createElement("canvas");
-        canvas.width = scaledWidth;
-        canvas.height = canvasHeight;
-        const ctx = canvas.getContext("2d", {
-          alpha: false,
-          willReadFrequently: true,
-        });
-        if (!ctx) continue;
-
-        // Enable image smoothing for better quality
-        ctx.imageSmoothingEnabled = true;
-        ctx.imageSmoothingQuality = "high";
-
-        // Fill background
-        ctx.fillStyle = "#ffffff";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        // Draw image with high quality scaling
-        ctx.drawImage(img, 0, 0, scaledWidth, maxImageHeight);
-
-        // Draw timestamp if enabled
-        if (showTimestamps) {
-          ctx.fillStyle = "#1f2937";
-          ctx.font = "bold 24px sans-serif";
-          ctx.textAlign = "center";
-          ctx.fillText(shot.relativeTime, scaledWidth / 2, maxImageHeight + 40);
-        }
-
-        // Store canvas and collect image data
-        frameCanvases.push(canvas);
-        const imageData = ctx.getImageData(0, 0, scaledWidth, canvasHeight);
-        allImageData.push(imageData.data);
-      }
-
-      // Create a global palette from all frames for consistent colors
-      const combinedData = new Uint8ClampedArray(
-        allImageData.reduce((acc, data) => acc + data.length, 0),
-      );
-      let offset = 0;
-      for (const data of allImageData) {
-        combinedData.set(data, offset);
-        offset += data.length;
-      }
-      const globalPalette = quantize(combinedData, 256, { format: "rgb444" });
-
-      // Process each frame with the global palette
-      for (let i = 0; i < frameCanvases.length; i++) {
-        const canvas = frameCanvases[i];
-        const ctx = canvas.getContext("2d");
-        if (!ctx) continue;
-
-        const imageData = ctx.getImageData(0, 0, scaledWidth, canvasHeight);
-        const index = applyPalette(imageData.data, globalPalette);
-
-        // Add frame to GIF (500ms delay between frames)
-        gif.writeFrame(index, scaledWidth, canvasHeight, {
-          palette: globalPalette,
-          delay: 500,
-        });
-      }
-
-      // Finish encoding
-      gif.finish();
-
-      // Download GIF
-      const buffer = gif.bytes();
-      // Convert to proper Uint8Array for Blob
-      const blobData = new Uint8Array(buffer);
-      const blob = new Blob([blobData], { type: "image/gif" });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `film-strip-${Date.now()}.gif`;
-      link.click();
-      URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error("Failed to download GIF:", error);
-      alert("Failed to create GIF. Please try PNG format instead.");
     }
   }
 }

@@ -21,10 +21,11 @@ TraceService.addFile(file, json)              apps/web  signal store
 ParsedTrace { screenshots, metadata }
         │  selectFilmStripFrames(screenshots, { timeRange, intervalMs })   trace-core
         ▼
-FilmStripFrame[]                              apps/web  FilmStripComponent
+FilmStripFrame[]                              apps/web  FilmStripService
         │
-        ├─ rendered as the strip and the preview
-        └─ drawn on a canvas for the PNG and GIF downloads
+        ├─ rendered as the strip and the preview          FilmStripComponent
+        ├─ drawn on a canvas for the PNG and GIF downloads   FilmStripExportService
+        └─ reported to in-browser agents                  WebMCP tools
 ```
 
 Everything runs in the browser. There is no backend and no persistence. See [ADR 0001](adr/0001-process-traces-in-the-browser.md).
@@ -73,15 +74,39 @@ apps/web/src/
     │   └── film-strip-settings-dialog/   Interval, time range and timestamp settings
     ├── services/
     │   ├── trace.service.ts              The loaded trace and its parsed data
-    │   └── film-strip-settings.service.ts   Settings shared by the strip and the dialog
+    │   ├── film-strip-settings.service.ts   Settings shared by the strip and the dialog
+    │   ├── film-strip.service.ts         The frames the settings select
+    │   └── film-strip-export.service.ts  PNG and GIF download
+    ├── webmcp/
+    │   └── film-strip-tools.ts           The tools published to in-browser agents
     └── design-system/           PushBased components (pbButton, pb-card, pbSwitch, ...)
 ```
 
 **State.** Services hold state in Angular signals and expose it read-only. Components derive what they show with `computed`, and use `ChangeDetectionStrategy.OnPush`. See [ADR 0002](adr/0002-angular-signals-and-standalone-components.md).
 
-**Export.** `FilmStripComponent` draws the visible frames on a canvas. The PNG is one image with the frames side by side. The GIF is encoded with [gifenc](https://github.com/mattdesl/gifenc), which is loaded with a dynamic `import()` so it stays out of the initial bundle.
+**Frames.** `FilmStripService` applies the interval and time-range settings to the loaded trace's screenshots. The strip component and the WebMCP tools both go through it, so they always show the same frames.
+
+**Export.** `FilmStripExportService` draws the frames on a canvas and downloads the result. The PNG is one image with the frames side by side. The GIF is encoded with [gifenc](https://github.com/mattdesl/gifenc), which is loaded with a dynamic `import()` so it stays out of the initial bundle.
 
 **Styling.** The UI uses the PushBased design system. `tokens.scss` holds the raw tokens and `styles.scss` maps them to semantic roles such as `--surface`, `--text` and `--accent`, each with a light and a dark value. Components read the semantic roles only. See [ADR 0006](adr/0006-pushbased-design-system.md).
+
+## WebMCP tools
+
+The app publishes three tools to agents that run in the browser, through [WebMCP](https://webmachinelearning.github.io/webmcp/). See [ADR 0010](adr/0010-webmcp-tools-for-the-film-strip.md).
+
+| Tool                         | What it does                                                 | Returns                                                         |
+| ---------------------------- | ------------------------------------------------------------ | --------------------------------------------------------------- |
+| `get_film_strip_state`       | Reads the loaded trace and the settings                      | File name, screenshot count, duration, settings and frame times |
+| `update_film_strip_settings` | Sets the interval, the time range or whether timestamps show | The state after the change                                      |
+| `export_film_strip`          | Downloads the displayed frames as `png` or `gif`             | File name, frame count and pixel size                           |
+
+`app.config.ts` registers them with Angular's `provideExperimentalWebMcpTools`. It registers the tools when the app starts and does nothing in a browser without `document.modelContext`. Each tool's `execute` runs in the app's injection context, so it reads and writes the same services as the UI, and the page updates as the agent works.
+
+A tool that cannot do what it was asked returns `{ error: "..." }` in place of its result. Chrome swaps a thrown error for a generic failure, so a thrown message would never reach the agent.
+
+Times are in milliseconds from the first screenshot, in both input and output. A tool never returns image data.
+
+WebMCP is behind a flag in Chrome. See [Try the WebMCP tools](development.md#try-the-webmcp-tools).
 
 ## Toolchain
 

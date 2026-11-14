@@ -94,6 +94,23 @@ See [ADR 0005](adr/0005-compile-angular-with-vite-plugin-ngp.md) before changing
 2. `selectFilmStripFrames` passes it through on each `FilmStripFrame`.
 3. Render it in `apps/web/src/app/components/film-strip/film-strip.html`.
 
+### Try the WebMCP tools
+
+WebMCP is behind a flag in Chrome 149 and later.
+
+1. Open `chrome://flags/#enable-webmcp-testing`, enable it and relaunch Chrome.
+2. Run `vp run dev` and open the app.
+3. Open DevTools, then **Application** > **WebMCP**. The three tools are listed under **Available tools**, and each has a **Run tool** button.
+
+An agent connected through [Chrome DevTools MCP](https://github.com/ChromeDevTools/chrome-devtools-mcp) can call them with `list_webmcp_tools` and `execute_webmcp_tool`, which it enables with `--categoryExperimentalWebmcp`.
+
+### Add a WebMCP tool
+
+1. Add a `WebMcpToolDescriptor` to `apps/web/src/app/webmcp/film-strip-tools.ts` and to the `filmStripTools` array.
+2. In `execute`, call `inject()` before the first `await`, check every argument, and throw a `ToolError` for anything the agent can fix. Wrap `execute` in `reportingErrors` so the message is returned to the agent.
+3. Change state through the services the UI uses, so the page shows what the tool did.
+4. Add cases to `film-strip-tools.spec.ts`, and the tool to the table in [Architecture](architecture.md#webmcp-tools).
+
 ### Record a decision
 
 Add an ADR when a change picks one option over another and the reason will not be obvious from the code. See [the ADR index](adr/README.md).

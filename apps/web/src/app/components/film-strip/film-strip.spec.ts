@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { FilmStripComponent } from "./film-strip";
 import type { Screenshot } from "@trace-convenience/trace-core";
+import { FilmStripExportService } from "../../services/film-strip-export.service";
 import { FilmStripSettingsService } from "../../services/film-strip-settings.service";
 
 describe("FilmStripComponent", () => {
@@ -151,6 +152,34 @@ describe("FilmStripComponent", () => {
       const event = new KeyboardEvent("keydown", { key: "f" });
       component["onKeydown"](event);
       expect(component["isFullscreen"]()).toBe(true);
+    });
+  });
+
+  describe("download", () => {
+    it("should export the displayed frames in the selected format", async () => {
+      const download = vi
+        .spyOn(TestBed.inject(FilmStripExportService), "download")
+        .mockResolvedValue({
+          fileName: "film-strip-1.gif",
+          format: "gif",
+          frameCount: 3,
+          width: 100,
+          height: 100,
+        });
+      component["selectFormat"]("gif");
+
+      await component["onDownload"]();
+
+      expect(download).toHaveBeenCalledWith("gif", component["screenshotsWithMetadata"]());
+    });
+
+    it("should not export an empty strip", async () => {
+      const download = vi.spyOn(TestBed.inject(FilmStripExportService), "download");
+      fixture.componentRef.setInput("screenshots", []);
+
+      await component["onDownload"]();
+
+      expect(download).not.toHaveBeenCalled();
     });
   });
 
