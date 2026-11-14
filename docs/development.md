@@ -70,7 +70,7 @@ vp add -D <package> --filter @trace-convenience/trace-core
 vp remove <package> --filter web
 ```
 
-Versions that must stay aligned across packages, such as `vite-plus`, `typescript` and `vitest`, live in the catalog in `pnpm-workspace.yaml`.
+The workspace uses `catalogMode: prefer`, the Vite+ default. `vp add` saves a new dependency's version to the catalog in `pnpm-workspace.yaml` and writes `catalog:` in the package's `package.json`. Versions that must stay aligned across packages, such as `vite-plus`, `typescript` and `vitest`, live there too.
 
 Some versions are pinned on purpose:
 
