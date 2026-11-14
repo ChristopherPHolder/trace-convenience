@@ -51,7 +51,7 @@ vp install
 vp run dev
 ```
 
-The application will be available at `http://localhost:4200`
+The application will be available at `http://localhost:5173`
 
 ### Creating a Trace File
 

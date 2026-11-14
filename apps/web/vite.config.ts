@@ -2,17 +2,8 @@ import { defineConfig } from 'vite-plus';
 import { ngp } from '@push-based/vite-plugin-ngp';
 
 export default defineConfig(({ mode }) => ({
-  resolve: {
-    tsconfigPaths: true,
-  },
   // GitHub Pages serves the app from /trace-convenience/.
   base: mode === 'production' ? '/trace-convenience/' : '/',
-  server: {
-    port: 4200,
-  },
-  build: {
-    sourcemap: mode !== 'production',
-  },
   plugins: [
     ngp({
       polyfills: ['zone.js'],
@@ -27,16 +18,14 @@ export default defineConfig(({ mode }) => ({
     }),
   ],
   test: {
-    name: 'web',
-    watch: false,
+    // Angular's TestBed registers its per-test teardown on the global
+    // beforeEach/afterEach hooks, so Vitest globals stay on.
     globals: true,
     environment: 'jsdom',
-    include: ['{src,tests}/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     setupFiles: ['src/test-setup.ts'],
-    reporters: ['default'],
     coverage: {
+      // Report every source file, not only the ones the tests import.
       include: ['src/**/*.ts'],
-      provider: 'v8',
     },
   },
 }));
