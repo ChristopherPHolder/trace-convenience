@@ -61,11 +61,12 @@ export function parseFlameChart(traceContent: unknown): FlameChart {
     return { thread: null, entries: [], startTime, endTime, maxDepth: -1 };
   }
 
-  const { completeEvents, profile } = collectThread(events, thread);
+  const { completeEvents, instantEvents, profile } = collectThread(events, thread);
+  // Instant events take no time, so they cannot change how long a call ran.
   const jsCalls = profile ? buildJsCalls(completeEvents, profile) : [];
 
   const entries: FlameChartEntry[] = [];
-  for (const event of completeEvents) {
+  for (const event of [...completeEvents, ...instantEvents]) {
     const style = eventStyleOf(event.name);
     if (!style) continue;
     const [label, category] = style;
@@ -205,12 +206,20 @@ function pickMainThread(
   );
 }
 
-/** The thread's events with a duration, sorted, and its CPU profile if the trace has one. */
+/**
+ * The thread's events with a duration, sorted, the instant events DevTools
+ * draws, and the thread's CPU profile if the trace has one.
+ */
 function collectThread(
   events: readonly RawEvent[],
   thread: FlameChartThread,
-): { completeEvents: CompleteEvent[]; profile: ReturnType<typeof buildCpuProfile> | null } {
+): {
+  completeEvents: CompleteEvent[];
+  instantEvents: CompleteEvent[];
+  profile: ReturnType<typeof buildCpuProfile> | null;
+} {
   const completeEvents: CompleteEvent[] = [];
+  const instantEvents: CompleteEvent[] = [];
   const beginStack: CompleteEvent[] = [];
   let profileId: string | number | undefined;
   let profileStart = 0;
@@ -251,6 +260,10 @@ function collectThread(
       // An end without a begin is expected: the trace can start mid-event.
       const begun = beginStack.pop();
       if (begun) begun.dur = Math.max(ts - begun.ts, 0);
+    } else if ((event.ph === "I" || event.ph === "i") && eventStyleOf(event.name ?? "")) {
+      // Something that happens at one moment, such as installing a timer. It
+      // is drawn as a marker one pixel wide.
+      instantEvents.push(toComplete(event, ts, 0));
     }
   }
 
@@ -264,7 +277,7 @@ function collectThread(
         chunks.sort((a, b) => a.ts - b.ts).map(({ chunk }) => chunk),
       )
     : null;
-  return { completeEvents, profile };
+  return { completeEvents, instantEvents, profile };
 }
 
 function toComplete(event: RawEvent, ts: number, dur: number): CompleteEvent {

@@ -132,6 +132,39 @@ describe("parseFlameChart", () => {
       expect(outline(chart.entries)).toEqual(["Task@0+30", "  Layout@2+5"]);
     });
 
+    it("keeps the instant events DevTools draws, as entries without a duration", () => {
+      const instant = (name: string, atMs: number, ph = "I") => ({
+        ph,
+        name,
+        pid: PID,
+        tid: MAIN,
+        ts: T0 + atMs * 1000,
+        s: "t",
+      });
+
+      const chart = parseFlameChart(
+        traceOf(
+          complete("RunTask", 0, 30),
+          complete("FunctionCall", 2, 20),
+          instant("TimerInstall", 5),
+          instant("UpdateCounters", 6),
+          complete("Layout", 10, 5),
+          instant("RequestAnimationFrame", 24, "i"),
+          complete("RunTask", 40, 5),
+        ),
+      );
+
+      expect(outline(chart.entries)).toEqual([
+        "Task@0+30",
+        "  Function call@2+20",
+        "    Install timer@5+0",
+        "    Layout@10+5",
+        "  Request animation frame@24+0",
+        "Task@40+5",
+      ]);
+      expect(chart.entries.map((entry) => entry.selfTime / 1000)).toEqual([10, 15, 0, 5, 0, 5]);
+    });
+
     it("pairs begin and end events", () => {
       const begin = { ph: "B", name: "RunTask", pid: PID, tid: MAIN, ts: T0 };
       const end = { ph: "E", name: "RunTask", pid: PID, tid: MAIN, ts: T0 + 12_000 };
