@@ -51,23 +51,19 @@ To test the feature, you need a Chrome DevTools trace with screenshots:
 ## Project Structure
 
 ```
-apps/web/src/app/
-├── components/
-│   ├── file-upload/          # Main upload component
-│   │   ├── file-upload.ts
-│   │   ├── file-upload.html
-│   │   ├── file-upload.scss
-│   │   └── file-upload.spec.ts
-│   └── film-strip/           # Screenshot display component
-│       ├── film-strip.ts
-│       ├── film-strip.html
-│       ├── film-strip.scss
-│       └── film-strip.spec.ts
-└── services/
-    ├── trace.service.ts       # Trace file management
-    ├── trace.service.spec.ts
-    ├── trace-parser.service.ts # Screenshot extraction
-    └── trace-parser.service.spec.ts
+apps/web/src/
+├── styles.scss                # Semantic colour roles (light + dark) and global .pb-* classes
+├── styles/tokens.scss         # PushBased design tokens
+└── app/
+    ├── design-system/         # PushBased Angular components (PbButton, PbCard, PbSwitch, ...)
+    ├── components/
+    │   ├── file-upload/       # Main upload component
+    │   ├── film-strip/        # Screenshot display component
+    │   └── film-strip-settings-dialog/
+    └── services/
+        ├── trace.service.ts       # Trace file management
+        ├── trace-parser.service.ts # Screenshot extraction
+        └── film-strip-settings.service.ts
 ```
 
 ## Key Concepts
@@ -164,20 +160,11 @@ Edit `film-strip.scss`:
 
 ### Modifying Colors
 
-Update the color scheme in `film-strip.scss`:
+The UI uses the PushBased design system. The raw colour ramps, spacing, radii, shadows and type scale live in `apps/web/src/styles/tokens.scss`; leave that file as it is so it stays in sync with push-based.io.
 
-```scss
-// Primary color (for selections, borders)
-$primary: #6366f1;
+`apps/web/src/styles.scss` maps those tokens to semantic roles (`--surface`, `--text`, `--text-muted`, `--border`, `--accent`, `--danger-bg`, ...) with a light and a dark value each. The app follows the system colour scheme. Components read the semantic roles, never the raw `--color-*` ramps, so a colour change is one edit there and both themes keep working.
 
-// Background colors
-$bg-light: #f9fafb;
-$bg-white: #ffffff;
-
-// Text colors
-$text-dark: #1f2937;
-$text-gray: #6b7280;
-```
+Reach for a component from `apps/web/src/app/design-system` (`button[pbButton]`, `button[pbIconButton]`, `pb-card`, `pb-badge`, `pb-notice`, `button[pbSwitch]`, ...) before writing new button or card styles. Form controls use the global `.pb-input` and `.pb-range` classes.
 
 ### Adding New Metadata
 

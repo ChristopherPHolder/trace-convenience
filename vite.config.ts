@@ -134,6 +134,20 @@ export default defineConfig({
         },
       },
       {
+        // The PushBased design system: `pb-*` elements and `pb*` attribute
+        // components, e.g. button[pbButton].
+        files: ['apps/web/src/app/design-system/**/*.ts'],
+        rules: {
+          '@angular-eslint/component-selector': [
+            'error',
+            [
+              { type: 'element', prefix: 'pb', style: 'kebab-case' },
+              { type: 'attribute', prefix: 'pb', style: 'camelCase' },
+            ],
+          ],
+        },
+      },
+      {
         // `expect(obj.method).toHaveBeenCalled()` is idiomatic in specs.
         files: ['**/*.spec.ts'],
         rules: {
