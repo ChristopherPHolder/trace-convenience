@@ -46,7 +46,7 @@ The file upload feature provides a drag-and-drop interface for uploading JSON fi
 ### Basic Usage
 
 ```typescript
-import { FileUploadComponent } from './components/file-upload/file-upload';
+import { FileUploadComponent } from "./components/file-upload/file-upload";
 
 @Component({
   imports: [FileUploadComponent],
@@ -58,7 +58,7 @@ export class MyComponent {}
 ### Accessing Uploaded Files
 
 ```typescript
-import { TraceService } from './services/trace.service';
+import { TraceService } from "./services/trace.service";
 
 export class MyComponent {
   private traceService = inject(TraceService);

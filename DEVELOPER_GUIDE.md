@@ -127,9 +127,9 @@ To support additional screenshot event types:
 
 ```typescript
 // Example: Adding support for a new event type
-if (event.name === 'NewScreenshotType') {
+if (event.name === "NewScreenshotType") {
   const imageData = event.args?.imageData;
-  if (imageData && typeof imageData === 'string') {
+  if (imageData && typeof imageData === "string") {
     screenshots.push({
       timestamp,
       data: this.extractBase64FromDataUri(imageData),
@@ -194,10 +194,10 @@ vp test trace-parser.service.spec.ts
 Example test structure:
 
 ```typescript
-import { TestBed } from '@angular/core/testing';
-import { MyService } from './my.service';
+import { TestBed } from "@angular/core/testing";
+import { MyService } from "./my.service";
 
-describe('MyService', () => {
+describe("MyService", () => {
   let service: MyService;
 
   beforeEach(() => {
@@ -205,7 +205,7 @@ describe('MyService', () => {
     service = TestBed.inject(MyService);
   });
 
-  it('should do something', () => {
+  it("should do something", () => {
     const result = service.doSomething();
     expect(result).toBe(expectedValue);
   });
@@ -215,10 +215,10 @@ describe('MyService', () => {
 ### Component Testing
 
 ```typescript
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MyComponent } from './my.component';
+import { ComponentFixture, TestBed } from "@angular/core/testing";
+import { MyComponent } from "./my.component";
 
-describe('MyComponent', () => {
+describe("MyComponent", () => {
   let component: MyComponent;
   let fixture: ComponentFixture<MyComponent>;
 
@@ -231,14 +231,14 @@ describe('MyComponent', () => {
     component = fixture.componentInstance;
 
     // Set input values
-    fixture.componentRef.setInput('myInput', 'value');
+    fixture.componentRef.setInput("myInput", "value");
 
     fixture.detectChanges();
   });
 
-  it('should display something', () => {
-    const element = fixture.nativeElement.querySelector('.my-class');
-    expect(element.textContent).toContain('expected text');
+  it("should display something", () => {
+    const element = fixture.nativeElement.querySelector(".my-class");
+    expect(element.textContent).toContain("expected text");
   });
 });
 ```
@@ -330,13 +330,13 @@ For very large traces:
 
 ```typescript
 // trace-parser.worker.ts
-addEventListener('message', ({ data }) => {
+addEventListener("message", ({ data }) => {
   const parsed = parseTraceSync(data);
   postMessage(parsed);
 });
 
 // In component:
-const worker = new Worker(new URL('./trace-parser.worker', import.meta.url));
+const worker = new Worker(new URL("./trace-parser.worker", import.meta.url));
 worker.postMessage(traceData);
 worker.onmessage = ({ data }) => {
   this.parsedTrace.set(data);

@@ -1,6 +1,6 @@
 ---
 description: This rule provides comprehensive best practices and coding standards for Angular development, focusing on modern TypeScript, standalone components, signals, and performance optimizations.
-globs: ['**/*.{ts,html,scss,css}']
+globs: ["**/*.{ts,html,scss,css}"]
 ---
 
 # Angular Best Practices
@@ -13,11 +13,11 @@ This project adheres to modern Angular best practices, emphasizing maintainabili
 - **Prefer Type Inference:** Allow TypeScript to infer types when they are obvious from the context. This reduces verbosity while maintaining type safety.
   - **Bad:**
     ```typescript
-    let name: string = 'Angular';
+    let name: string = "Angular";
     ```
   - **Good:**
     ```typescript
-    let name = 'Angular';
+    let name = "Angular";
     ```
 - **Avoid `any`:** Do not use the `any` type unless absolutely necessary as it bypasses type checking. Prefer `unknown` when a type is uncertain and you need to handle it safely.
 
@@ -57,10 +57,10 @@ This project adheres to modern Angular best practices, emphasizing maintainabili
     ```
   - **New Function Syntax:**
     ```typescript
-    import { input, output } from '@angular/core';
+    import { input, output } from "@angular/core";
 
     // ...
-    userId = input<string>('');
+    userId = input<string>("");
     userSelected = output<string>();
     ```
 - **`computed()` for Derived State:** Use the `computed()` function from `@angular/core` for derived state based on signals.
@@ -126,7 +126,7 @@ This project adheres to modern Angular best practices, emphasizing maintainabili
     ```
   - **New `inject()` Function:**
     ```typescript
-    import { inject } from '@angular/core';
+    import { inject } from "@angular/core";
 
     export class MyComponent {
       private myService = inject(MyService);
@@ -182,9 +182,7 @@ This project adheres to modern Angular best practices, emphasizing maintainabili
     lastName = input();
 
     // Not part of public API, but used in template
-    protected fullName = computed(
-      () => `${this.firstName()} ${this.lastName()}`,
-    );
+    protected fullName = computed(() => `${this.firstName()} ${this.lastName()}`);
   }
   ```
 - **Use `readonly` for Angular-initialized properties:** Mark properties initialized by Angular as `readonly`:
@@ -217,7 +215,7 @@ This project adheres to modern Angular best practices, emphasizing maintainabili
   ```
 - **Implement lifecycle hook interfaces:** Always import and implement lifecycle interfaces (e.g., `OnInit`, `OnDestroy`) to ensure correct method naming
   ```typescript
-  import { Component, OnInit } from '@angular/core';
+  import { Component, OnInit } from "@angular/core";
 
   @Component({/* ... */})
   export class UserProfile implements OnInit {

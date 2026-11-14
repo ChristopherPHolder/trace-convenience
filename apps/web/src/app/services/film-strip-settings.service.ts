@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal } from "@angular/core";
 
 export interface FilmStripSettings {
   exportImageHeight: number;
@@ -12,7 +12,7 @@ export interface FilmStripSettings {
 }
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: "root",
 })
 export class FilmStripSettingsService {
   // Settings state

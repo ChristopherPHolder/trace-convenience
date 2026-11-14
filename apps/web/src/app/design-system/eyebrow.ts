@@ -1,9 +1,9 @@
-import { Component, input } from '@angular/core';
+import { Component, input } from "@angular/core";
 
-export type EyebrowTone = 'brand' | 'muted';
+export type EyebrowTone = "brand" | "muted";
 
 @Component({
-  selector: '[pbEyebrow]',
+  selector: "[pbEyebrow]",
   template: `<ng-content />`,
   styles: `
     :host {
@@ -15,8 +15,8 @@ export type EyebrowTone = 'brand' | 'muted';
       color: var(--text-muted);
     }
   `,
-  host: { class: 'text-subtitle', '[class.muted]': "tone() === 'muted'" },
+  host: { class: "text-subtitle", "[class.muted]": "tone() === 'muted'" },
 })
 export class PbEyebrow {
-  readonly tone = input<EyebrowTone>('brand');
+  readonly tone = input<EyebrowTone>("brand");
 }

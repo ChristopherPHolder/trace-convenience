@@ -88,7 +88,7 @@ TraceService (Singleton)
 ```typescript
 // Standalone component, no inputs/outputs
 // Communicates via TraceService
-selector: 'app-file-upload';
+selector: "app-file-upload";
 changeDetection: ChangeDetectionStrategy.OnPush;
 ```
 

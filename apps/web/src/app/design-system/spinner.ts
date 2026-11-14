@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
+import { Component } from "@angular/core";
 
 @Component({
-  selector: 'pb-spinner',
+  selector: "pb-spinner",
   template: ``,
   styles: `
     :host {
@@ -21,6 +21,6 @@ import { Component } from '@angular/core';
       }
     }
   `,
-  host: { 'aria-hidden': 'true' },
+  host: { "aria-hidden": "true" },
 })
 export class PbSpinner {}

@@ -1,5 +1,5 @@
-import { Injectable, signal, computed, inject } from '@angular/core';
-import { TraceParserService, ParsedTrace } from './trace-parser.service';
+import { Injectable, signal, computed, inject } from "@angular/core";
+import { TraceParserService, ParsedTrace } from "./trace-parser.service";
 
 export interface TraceFile {
   id: string;
@@ -11,7 +11,7 @@ export interface TraceFile {
 }
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: "root",
 })
 export class TraceService {
   private readonly traceParser = inject(TraceParserService);
@@ -37,7 +37,7 @@ export class TraceService {
     try {
       parsedData = this.traceParser.parseTrace(content);
     } catch (error) {
-      console.warn('Failed to parse trace file:', error);
+      console.warn("Failed to parse trace file:", error);
       // Continue anyway - we still want to store the file even if parsing fails
     }
 

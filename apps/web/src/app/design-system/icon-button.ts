@@ -1,10 +1,10 @@
-import { Component, input } from '@angular/core';
+import { Component, input } from "@angular/core";
 
-export type IconButtonTone = 'quiet' | 'danger' | 'overlay';
+export type IconButtonTone = "quiet" | "danger" | "overlay";
 
 /** A square, icon-only button. Give it an `aria-label`. */
 @Component({
-  selector: 'button[pbIconButton], a[pbIconButton]',
+  selector: "button[pbIconButton], a[pbIconButton]",
   template: `<ng-content />`,
   styles: `
     :host {
@@ -66,10 +66,10 @@ export type IconButtonTone = 'quiet' | 'danger' | 'overlay';
     }
   `,
   host: {
-    '[class.danger]': "tone() === 'danger'",
-    '[class.overlay]': "tone() === 'overlay'",
+    "[class.danger]": "tone() === 'danger'",
+    "[class.overlay]": "tone() === 'overlay'",
   },
 })
 export class PbIconButton {
-  readonly tone = input<IconButtonTone>('quiet');
+  readonly tone = input<IconButtonTone>("quiet");
 }

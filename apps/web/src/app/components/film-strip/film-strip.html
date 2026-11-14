@@ -5,9 +5,8 @@
       <h3 class="film-strip-title">Film strip</h3>
       <div class="film-strip-meta">
         <pb-badge tone="brand" class="text-tabular">
-          @if (displayedCount() === totalCount()) { {{ totalCount() }}
-          screenshots } @else { {{ displayedCount() }} of {{ totalCount() }}
-          screenshots }
+          @if (displayedCount() === totalCount()) { {{ totalCount() }} screenshots } @else { {{
+          displayedCount() }} of {{ totalCount() }} screenshots }
         </pb-badge>
         <pb-badge class="text-tabular">
           <svg
@@ -143,8 +142,7 @@
 
   <div class="film-strip-scroll">
     <div class="film-strip-track">
-      @for (screenshot of screenshotsWithMetadata(); track trackByIndex($index))
-      {
+      @for (screenshot of screenshotsWithMetadata(); track trackByIndex($index)) {
       <div
         class="film-frame"
         [class.selected]="selectedIndex() === screenshot.index"
@@ -165,13 +163,9 @@
         </div>
         @if (showTimestamps()) {
         <div class="frame-info">
-          <span class="frame-time text-tabular"
-            >{{ screenshot.relativeTime }}</span
-          >
+          <span class="frame-time text-tabular">{{ screenshot.relativeTime }}</span>
           @if (screenshot.delta > 0 && !useIntervalFiltering()) {
-          <span class="frame-delta text-tabular"
-            >+{{ screenshot.delta }}ms</span
-          >
+          <span class="frame-delta text-tabular">+{{ screenshot.delta }}ms</span>
           }
         </div>
         }
@@ -199,9 +193,7 @@
     >
       <div class="preview-header">
         <div class="preview-title">
-          <span class="preview-time text-tabular"
-            >{{ selected.relativeTime }}</span
-          >
+          <span class="preview-time text-tabular">{{ selected.relativeTime }}</span>
           <pb-badge class="preview-index text-tabular">
             {{ selected.index + 1 }} / {{ displayedCount() }}
           </pb-badge>
@@ -316,9 +308,7 @@
 
       @if (selected.delta > 0) {
       <div class="preview-footer">
-        <span class="preview-meta">
-          Time since previous: {{ selected.delta }}ms
-        </span>
+        <span class="preview-meta"> Time since previous: {{ selected.delta }}ms </span>
       </div>
       }
     </div>
@@ -342,8 +332,7 @@
     </svg>
     <p class="empty-text">No screenshots found in this trace</p>
     <p pbDescription>
-      Record the trace with the Screenshots option enabled in the Performance
-      panel.
+      Record the trace with the Screenshots option enabled in the Performance panel.
     </p>
   </div>
   }

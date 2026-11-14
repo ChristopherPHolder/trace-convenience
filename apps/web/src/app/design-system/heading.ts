@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
+import { Component } from "@angular/core";
 
 @Component({
-  selector: '[pbHeading]',
+  selector: "[pbHeading]",
   template: `<ng-content />`,
   styles: `
     :host {
@@ -9,6 +9,6 @@ import { Component } from '@angular/core';
       color: var(--text-heading);
     }
   `,
-  host: { class: 'text-title' },
+  host: { class: "text-title" },
 })
 export class PbHeading {}

@@ -1,9 +1,9 @@
-import { Component, input } from '@angular/core';
+import { Component, input } from "@angular/core";
 
-export type CardTone = 'subtle' | 'raised';
+export type CardTone = "subtle" | "raised";
 
 @Component({
-  selector: 'pb-card',
+  selector: "pb-card",
   template: `<ng-content />`,
   styles: `
     :host(.raised) {
@@ -11,8 +11,8 @@ export type CardTone = 'subtle' | 'raised';
       box-shadow: var(--shadow-sm);
     }
   `,
-  host: { class: 'pb-card', '[class.raised]': "tone() === 'raised'" },
+  host: { class: "pb-card", "[class.raised]": "tone() === 'raised'" },
 })
 export class PbCard {
-  readonly tone = input<CardTone>('subtle');
+  readonly tone = input<CardTone>("subtle");
 }

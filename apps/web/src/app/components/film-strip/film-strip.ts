@@ -6,28 +6,20 @@ import {
   computed,
   inject,
   effect,
-} from '@angular/core';
-import {
-  TraceParserService,
-  Screenshot,
-} from '../../services/trace-parser.service';
-import { FilmStripSettingsService } from '../../services/film-strip-settings.service';
-import {
-  PbBadge,
-  PbButton,
-  PbDescription,
-  PbIconButton,
-} from '../../design-system';
+} from "@angular/core";
+import { TraceParserService, Screenshot } from "../../services/trace-parser.service";
+import { FilmStripSettingsService } from "../../services/film-strip-settings.service";
+import { PbBadge, PbButton, PbDescription, PbIconButton } from "../../design-system";
 
 interface ScreenshotWithSyntheticTime extends Screenshot {
   syntheticTimestamp?: number;
 }
 
 @Component({
-  selector: 'app-film-strip',
+  selector: "app-film-strip",
   imports: [PbBadge, PbButton, PbDescription, PbIconButton],
-  templateUrl: './film-strip.html',
-  styleUrl: './film-strip.scss',
+  templateUrl: "./film-strip.html",
+  styleUrl: "./film-strip.scss",
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FilmStripComponent {
@@ -42,16 +34,14 @@ export class FilmStripComponent {
   // State
   protected readonly selectedIndex = signal<number | null>(null);
   protected readonly isFullscreen = signal(false);
-  protected readonly selectedFormat = signal<'png' | 'gif'>('png');
+  protected readonly selectedFormat = signal<"png" | "gif">("png");
   protected readonly isFormatDropdownOpen = signal(false);
 
   // Get settings state from service
-  protected readonly useIntervalFiltering =
-    this.settingsService.useIntervalFiltering;
+  protected readonly useIntervalFiltering = this.settingsService.useIntervalFiltering;
   protected readonly minIntervalMs = this.settingsService.minIntervalMs;
   protected readonly showTimestamps = this.settingsService.exportShowTimestamps;
-  protected readonly useTimeRangeFilter =
-    this.settingsService.useTimeRangeFilter;
+  protected readonly useTimeRangeFilter = this.settingsService.useTimeRangeFilter;
   protected readonly startTimeMs = this.settingsService.startTimeMs;
   protected readonly endTimeMs = this.settingsService.endTimeMs;
 
@@ -69,9 +59,7 @@ export class FilmStripComponent {
   }
 
   // Computed properties
-  protected readonly hasScreenshots = computed(
-    () => this.screenshots().length > 0,
-  );
+  protected readonly hasScreenshots = computed(() => this.screenshots().length > 0);
 
   // Calculate the total duration in milliseconds
   protected readonly totalDurationMs = computed(() => {
@@ -189,10 +177,7 @@ export class FilmStripComponent {
       const syntheticTimestamp = startTime + currentTime * 1000; // Convert back to microseconds
 
       // Find the most recent screenshot at or before this time
-      while (
-        shotIndex < shots.length - 1 &&
-        shots[shotIndex + 1].timestamp <= syntheticTimestamp
-      ) {
+      while (shotIndex < shots.length - 1 && shots[shotIndex + 1].timestamp <= syntheticTimestamp) {
         shotIndex++;
       }
 
@@ -241,8 +226,7 @@ export class FilmStripComponent {
 
     return shots.map((screenshot, index) => {
       // Use synthetic timestamp if available (when interval filtering is active), otherwise use original
-      const displayTimestamp =
-        screenshot.syntheticTimestamp ?? screenshot.timestamp;
+      const displayTimestamp = screenshot.syntheticTimestamp ?? screenshot.timestamp;
       const prevDisplayTimestamp =
         index > 0
           ? (shots[index - 1].syntheticTimestamp ?? shots[index - 1].timestamp)
@@ -273,9 +257,7 @@ export class FilmStripComponent {
     return this.traceParser.formatTimestamp(end, start);
   });
 
-  protected readonly displayedCount = computed(
-    () => this.filteredScreenshots().length,
-  );
+  protected readonly displayedCount = computed(() => this.filteredScreenshots().length);
 
   protected readonly totalCount = computed(() => this.screenshots().length);
 
@@ -323,17 +305,17 @@ export class FilmStripComponent {
     if (this.selectedIndex() === null) return;
 
     switch (event.key) {
-      case 'Escape':
+      case "Escape":
         this.onClosePreview();
         break;
-      case 'ArrowLeft':
+      case "ArrowLeft":
         this.onNavigatePrevious();
         break;
-      case 'ArrowRight':
+      case "ArrowRight":
         this.onNavigateNext();
         break;
-      case 'f':
-      case 'F':
+      case "f":
+      case "F":
         this.onToggleFullscreen();
         break;
     }
@@ -351,14 +333,14 @@ export class FilmStripComponent {
     this.isFormatDropdownOpen.set(false);
   }
 
-  protected selectFormat(format: 'png' | 'gif'): void {
+  protected selectFormat(format: "png" | "gif"): void {
     this.selectedFormat.set(format);
     this.closeFormatDropdown();
   }
 
   protected async onDownload(): Promise<void> {
     const format = this.selectedFormat();
-    if (format === 'gif') {
+    if (format === "gif") {
       await this.onDownloadGif();
     } else {
       await this.onDownloadPng();
@@ -371,8 +353,8 @@ export class FilmStripComponent {
 
     try {
       // Create a canvas to composite all screenshots
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
       if (!ctx) return;
 
       // Use settings from service
@@ -408,7 +390,7 @@ export class FilmStripComponent {
       canvas.height = maxImageHeight + textHeight + padding * 2;
 
       // Fill background
-      ctx.fillStyle = '#ffffff';
+      ctx.fillStyle = "#ffffff";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       // Draw each screenshot with its timestamp
@@ -424,14 +406,10 @@ export class FilmStripComponent {
 
         // Draw timestamp below if enabled
         if (showTimestamps) {
-          ctx.fillStyle = '#1f2937';
-          ctx.font = '14px sans-serif';
-          ctx.textAlign = 'center';
-          ctx.fillText(
-            shot.relativeTime,
-            xOffset + scaledWidth / 2,
-            maxImageHeight + padding + 20,
-          );
+          ctx.fillStyle = "#1f2937";
+          ctx.font = "14px sans-serif";
+          ctx.textAlign = "center";
+          ctx.fillText(shot.relativeTime, xOffset + scaledWidth / 2, maxImageHeight + padding + 20);
         }
 
         xOffset += scaledWidth + padding;
@@ -441,14 +419,14 @@ export class FilmStripComponent {
       canvas.toBlob((blob) => {
         if (!blob) return;
         const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
+        const link = document.createElement("a");
         link.href = url;
         link.download = `film-strip-${Date.now()}.png`;
         link.click();
         URL.revokeObjectURL(url);
-      }, 'image/png');
+      }, "image/png");
     } catch (error) {
-      console.error('Failed to download film strip:', error);
+      console.error("Failed to download film strip:", error);
     }
   }
 
@@ -458,7 +436,7 @@ export class FilmStripComponent {
 
     try {
       // Dynamic import of gifenc
-      const { GIFEncoder, quantize, applyPalette } = await import('gifenc');
+      const { GIFEncoder, quantize, applyPalette } = await import("gifenc");
 
       const settings = this.settingsService.getSettings();
       const showTimestamps = settings.exportShowTimestamps;
@@ -498,10 +476,10 @@ export class FilmStripComponent {
         const shot = shots[i];
 
         // Create canvas for this frame
-        const canvas = document.createElement('canvas');
+        const canvas = document.createElement("canvas");
         canvas.width = scaledWidth;
         canvas.height = canvasHeight;
-        const ctx = canvas.getContext('2d', {
+        const ctx = canvas.getContext("2d", {
           alpha: false,
           willReadFrequently: true,
         });
@@ -509,10 +487,10 @@ export class FilmStripComponent {
 
         // Enable image smoothing for better quality
         ctx.imageSmoothingEnabled = true;
-        ctx.imageSmoothingQuality = 'high';
+        ctx.imageSmoothingQuality = "high";
 
         // Fill background
-        ctx.fillStyle = '#ffffff';
+        ctx.fillStyle = "#ffffff";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
         // Draw image with high quality scaling
@@ -520,9 +498,9 @@ export class FilmStripComponent {
 
         // Draw timestamp if enabled
         if (showTimestamps) {
-          ctx.fillStyle = '#1f2937';
-          ctx.font = 'bold 24px sans-serif';
-          ctx.textAlign = 'center';
+          ctx.fillStyle = "#1f2937";
+          ctx.font = "bold 24px sans-serif";
+          ctx.textAlign = "center";
           ctx.fillText(shot.relativeTime, scaledWidth / 2, maxImageHeight + 40);
         }
 
@@ -541,12 +519,12 @@ export class FilmStripComponent {
         combinedData.set(data, offset);
         offset += data.length;
       }
-      const globalPalette = quantize(combinedData, 256, { format: 'rgb444' });
+      const globalPalette = quantize(combinedData, 256, { format: "rgb444" });
 
       // Process each frame with the global palette
       for (let i = 0; i < frameCanvases.length; i++) {
         const canvas = frameCanvases[i];
-        const ctx = canvas.getContext('2d');
+        const ctx = canvas.getContext("2d");
         if (!ctx) continue;
 
         const imageData = ctx.getImageData(0, 0, scaledWidth, canvasHeight);
@@ -566,16 +544,16 @@ export class FilmStripComponent {
       const buffer = gif.bytes();
       // Convert to proper Uint8Array for Blob
       const blobData = new Uint8Array(buffer);
-      const blob = new Blob([blobData], { type: 'image/gif' });
+      const blob = new Blob([blobData], { type: "image/gif" });
       const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
       link.download = `film-strip-${Date.now()}.gif`;
       link.click();
       URL.revokeObjectURL(url);
     } catch (error) {
-      console.error('Failed to download GIF:', error);
-      alert('Failed to create GIF. Please try PNG format instead.');
+      console.error("Failed to download GIF:", error);
+      alert("Failed to create GIF. Please try PNG format instead.");
     }
   }
 }
