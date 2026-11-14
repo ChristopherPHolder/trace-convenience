@@ -150,13 +150,13 @@ The component follows WCAG AA standards:
 
 ```bash
 # Run all tests
-pnpm test
+vp test
 
 # Run tests in watch mode
-pnpm test --watch
+vp test --watch
 
 # Run tests with coverage
-pnpm test --coverage
+vp test --coverage
 ```
 
 ### Test Coverage
@@ -239,16 +239,16 @@ Potential improvements:
 
 ```bash
 # Serve the application
-pnpm dev
+vp run dev
 
 # Build for production
-pnpm vp run build
+vp run web#build
 
 # Format, lint and type-check
-pnpm check
+vp check
 
 # Run tests
-pnpm test
+vp test
 ```
 
 ## Troubleshooting
@@ -269,8 +269,8 @@ pnpm test
 
 **Tests failing:**
 
-- Run `pnpm install` to ensure dependencies are up to date
-- Clear the task cache: `pnpm vp cache clean`
+- Run `vp install` to ensure dependencies are up to date
+- Clear the task cache: `vp cache clean`
 - Check Node version compatibility
 
 ## Support

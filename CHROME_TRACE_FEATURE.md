@@ -147,7 +147,7 @@ All components and services include comprehensive test suites:
 Run tests with:
 
 ```bash
-pnpm test
+vp test
 ```
 
 ## Browser Support

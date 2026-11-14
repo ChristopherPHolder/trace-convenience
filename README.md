@@ -31,8 +31,9 @@ Trace Convenience is a powerful browser-based tool that helps developers analyze
 
 ### Prerequisites
 
-- Node.js 26.x (required by the Vite build; see `package.json#engines`)
-- pnpm 10.x (the exact version is pinned in `package.json#packageManager`; see [pnpm installation](https://pnpm.io/installation))
+- [Vite+](https://viteplus.dev) (`vp`): `curl -fsSL https://vite.plus | bash`
+
+`vp` provisions the rest. Node.js is pinned in `.node-version` and pnpm in `package.json#devEngines`.
 
 ### Installation
 
@@ -43,11 +44,11 @@ git clone https://github.com/ChristopherPHolder/trace-convenience.git
 # Navigate to the project directory
 cd trace-convenience
 
-# Install dependencies
-pnpm install
+# Install dependencies (also installs the pre-commit hook)
+vp install
 
 # Start the development server
-pnpm dev
+vp run dev
 ```
 
 The application will be available at `http://localhost:4200`
@@ -100,16 +101,19 @@ Built with modern web technologies and best practices:
 
 ```bash
 # Run all tests
-pnpm test
+vp test
 
 # Run tests in watch mode
-pnpm test --watch
+vp test --watch
 
 # Run with coverage report
-pnpm test --coverage
+vp test --coverage
 
 # Format, lint and type-check
-pnpm check
+vp check
+
+# Everything CI runs: check, test and build
+vp run ready
 ```
 
 Current test coverage: **98 tests passing** across all components and services.
@@ -117,11 +121,11 @@ Current test coverage: **98 tests passing** across all components and services.
 ## 🔨 Building
 
 ```bash
-# Production build (outputs to dist/apps/web/browser, served from /trace-convenience/)
-pnpm vp run build
+# Production build (outputs to apps/web/dist, served from /trace-convenience/)
+vp run web#build
 
 # Serve the production build locally at http://localhost:4173/trace-convenience/
-pnpm preview
+vp run web#preview
 ```
 
 ## 🌐 Browser Support
@@ -149,7 +153,7 @@ Contributions are welcome! Please read our [Developer Guide](DEVELOPER_GUIDE.md)
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
 3. Make your changes
-4. Run checks and tests (`pnpm check && pnpm test`)
+4. Run checks, tests and build (`vp run ready`). The pre-commit hook already formats and lints staged files.
 5. Commit your changes (`git commit -m 'Add amazing feature'`)
 6. Push to the branch (`git push origin feature/amazing-feature`)
 7. Open a Pull Request

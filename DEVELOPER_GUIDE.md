@@ -4,15 +4,14 @@
 
 ### Prerequisites
 
-- Node.js (v18+)
-- pnpm 10.x (pinned in `package.json#packageManager`)
+- [Vite+](https://viteplus.dev) (`vp`), which provisions Node.js (`.node-version`) and pnpm (`package.json#devEngines`)
 - Chrome browser (for capturing traces)
 
 ### Installation
 
 ```bash
 # Install dependencies
-pnpm install
+vp install
 
 # The devtools-protocol package is already included
 ```
@@ -21,16 +20,16 @@ pnpm install
 
 ```bash
 # Start development server
-pnpm dev
+vp run dev
 
 # Run tests
-pnpm test
+vp test
 
 # Run tests in watch mode
-pnpm test --watch
+vp test --watch
 
 # Build for production
-pnpm vp run build
+vp run web#build
 ```
 
 ## Capturing a Test Trace
@@ -181,13 +180,13 @@ To display additional information about screenshots:
 Run all tests:
 
 ```bash
-pnpm test
+vp test
 ```
 
 Run specific test file:
 
 ```bash
-pnpm test trace-parser.service.spec.ts
+vp test trace-parser.service.spec.ts
 ```
 
 ### Writing New Tests
@@ -283,7 +282,7 @@ Use Angular DevTools browser extension:
 
 **Issue: Tests failing**
 
-- Clear node_modules and reinstall: `rm -rf node_modules && pnpm install`
+- Clear node_modules and reinstall: `rm -rf node_modules apps/web/node_modules && vp install`
 - Check that all imports are correct
 - Verify test data matches expected format
 
@@ -296,7 +295,7 @@ For traces with many screenshots (100+):
 1. **Implement Virtual Scrolling**
 
    ```bash
-   pnpm add @angular/cdk
+   vp add @angular/cdk --filter web
    ```
 
 2. **Add to film-strip component:**
@@ -404,8 +403,8 @@ worker.onmessage = ({ data }) => {
 
 - Use TypeScript strict mode
 - Follow Angular style guide
-- Use Oxfmt for formatting (`pnpm fmt`)
-- Use Oxlint for linting (`pnpm lint`, or `pnpm check` for format + lint + types)
+- Use Oxfmt for formatting (`vp fmt`)
+- Use Oxlint for linting (`vp lint`, or `vp check` for format + lint + types)
 
 ### Commit Messages
 
