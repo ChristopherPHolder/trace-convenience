@@ -29,3 +29,53 @@ release. Add a tool name to select part of the graph. For example, run
 - [ ] If setup, runtime, or package-manager behavior looks wrong, run `vp env doctor` and include its output when asking for help.
 
 <!--VITE PLUS END-->
+
+# Trace Convenience
+
+A browser app that turns a Chrome DevTools performance trace into a film strip of its screenshots. It is a pnpm workspace managed by Vite+.
+
+| Package               | What it is                                                                          |
+| --------------------- | ----------------------------------------------------------------------------------- |
+| `apps/web`            | Angular app: upload, film strip, preview, PNG and GIF export                        |
+| `packages/trace-core` | Framework-agnostic trace parsing and frame selection. No Angular, DOM or Node APIs. |
+
+Read these before you change how something works:
+
+- [docs/architecture.md](docs/architecture.md): packages, data flow and the `trace-core` API
+- [docs/development.md](docs/development.md): commands, conventions, tests and dependencies
+- [docs/adr/](docs/adr/README.md): why things are the way they are. Add an ADR when a change picks one option over another.
+
+## Before you finish
+
+Run `vp run ready`. It runs `vp check --deny-warnings`, every package's tests and every build, the same as CI. Lint warnings fail it.
+
+## Do not change without reading the ADR
+
+- **Angular, TypeScript and pnpm versions.** Angular is pinned to the exact prerelease `@push-based/vite-plugin-ngp` is built against, TypeScript stays on 6.0.x and pnpm on 10.x. See [ADR 0005](docs/adr/0005-compile-angular-with-vite-plugin-ngp.md) and [ADR 0004](docs/adr/0004-pnpm-as-package-manager.md).
+- **Lint and format config.** They follow the Vite+ defaults on purpose. Do not add ESLint, Prettier or stylistic rule sets. See [ADR 0007](docs/adr/0007-vite-plus-toolchain.md).
+- **`apps/web/src/styles/tokens.scss`.** It is a copy of the PushBased design tokens.
+
+## Angular conventions
+
+These follow the [Angular team's guidance for AI tools](https://angular.dev/ai/develop-with-ai).
+
+- Standalone components only. Do not set `standalone: true`; it is the default.
+- State lives in signals. Derive with `computed()`, update with `set` or `update`.
+- `input()` and `output()` functions, not the `@Input` and `@Output` decorators.
+- `inject()`, not constructor injection. Services use `providedIn: "root"`.
+- `changeDetection: ChangeDetectionStrategy.OnPush` on every component.
+- Native control flow (`@if`, `@for`, `@switch`), not `*ngIf` or `*ngFor`.
+- `class` and `style` bindings, not `ngClass` or `ngStyle`.
+- Host bindings go in the `host` object of the decorator, not `@HostBinding` or `@HostListener`.
+- Members used only by the template are `protected`. Properties Angular initialises are `readonly`.
+- Name event handlers for what they do, for example `onDownload`, not `onClick`.
+- Selectors: `app-` elements and `app` attributes; `pb-` and `pb` inside `apps/web/src/app/design-system`.
+- Keep the UI accessible: labels on controls, keyboard support and visible focus.
+
+## Styling
+
+Use a component from `apps/web/src/app/design-system` before writing new button or card styles. Read colours from the semantic roles in `apps/web/src/styles.scss` (`--surface`, `--text`, `--accent`, ...), not from the raw `--color-*` tokens.
+
+## Tests
+
+Specs sit next to the code as `*.spec.ts`. `apps/web` specs use Vitest globals and `TestBed`. `packages/trace-core` specs import from `vite-plus/test`.
