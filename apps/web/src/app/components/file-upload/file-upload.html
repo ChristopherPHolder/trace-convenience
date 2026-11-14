@@ -1,5 +1,14 @@
 <div class="file-upload-container">
   @if (!hasFiles()) {
+    <div class="intro">
+      <p pbEyebrow>Chrome performance traces</p>
+      <h2 class="intro-title">Turn a trace into a film strip</h2>
+      <p class="intro-lead">
+        Drop a trace exported from the Chrome DevTools Performance panel to see every screenshot
+        it captured, then download them as a PNG or an animated GIF.
+      </p>
+    </div>
+
     <div
       class="drop-zone"
       (dragover)="onDragOver($event)"
@@ -11,73 +20,63 @@
       <div class="drop-zone-content">
         @if (isDragging()) {
           <div class="drag-active" aria-live="polite">
-            <svg
-              class="icon icon-large"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              aria-hidden="true"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-              />
-            </svg>
-            <p class="text-large">Drop your JSON file here</p>
+            <span class="drop-icon" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="1.75"
+                  d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                />
+              </svg>
+            </span>
+            <p class="drop-title">Drop your JSON file here</p>
           </div>
         } @else {
           <div class="drop-zone-idle">
-            <svg
-              class="icon icon-large"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              aria-hidden="true"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-              />
-            </svg>
-            <p class="text-large">Drag and drop a JSON file here</p>
-            <p class="text-small">or</p>
+            <span class="drop-icon" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="1.75"
+                  d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                />
+              </svg>
+            </span>
+            <p class="drop-title">Drag and drop a JSON file here</p>
+            <p class="drop-or">or</p>
             <label class="file-input-label">
               <input
                 type="file"
-                class="file-input"
+                class="visually-hidden"
                 accept=".json,application/json"
                 (change)="onFileSelect($event)"
                 aria-label="Select a JSON file to upload"
               />
-              <span class="btn btn-primary">Browse Files</span>
+              <span class="pb-btn pb-btn-primary">Browse files</span>
             </label>
-            <p class="text-hint">Only JSON files are accepted</p>
+            <p class="drop-hint">Only JSON files are accepted</p>
           </div>
         }
 
         @if (isProcessing()) {
-          <div class="processing-indicator" role="status" aria-live="polite">
-            <span class="spinner" aria-hidden="true"></span>
-            <span>Processing file...</span>
-          </div>
+          <pb-notice class="processing-indicator" role="status" aria-live="polite">
+            <pb-spinner />
+            <span>Processing file…</span>
+          </pb-notice>
         }
       </div>
     </div>
 
     @if (errors().length > 0) {
-      <div class="error-list" role="alert" aria-live="assertive">
-        <h3 class="error-title">Upload Error</h3>
+      <pb-notice kind="error" class="error-list" role="alert" aria-live="assertive">
+        <h3 class="error-title">Upload error</h3>
         <ul>
           @for (error of errors(); track error.fileName) {
             <li class="error-item">
               <svg
-                class="icon icon-small"
+                class="icon"
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 20 20"
                 fill="currentColor"
@@ -89,64 +88,36 @@
                   clip-rule="evenodd"
                 />
               </svg>
-              <strong>{{ error.fileName }}:</strong> {{ error.message }}
+              <span><strong>{{ error.fileName }}:</strong> {{ error.message }}</span>
             </li>
           }
         </ul>
-      </div>
+      </pb-notice>
     }
   }
 
   @if (hasFiles()) {
-    <div class="file-widget">
-      <div class="widget-header">
-        <svg
-          class="icon icon-medium"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 20 20"
-          fill="currentColor"
-          aria-hidden="true"
-        >
-          <path
-            fill-rule="evenodd"
-            d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z"
-            clip-rule="evenodd"
-          />
-        </svg>
-        <h3 class="widget-title">Uploaded File</h3>
-        <button
-          type="button"
-          class="btn btn-icon"
-          (click)="onRemoveFile(uploadedFiles()[0].id)"
-          aria-label="Remove file and upload a new one"
-          title="Remove file"
-        >
-          <svg
-            class="icon icon-small"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-            aria-hidden="true"
-          >
+    <pb-card tone="raised" class="file-widget">
+      <div class="widget-row">
+        <span class="file-icon" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
             <path
               fill-rule="evenodd"
-              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+              d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z"
               clip-rule="evenodd"
             />
           </svg>
-        </button>
-      </div>
-      <div class="widget-content">
+        </span>
         <div class="file-details">
           <p class="file-name">{{ uploadedFiles()[0].name }}</p>
-          <p class="file-meta">
-            {{ formatFileSize(uploadedFiles()[0].size) }} •
+          <p class="file-meta text-tabular">
+            {{ formatFileSize(uploadedFiles()[0].size) }} ·
             {{ formatDate(uploadedFiles()[0].uploadedAt) }}
           </p>
         </div>
-        <div class="widget-status">
+        <pb-badge tone="done">
           <svg
-            class="icon icon-small success-icon"
+            class="icon"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 20 20"
             fill="currentColor"
@@ -158,12 +129,27 @@
               clip-rule="evenodd"
             />
           </svg>
-          <span class="status-text">Ready</span>
-        </div>
+          Ready
+        </pb-badge>
+        <button
+          pbIconButton
+          tone="danger"
+          type="button"
+          (click)="onRemoveFile(uploadedFiles()[0].id)"
+          aria-label="Remove file and upload a new one"
+          title="Remove file"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path
+              fill-rule="evenodd"
+              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        </button>
       </div>
-    </div>
+    </pb-card>
 
-    <!-- Film Strip Component -->
     <app-film-strip
       [screenshots]="screenshots()"
       [startTime]="traceStartTime()"
@@ -171,4 +157,3 @@
     />
   }
 </div>
-

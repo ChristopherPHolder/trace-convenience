@@ -1,11 +1,17 @@
 import { Component, ChangeDetectionStrategy, inject, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FilmStripSettingsService } from '../../services/film-strip-settings.service';
+import {
+  PbButton,
+  PbDescription,
+  PbEyebrow,
+  PbHeading,
+  PbIconButton,
+  PbSwitch,
+} from '../../design-system';
 
 @Component({
   selector: 'app-film-strip-settings-dialog',
-  standalone: true,
-  imports: [CommonModule],
+  imports: [PbButton, PbDescription, PbEyebrow, PbHeading, PbIconButton, PbSwitch],
   templateUrl: './film-strip-settings-dialog.html',
   styleUrl: './film-strip-settings-dialog.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

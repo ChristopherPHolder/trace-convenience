@@ -7,9 +7,9 @@ import {
   inject,
   effect,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { TraceParserService, Screenshot } from '../../services/trace-parser.service';
 import { FilmStripSettingsService } from '../../services/film-strip-settings.service';
+import { PbBadge, PbButton, PbDescription, PbIconButton } from '../../design-system';
 
 interface ScreenshotWithSyntheticTime extends Screenshot {
   syntheticTimestamp?: number;
@@ -17,7 +17,7 @@ interface ScreenshotWithSyntheticTime extends Screenshot {
 
 @Component({
   selector: 'app-film-strip',
-  imports: [CommonModule],
+  imports: [PbBadge, PbButton, PbDescription, PbIconButton],
   templateUrl: './film-strip.html',
   styleUrl: './film-strip.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

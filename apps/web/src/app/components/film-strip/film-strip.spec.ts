@@ -81,7 +81,7 @@ describe('FilmStripComponent', () => {
       component['onSelectScreenshot'](0);
       fixture.detectChanges();
 
-      const closeBtn = fixture.nativeElement.querySelector('.preview-header .btn-icon:last-child');
+      const closeBtn = fixture.nativeElement.querySelector('button[aria-label="Close preview"]');
       closeBtn.click();
       fixture.detectChanges();
 
