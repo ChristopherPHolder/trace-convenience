@@ -5,9 +5,9 @@ import {
   computed,
   inject,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { TraceService } from '../../services/trace.service';
 import { FilmStripComponent } from '../film-strip/film-strip';
+import { PbBadge, PbCard, PbEyebrow, PbIconButton, PbNotice, PbSpinner } from '../../design-system';
 
 interface UploadedFileDisplay {
   id: string;
@@ -23,7 +23,7 @@ interface FileError {
 
 @Component({
   selector: 'app-file-upload',
-  imports: [CommonModule, FilmStripComponent],
+  imports: [FilmStripComponent, PbBadge, PbCard, PbEyebrow, PbIconButton, PbNotice, PbSpinner],
   templateUrl: './file-upload.html',
   styleUrl: './file-upload.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

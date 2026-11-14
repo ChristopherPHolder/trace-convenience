@@ -1,14 +1,346 @@
-/* You can add global styles to this file, and also import other style files */
+@use './styles/tokens';
 
-* {
-  margin: 0;
-  padding: 0;
+// Geist, self-hosted. Plain CSS imports, so Sass leaves them for Vite to resolve and inline.
+@import '@fontsource/geist/400.css';
+@import '@fontsource/geist/500.css';
+@import '@fontsource/geist/600.css';
+@import '@fontsource/geist-mono/500.css';
+@import '@fontsource/geist-mono/600.css';
+
+:root {
+  --header-height: 64px;
+  --container-width: 75rem;
+  color-scheme: light;
+
+  /* Semantic roles, light theme. Components read these, never the raw --color-* ramps from tokens.scss. */
+  --surface: var(--color-surface);
+  --surface-subtle: var(--color-neutral-50);
+  --surface-raised: var(--color-surface);
+  --surface-sunken: var(--color-neutral-100);
+  --surface-header: rgba(255, 255, 255, 0.88);
+  --border: var(--color-neutral-100);
+  --border-strong: var(--color-neutral-200);
+  --border-control: var(--color-neutral-300);
+  --text-heading: var(--color-neutral-900);
+  --text: var(--color-neutral-700);
+  --text-muted: var(--color-neutral-500);
+  --text-subtle: var(--color-neutral-400);
+  --link: var(--color-primary-600);
+  --accent: var(--color-primary-600);
+  --accent-hover: var(--color-primary-700);
+  /* White text needs the 600 shade for 4.5:1, in both themes. */
+  --btn-primary-bg: var(--color-primary-600);
+  --accent-soft: var(--color-primary-50);
+  --accent-soft-text: var(--color-primary-700);
+  --accent-outline: var(--color-primary-300);
+  --ghost-bg: var(--color-primary-50);
+  --ghost-bg-hover: var(--color-primary-25);
+  --ghost-text: var(--color-neutral-600);
+  --ghost-text-hover: var(--color-neutral-900);
+  --ghost-border: var(--color-neutral-300);
+  --quiet-bg-hover: var(--color-neutral-100);
+  --info-bg: var(--color-info-50);
+  --info-border: var(--color-info-200);
+  --info-text: var(--color-info-800);
+  --success-bg: var(--color-success-50);
+  --success-border: var(--color-success-200);
+  --success-text: var(--color-success-700);
+  --danger-bg: var(--color-error-50);
+  --danger-border: var(--color-error-200);
+  --danger-text: var(--color-error-800);
+  --danger-hover: var(--color-error-600);
+  --backdrop: rgb(13 18 28 / 0.55);
+  --media-bg: var(--color-neutral-950);
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --duration-fast: 150ms;
+  --duration-base: 200ms;
+}
+
+@mixin dark-theme {
+  color-scheme: dark;
+  --surface: var(--color-neutral-950);
+  --surface-subtle: var(--color-neutral-900);
+  --surface-raised: var(--color-neutral-900);
+  --surface-sunken: var(--color-neutral-800);
+  --surface-header: rgba(13, 18, 28, 0.88);
+  --border: var(--color-neutral-800);
+  --border-strong: var(--color-neutral-700);
+  --border-control: var(--color-neutral-600);
+  --text-heading: var(--color-neutral-50);
+  --text: var(--color-neutral-300);
+  --text-muted: var(--color-neutral-400);
+  --text-subtle: var(--color-neutral-500);
+  --link: var(--color-primary-300);
+  --accent: var(--color-primary-500);
+  --accent-hover: var(--color-primary-400);
+  --btn-primary-bg: var(--color-primary-600);
+  --accent-soft: var(--color-primary-950);
+  --accent-soft-text: var(--color-primary-200);
+  --accent-outline: var(--color-primary-700);
+  --ghost-bg: var(--color-neutral-900);
+  --ghost-bg-hover: var(--color-neutral-800);
+  --ghost-text: var(--color-neutral-200);
+  --ghost-text-hover: var(--color-neutral-50);
+  --ghost-border: var(--color-neutral-700);
+  --quiet-bg-hover: var(--color-neutral-800);
+  --info-bg: var(--color-info-950);
+  --info-border: var(--color-info-800);
+  --info-text: var(--color-info-300);
+  --success-bg: var(--color-success-950);
+  --success-border: var(--color-success-800);
+  --success-text: var(--color-success-300);
+  --danger-bg: var(--color-error-950);
+  --danger-border: var(--color-error-800);
+  --danger-text: var(--color-error-300);
+  --danger-hover: var(--color-error-400);
+  --backdrop: rgb(0 0 0 / 0.7);
+  --media-bg: #000000;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    @include dark-theme;
+  }
+}
+
+:root[data-theme='dark'] {
+  @include dark-theme;
+}
+
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
-html, body {
+html {
+  -webkit-text-size-adjust: 100%;
+  overflow-x: clip;
+}
+
+body {
   margin: 0;
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.5rem;
+  color: var(--text);
+  background: var(--surface);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4,
+p,
+ul {
+  margin: 0;
+}
+
+a {
+  color: var(--link);
+}
+
+code,
+kbd,
+pre {
+  font-family: var(--font-mono);
+}
+
+.text-tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
   padding: 0;
-  overflow-x: hidden;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.container {
   width: 100%;
+  max-width: var(--container-width);
+  margin: 0 auto;
+  padding-left: var(--space-5);
+  padding-right: var(--space-5);
+}
+
+/* Button — mirrors push-based.io .pb-btn */
+.pb-btn {
+  appearance: none;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1-5);
+  font-family: var(--font-sans);
+  background-color: var(--btn-bg, var(--btn-primary-bg));
+  color: var(--btn-color, #ffffff);
+  border: var(--btn-border, 1px solid transparent);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--btn-shadow, var(--shadow-sm));
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.25rem;
+  white-space: nowrap;
+  padding: var(--space-2) var(--space-3-5);
+  transition:
+    background-color var(--duration-base) ease-out,
+    color var(--duration-base) ease-out,
+    box-shadow var(--duration-base) ease-out,
+    border-color var(--duration-base) ease-out,
+    column-gap var(--duration-base) ease-out;
+}
+.pb-btn:hover {
+  background-color: var(--btn-bg-hover, var(--btn-bg));
+  color: var(--btn-color-hover, var(--btn-color, #ffffff));
+}
+.pb-btn:focus-visible,
+label:focus-within > .pb-btn {
+  outline: none;
+  box-shadow: var(--btn-shadow-focus, var(--shadow-focus));
+}
+.pb-btn:disabled,
+.pb-btn[aria-disabled='true'] {
+  --btn-bg-hover: var(--btn-bg);
+  --btn-color-hover: var(--btn-color);
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+.pb-btn-lg {
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.5rem;
+  padding: var(--space-2-5) var(--space-4);
+}
+.pb-btn-full {
+  width: 100%;
+}
+.pb-btn-primary {
+  --btn-bg: var(--btn-primary-bg);
+  --btn-bg-hover: var(--accent-hover);
+  --btn-color: #ffffff;
+}
+.pb-btn-ghost {
+  --btn-bg: var(--ghost-bg);
+  --btn-bg-hover: var(--ghost-bg-hover);
+  --btn-color: var(--ghost-text);
+  --btn-color-hover: var(--ghost-text-hover);
+  --btn-border: 1px solid var(--ghost-border);
+  --btn-shadow-focus: 0 0 0 4px #98a2b324;
+}
+.pb-btn-tertiary {
+  --btn-bg: transparent;
+  --btn-shadow: none;
+  --btn-color: var(--ghost-text);
+  --btn-color-hover: var(--ghost-text-hover);
+  padding: 0;
+  font-weight: 500;
+}
+.pb-btn-tertiary:hover {
+  column-gap: var(--space-2);
+}
+
+/* Card — mirrors push-based.io .card--default */
+.pb-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  background: var(--surface-subtle);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+}
+
+/* Form controls */
+.pb-input {
+  width: 100%;
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  transition: border-color var(--duration-base) ease-out;
+}
+.pb-input:focus-visible {
+  outline: none;
+  border-color: var(--accent-outline);
+  box-shadow: var(--shadow-focus);
+}
+
+.pb-range {
+  --range-track: var(--border-strong);
+  width: 100%;
+  height: 20px;
+  margin: 0;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+  accent-color: var(--accent);
+}
+.pb-range::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: var(--radius-full);
+  background: var(--range-track);
+}
+.pb-range::-moz-range-track {
+  height: 6px;
+  border: none;
+  border-radius: var(--radius-full);
+  background: var(--range-track);
+}
+.pb-range::-moz-range-progress {
+  height: 6px;
+  border-radius: var(--radius-full);
+  background: var(--accent);
+}
+.pb-range::-webkit-slider-thumb {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  margin-top: -6px;
+  border: 2px solid #ffffff;
+  border-radius: var(--radius-full);
+  background: var(--accent);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--duration-base) ease-out;
+}
+.pb-range::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border: 2px solid #ffffff;
+  border-radius: var(--radius-full);
+  background: var(--accent);
+  box-shadow: var(--shadow-sm);
+}
+.pb-range:focus-visible {
+  outline: none;
+}
+.pb-range:focus-visible::-webkit-slider-thumb {
+  box-shadow: var(--shadow-focus);
+}
+.pb-range:focus-visible::-moz-range-thumb {
+  box-shadow: var(--shadow-focus);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }

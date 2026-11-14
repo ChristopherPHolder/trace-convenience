@@ -27,6 +27,19 @@ export default [
     },
   },
   {
+    // The PushBased design system: `pb-*` elements and `pb*` attribute components, e.g. button[pbButton].
+    files: ['src/app/design-system/**/*.ts'],
+    rules: {
+      '@angular-eslint/component-selector': [
+        'error',
+        [
+          { type: 'element', prefix: 'pb', style: 'kebab-case' },
+          { type: 'attribute', prefix: 'pb', style: 'camelCase' },
+        ],
+      ],
+    },
+  },
+  {
     files: ['**/*.html'],
     // Override or add rules here
     rules: {},
