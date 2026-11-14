@@ -175,7 +175,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Built with [Angular](https://angular.dev) - The modern web developer's platform
 - Powered by [Vite+](https://viteplus.dev) - The unified toolchain for the web
 - Uses [gifenc](https://github.com/mattdesl/gifenc) for potential GIF export features
-- Chrome DevTools Protocol types from [devtools-protocol](https://github.com/ChromeDevTools/devtools-protocol)
 
 ## 📧 Support
 
