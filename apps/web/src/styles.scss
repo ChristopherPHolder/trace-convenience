@@ -51,6 +51,8 @@
   --danger-hover: var(--color-error-600);
   --backdrop: rgb(13 18 28 / 0.55);
   --media-bg: var(--color-neutral-950);
+  /* Navy half of the PushBased mark in the footer. */
+  --pb-mark-ink: #2d0064;
 
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --duration-fast: 150ms;
@@ -96,6 +98,8 @@
   --danger-hover: var(--color-error-400);
   --backdrop: rgb(0 0 0 / 0.7);
   --media-bg: #000000;
+  /* The navy disappears on dark surfaces, so the mark follows the link color instead. */
+  --pb-mark-ink: currentColor;
 }
 
 @media (prefers-color-scheme: dark) {
