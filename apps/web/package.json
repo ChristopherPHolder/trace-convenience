@@ -28,7 +28,7 @@
     "@push-based/vite-plugin-ngp": "0.3.0",
     "@types/node": "catalog:",
     "@vitest/coverage-v8": "catalog:",
-    "jsdom": "~22.1.0",
+    "jsdom": "31.0.1",
     "sass": "1.105.2",
     "typescript": "catalog:",
     "vite": "catalog:",
