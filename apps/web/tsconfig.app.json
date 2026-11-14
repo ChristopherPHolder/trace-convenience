@@ -1,22 +1,10 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "outDir": "../../dist/out-tsc",
     "types": []
   },
   "include": ["src/**/*.ts"],
-  "exclude": [
-    "src/test-setup.ts",
-    "src/**/*.test.ts",
-    "src/**/*.spec.ts",
-    "vite.config.ts",
-    "src/**/*.test.tsx",
-    "src/**/*.spec.tsx",
-    "src/**/*.test.js",
-    "src/**/*.spec.js",
-    "src/**/*.test.jsx",
-    "src/**/*.spec.jsx"
-  ],
+  "exclude": ["src/**/*.spec.ts", "src/test-setup.ts"],
   "angularCompilerOptions": {
     "extendedDiagnostics": {
       "checks": {
