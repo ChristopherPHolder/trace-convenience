@@ -1,6 +1,6 @@
 import { Component, ChangeDetectionStrategy, signal, computed, inject } from "@angular/core";
 import { TraceService } from "../../services/trace.service";
-import { FilmStripComponent } from "../film-strip/film-strip";
+import { TraceToolsComponent } from "../trace-tools/trace-tools";
 import { PbBadge, PbCard, PbEyebrow, PbIconButton, PbNotice, PbSpinner } from "../../design-system";
 
 interface UploadedFileDisplay {
@@ -17,7 +17,7 @@ interface FileError {
 
 @Component({
   selector: "app-file-upload",
-  imports: [FilmStripComponent, PbBadge, PbCard, PbEyebrow, PbIconButton, PbNotice, PbSpinner],
+  imports: [TraceToolsComponent, PbBadge, PbCard, PbEyebrow, PbIconButton, PbNotice, PbSpinner],
   templateUrl: "./file-upload.html",
   styleUrl: "./file-upload.scss",
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -43,12 +43,6 @@ export class FileUploadComponent {
 
   protected readonly hasFiles = computed(() => this.uploadedFiles().length > 0);
   protected readonly fileCount = computed(() => this.uploadedFiles().length);
-
-  // Film strip data
-  protected readonly parsedTrace = computed(() => this.traceService.currentParsedTrace());
-  protected readonly screenshots = computed(() => this.parsedTrace()?.screenshots || []);
-  protected readonly traceStartTime = computed(() => this.parsedTrace()?.metadata.startTime || 0);
-  protected readonly traceEndTime = computed(() => this.parsedTrace()?.metadata.endTime || 0);
 
   protected onDragOver(event: DragEvent): void {
     event.preventDefault();

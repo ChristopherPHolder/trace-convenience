@@ -94,6 +94,24 @@ See [ADR 0005](adr/0005-compile-angular-with-vite-plugin-ngp.md) before changing
 2. `selectFilmStripFrames` passes it through on each `FilmStripFrame`.
 3. Render it in `apps/web/src/app/components/film-strip/film-strip.html`.
 
+### Show another trace event in the flame chart
+
+1. Add the event's name, label and category to `packages/trace-core/src/flame-chart/event-styles.ts`. Use the label and category DevTools gives it in `front_end/models/trace/Styles.ts` of [devtools-frontend](https://github.com/ChromeDevTools/devtools-frontend).
+2. If it runs JavaScript, add it to `isJsInvocation` in the same file, so that CPU profile samples inside it become JavaScript frames.
+3. Add a case to `parse-flame-chart.spec.ts`.
+
+### Change how the flame chart looks
+
+1. Positions, labels, ticks and anything else that needs a decision go in `layoutFlameChart` (`packages/trace-core/src/flame-chart/layout.ts`), with a case in `layout.spec.ts`.
+2. Colours and fonts shared by both renderers go in `FLAME_CHART_STYLE` (`style.ts`).
+3. Draw the change twice: in `renderFlameChartSvg` (`svg.ts`) for the export and in `apps/web/src/app/components/flame-chart/flame-chart.html` for the page. See [ADR 0011](adr/0011-flame-chart-laid-out-in-trace-core.md).
+
+### Add a tool
+
+1. Add its id and label to `TOOLS` in `apps/web/src/app/components/trace-tools/trace-tools.ts`, and a `@case` for its component in `trace-tools.html`.
+2. Keep its state in a service that reads `TraceService`, so it survives switching tabs.
+3. Put trace logic in `trace-core`, not in the component.
+
 ### Try the WebMCP tools
 
 WebMCP is behind a flag in Chrome 149 and later.

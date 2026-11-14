@@ -2,10 +2,11 @@
   @if (!hasFiles()) {
   <div class="intro">
     <p pbEyebrow>Chrome performance traces</p>
-    <h2 class="intro-title">Turn a trace into a film strip</h2>
+    <h2 class="intro-title">Turn a trace into a film strip or a flame chart</h2>
     <p class="intro-lead">
-      Drop a trace exported from the Chrome DevTools Performance panel to see every screenshot it
-      captured, then download them as a PNG or an animated GIF.
+      Drop a trace exported from the Chrome DevTools Performance panel. See every screenshot it
+      captured, or cut its flame chart down to the tasks you care about, then download the result as
+      an image.
     </p>
   </div>
 
@@ -160,10 +161,6 @@
     </div>
   </pb-card>
 
-  <app-film-strip
-    [screenshots]="screenshots()"
-    [startTime]="traceStartTime()"
-    [endTime]="traceEndTime()"
-  />
+  <app-trace-tools />
   }
 </div>

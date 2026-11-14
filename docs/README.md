@@ -2,8 +2,8 @@
 
 | Document                                       | Read it when you want to                                     |
 | ---------------------------------------------- | ------------------------------------------------------------ |
-| [Usage](usage.md)                              | Capture a trace and work with the film strip                 |
-| [Architecture](architecture.md)                | Understand the packages and how a trace becomes a film strip |
+| [Usage](usage.md)                              | Capture a trace and work with the film strip and flame chart |
+| [Architecture](architecture.md)                | Understand the packages and how a trace becomes an image     |
 | [Development](development.md)                  | Set up the repo, run the checks and follow the conventions   |
 | [Deployment](deployment.md)                    | See how CI builds the app and publishes it to GitHub Pages   |
 | [Architecture decision records](adr/README.md) | Find out why something is built the way it is                |

@@ -14,6 +14,7 @@ An ADR captures one decision: the context it was made in, what was decided and w
 | [0008](0008-single-ci-workflow-gates-pages-deploy.md)     | One CI workflow that gates the Pages deploy             | Accepted |
 | [0009](0009-framework-agnostic-trace-core-package.md)     | Framework-agnostic `trace-core` package                 | Accepted |
 | [0010](0010-webmcp-tools-for-the-film-strip.md)           | WebMCP tools for the film strip                         | Accepted |
+| [0011](0011-flame-chart-laid-out-in-trace-core.md)        | Flame chart laid out in `trace-core` and drawn as SVG   | Accepted |
 
 ## Adding an ADR
 

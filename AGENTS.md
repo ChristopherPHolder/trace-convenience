@@ -32,12 +32,12 @@ release. Add a tool name to select part of the graph. For example, run
 
 # Trace Convenience
 
-A browser app that turns a Chrome DevTools performance trace into a film strip of its screenshots. It is a pnpm workspace managed by Vite+.
+A browser app that turns a Chrome DevTools performance trace into images: a film strip of its screenshots, and a flame chart cut down to a time range. It is a pnpm workspace managed by Vite+.
 
-| Package               | What it is                                                                          |
-| --------------------- | ----------------------------------------------------------------------------------- |
-| `apps/web`            | Angular app: upload, film strip, preview, PNG and GIF export                        |
-| `packages/trace-core` | Framework-agnostic trace parsing and frame selection. No Angular, DOM or Node APIs. |
+| Package               | What it is                                                                       |
+| --------------------- | -------------------------------------------------------------------------------- |
+| `apps/web`            | Angular app: upload, film strip, flame chart and their exports                   |
+| `packages/trace-core` | Framework-agnostic trace parsing and chart layout. No Angular, DOM or Node APIs. |
 
 Read these before you change how something works:
 

@@ -400,6 +400,18 @@ describe("FileUploadComponent", () => {
       expect(filesSection).toBeTruthy();
     });
 
+    it("should show the tools for the uploaded trace", async () => {
+      const compiled = fixture.nativeElement as HTMLElement;
+      expect(compiled.querySelector("app-trace-tools")).toBeFalsy();
+
+      const file = new File([JSON.stringify({})], "test.json");
+      await component["processFiles"]([file]);
+      fixture.detectChanges();
+
+      const tabs = Array.from(compiled.querySelectorAll('app-trace-tools [role="tab"]'));
+      expect(tabs.map((tab) => tab.textContent?.trim())).toEqual(["Film strip", "Flame chart"]);
+    });
+
     it("should not show files section when no files are uploaded", () => {
       const compiled = fixture.nativeElement as HTMLElement;
       const filesSection = compiled.querySelector(".files-section");
