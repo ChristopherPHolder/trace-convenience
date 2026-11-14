@@ -41,7 +41,7 @@ git push origin main
 The deployment workflow (`.github/workflows/deploy.yml`) will:
 
 1. **Trigger** automatically on every push to the `main` branch
-2. **Build** the application using `nx build web` (Vite, production mode)
+2. **Build** the application using `vp run build` (Vite+, production mode)
 3. **Upload** the built files from `dist/apps/web/browser/`
 4. **Deploy** to GitHub Pages
 
@@ -60,7 +60,7 @@ Before deploying, you can test the production build locally:
 
 ```bash
 # Build for production and serve the built files
-pnpm nx preview web
+pnpm vp run build && pnpm preview
 ```
 
 Then open http://localhost:4173/trace-convenience/ to test the production build.
@@ -71,7 +71,7 @@ Then open http://localhost:4173/trace-convenience/ to test the production build.
 
 - Check the Actions tab for error logs
 - Ensure all dependencies are listed in `package.json`
-- Try building locally first: `pnpm nx build web`
+- Try building locally first: `pnpm vp run build`
 
 ### Site Shows 404
 
@@ -114,9 +114,9 @@ If you need to add environment variables:
 ## Cost
 
 GitHub Pages is **free** for public repositories with these limits:
+
 - 1 GB storage
 - 100 GB bandwidth per month
 - 10 builds per hour
 
 Your trace-convenience app should easily fit within these limits.
-

@@ -3,11 +3,13 @@
 ## Quick Start
 
 ### Prerequisites
+
 - Node.js (v18+)
 - pnpm 10.x (pinned in `package.json#packageManager`)
 - Chrome browser (for capturing traces)
 
 ### Installation
+
 ```bash
 # Install dependencies
 pnpm install
@@ -16,18 +18,19 @@ pnpm install
 ```
 
 ### Development
+
 ```bash
 # Start development server
-pnpm nx serve web
+pnpm dev
 
 # Run tests
-pnpm nx test web
+pnpm test
 
 # Run tests in watch mode
-pnpm nx test web --watch
+pnpm test --watch
 
 # Build for production
-pnpm nx build web
+pnpm vp run build
 ```
 
 ## Capturing a Test Trace
@@ -82,7 +85,7 @@ console.log(count());
 
 // Updating a signal
 count.set(5);
-count.update(prev => prev + 1);
+count.update((prev) => prev + 1);
 
 // Computed signal (automatically updates)
 const doubled = computed(() => count() * 2);
@@ -189,13 +192,15 @@ To display additional information about screenshots:
 ### Unit Tests
 
 Run all tests:
+
 ```bash
-pnpm nx test web
+pnpm test
 ```
 
 Run specific test file:
+
 ```bash
-pnpm nx test web --testFile=trace-parser.service.spec.ts
+pnpm test trace-parser.service.spec.ts
 ```
 
 ### Writing New Tests
@@ -238,10 +243,10 @@ describe('MyComponent', () => {
 
     fixture = TestBed.createComponent(MyComponent);
     component = fixture.componentInstance;
-    
+
     // Set input values
     fixture.componentRef.setInput('myInput', 'value');
-    
+
     fixture.detectChanges();
   });
 
@@ -261,7 +266,7 @@ Uncomment console logs in `trace-parser.service.ts`:
 ```typescript
 parseTrace(traceContent: unknown): ParsedTrace {
   console.log('Parsing trace:', traceContent); // Debug log
-  
+
   // ... rest of the code
 }
 ```
@@ -269,6 +274,7 @@ parseTrace(traceContent: unknown): ParsedTrace {
 ### Inspecting Signals
 
 Use Angular DevTools browser extension:
+
 1. Install Angular DevTools
 2. Open DevTools
 3. Select "Angular" tab
@@ -277,16 +283,19 @@ Use Angular DevTools browser extension:
 ### Common Issues
 
 **Issue: Screenshots not appearing**
+
 - Check browser console for errors
 - Verify trace file has screenshot events
 - Ensure screenshots were enabled during capture
 
 **Issue: Images not loading**
+
 - Check that base64 data is valid
 - Verify image format detection is working
 - Check browser console for security errors
 
 **Issue: Tests failing**
+
 - Clear node_modules and reinstall: `rm -rf node_modules && pnpm install`
 - Check that all imports are correct
 - Verify test data matches expected format
@@ -298,14 +307,16 @@ Use Angular DevTools browser extension:
 For traces with many screenshots (100+):
 
 1. **Implement Virtual Scrolling**
+
    ```bash
    pnpm add @angular/cdk
    ```
 
 2. **Add to film-strip component:**
+
    ```typescript
    import { ScrollingModule } from '@angular/cdk/scrolling';
-   
+
    @Component({
      imports: [CommonModule, ScrollingModule],
      // ...
@@ -324,6 +335,7 @@ For traces with many screenshots (100+):
 ### Memory Management
 
 For very large traces:
+
 - Consider thumbnail generation (resize before display)
 - Implement pagination or infinite scroll
 - Use Web Workers for parsing (see example below)
@@ -350,6 +362,7 @@ worker.onmessage = ({ data }) => {
 ### TraceParserService
 
 **Methods:**
+
 - `parseTrace(traceContent: unknown): ParsedTrace`
   - Parses a Chrome DevTools trace and extracts screenshots
   - Returns: ParsedTrace object with screenshots and metadata
@@ -369,6 +382,7 @@ worker.onmessage = ({ data }) => {
 ### TraceService
 
 **Signals:**
+
 - `allFiles(): readonly TraceFile[]` - All uploaded files
 - `fileCount(): number` - Number of uploaded files
 - `isEmpty(): boolean` - Whether any files are uploaded
@@ -376,6 +390,7 @@ worker.onmessage = ({ data }) => {
 - `currentParsedTrace(): ParsedTrace | null` - Parsed trace data
 
 **Methods:**
+
 - `addFile(file: File, content: unknown): void` - Upload a new trace file
 - `removeFile(id: string): void` - Remove a file by ID
 - `clearAll(): void` - Remove all files
@@ -384,11 +399,13 @@ worker.onmessage = ({ data }) => {
 ### FilmStripComponent
 
 **Inputs:**
+
 - `screenshots: Screenshot[]` - Array of screenshots to display
 - `startTime: number` - Trace start timestamp (default: 0)
 - `endTime: number` - Trace end timestamp (default: 0)
 
 **Interactions:**
+
 - Click thumbnail to preview
 - Arrow keys to navigate
 - 'F' to toggle fullscreen
@@ -397,13 +414,16 @@ worker.onmessage = ({ data }) => {
 ## Contributing
 
 ### Code Style
+
 - Use TypeScript strict mode
 - Follow Angular style guide
-- Use Prettier for formatting
-- Use ESLint for linting
+- Use Oxfmt for formatting (`pnpm fmt`)
+- Use Oxlint for linting (`pnpm lint`, or `pnpm check` for format + lint + types)
 
 ### Commit Messages
+
 Follow conventional commits:
+
 ```
 feat: add new screenshot event type
 fix: resolve timestamp calculation issue
@@ -412,6 +432,7 @@ test: add tests for edge cases
 ```
 
 ### Pull Request Process
+
 1. Create a feature branch
 2. Write tests for new functionality
 3. Ensure all tests pass
@@ -423,14 +444,14 @@ test: add tests for edge cases
 - [Angular Documentation](https://angular.dev)
 - [Chrome DevTools Protocol](https://chromedevtools.github.io/devtools-protocol/)
 - [DevTools Protocol NPM Package](https://www.npmjs.com/package/devtools-protocol)
-- [Nx Documentation](https://nx.dev)
+- [Vite+ Documentation](https://viteplus.dev)
 - [Vitest Documentation](https://vitest.dev)
 
 ## Support
 
 For issues or questions:
+
 1. Check the documentation
 2. Review existing tests for examples
 3. Open an issue on GitHub
 4. Contact the development team
-

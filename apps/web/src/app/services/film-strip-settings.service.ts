@@ -90,7 +90,7 @@ export class FilmStripSettingsService {
   }
 
   toggle(): void {
-    this._isOpen.update(current => !current);
+    this._isOpen.update((current) => !current);
   }
 
   // Get all settings at once
@@ -107,4 +107,3 @@ export class FilmStripSettingsService {
     };
   }
 }
-

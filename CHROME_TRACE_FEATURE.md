@@ -66,6 +66,7 @@ This feature allows you to upload Chrome DevTools trace files and automatically 
 The parser supports standard Chrome DevTools trace JSON format with the following screenshot event types:
 
 1. **Screenshot Events** (most common)
+
 ```json
 {
   "name": "Screenshot",
@@ -78,6 +79,7 @@ The parser supports standard Chrome DevTools trace JSON format with the followin
 ```
 
 2. **Screencast Frame Events**
+
 ```json
 {
   "name": "ScreencastFrame",
@@ -89,6 +91,7 @@ The parser supports standard Chrome DevTools trace JSON format with the followin
 ```
 
 3. **Capture Frame Events**
+
 ```json
 {
   "name": "CaptureFrame",
@@ -102,12 +105,14 @@ The parser supports standard Chrome DevTools trace JSON format with the followin
 ## Features
 
 ### Film Strip Display
+
 - Horizontal scrollable thumbnail view
 - Hover effects and visual feedback
 - Responsive design for mobile and desktop
 - Lazy loading of images for performance
 
 ### Screenshot Preview
+
 - Full-size image viewer
 - Previous/Next navigation
 - Keyboard shortcuts (Arrow keys, F for fullscreen, Esc to close)
@@ -115,6 +120,7 @@ The parser supports standard Chrome DevTools trace JSON format with the followin
 - Timestamp and metadata display
 
 ### Error Handling
+
 - Graceful handling of traces without screenshots
 - Clear error messages for invalid files
 - Console warnings for parsing issues without breaking the UI
@@ -122,6 +128,7 @@ The parser supports standard Chrome DevTools trace JSON format with the followin
 ## Architecture
 
 The feature is built with Angular's latest features:
+
 - **Signals** for reactive state management
 - **Computed signals** for derived state
 - **Standalone components** for better modularity
@@ -131,19 +138,22 @@ The feature is built with Angular's latest features:
 ## Testing
 
 All components and services include comprehensive test suites:
+
 - Unit tests for all public methods
 - Component interaction tests
 - Accessibility tests
 - Error handling tests
 
 Run tests with:
+
 ```bash
-pnpm nx test web
+pnpm test
 ```
 
 ## Browser Support
 
 Works in all modern browsers that support:
+
 - ES2020+
 - CSS Grid and Flexbox
 - Base64 image decoding
@@ -152,10 +162,10 @@ Works in all modern browsers that support:
 ## Future Enhancements
 
 Potential improvements for future releases:
+
 - Export screenshots as individual files
 - Timeline scrubbing to jump to specific frames
 - Side-by-side comparison of multiple traces
 - Performance metrics overlay on screenshots
 - Video export from screenshot sequence
 - Filtering and search capabilities
-

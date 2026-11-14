@@ -29,7 +29,9 @@ describe('TraceService', () => {
 
   describe('addFile', () => {
     it('should add a file to the collection', () => {
-      const mockFile = new File(['{}'], 'test.json', { type: 'application/json' });
+      const mockFile = new File(['{}'], 'test.json', {
+        type: 'application/json',
+      });
       const mockContent = { test: 'data' };
 
       service.addFile(mockFile, mockContent);
@@ -39,8 +41,8 @@ describe('TraceService', () => {
     });
 
     it('should store file with correct properties', () => {
-      const mockFile = new File(['{"key":"value"}'], 'test.json', { 
-        type: 'application/json' 
+      const mockFile = new File(['{"key":"value"}'], 'test.json', {
+        type: 'application/json',
       });
       const mockContent = { key: 'value' };
 
@@ -105,7 +107,9 @@ describe('TraceService', () => {
       service.removeFile(fileIdToRemove);
 
       expect(service.fileCount()).toBe(2);
-      expect(service.allFiles().find(f => f.id === fileIdToRemove)).toBeUndefined();
+      expect(
+        service.allFiles().find((f) => f.id === fileIdToRemove),
+      ).toBeUndefined();
     });
 
     it('should do nothing if file ID does not exist', () => {
@@ -265,17 +269,18 @@ describe('TraceService', () => {
 
     it('should handle trace parsing errors', () => {
       const mockFile = new File(['{}'], 'test.json');
-      const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {
-        // Mock implementation to suppress console warnings during test
-      });
+      const consoleWarnSpy = vi
+        .spyOn(console, 'warn')
+        .mockImplementation(() => {
+          // Mock implementation to suppress console warnings during test
+        });
 
       service.addFile(mockFile, null);
 
       expect(consoleWarnSpy).toHaveBeenCalled();
       expect(service.allFiles()[0]).toBeDefined();
-      
+
       consoleWarnSpy.mockRestore();
     });
   });
 });
-

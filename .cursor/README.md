@@ -1,20 +1,13 @@
 # Cursor Rules Directory
 
-This `.cursor/` directory contains AI coding assistant rules and guidelines for this Nx monorepo workspace. Cursor will automatically discover and use rules from this directory.
+This `.cursor/` directory contains AI coding assistant rules and guidelines for this workspace. Cursor will automatically discover and use rules from this directory.
 
 ## Files
 
-### `nx-monorepo-rules.md`
-Contains comprehensive Nx-specific best practices and guidelines for working with this monorepo, including:
-- Project structure conventions
-- Nx command usage
-- Module boundaries and dependencies
-- Code generation patterns
-- Testing and building strategies
-- File naming conventions
-
 ### `angular-cursor-rules.md`
+
 Official Angular best practices from the Angular team (https://angular.dev/ai/develop-with-ai), including:
+
 - TypeScript best practices
 - Modern Angular patterns (standalone components, signals)
 - Component design guidelines
@@ -25,11 +18,12 @@ Official Angular best practices from the Angular team (https://angular.dev/ai/de
 
 ## Active Rules
 
-The `.cursorrules` file in the workspace root combines both Nx and Angular guidelines into a single, unified set of rules that Cursor will automatically follow. Individual rule files in this `.cursor/` directory are available for reference and organization.
+The `.cursorrules` file in the workspace root contains the Angular guidelines into a single, unified set of rules that Cursor will automatically follow. Individual rule files in this `.cursor/` directory are available for reference and organization.
 
 ## Updating Rules
 
 To update the Angular rules to the latest version:
+
 ```bash
 curl -o .cursor/angular-cursor-rules.md https://angular.dev/assets/context/angular-20.mdc
 ```
@@ -38,5 +32,4 @@ curl -o .cursor/angular-cursor-rules.md https://angular.dev/assets/context/angul
 
 - [Angular AI Development Guide](https://angular.dev/ai/develop-with-ai)
 - [Cursor Rules Documentation](https://docs.cursor.com/context/rules)
-- [Nx Documentation](https://nx.dev)
-
+- [Vite+ Documentation](https://viteplus.dev)

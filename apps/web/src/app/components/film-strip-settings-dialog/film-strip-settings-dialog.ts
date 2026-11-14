@@ -1,4 +1,9 @@
-import { Component, ChangeDetectionStrategy, inject, computed } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  inject,
+  computed,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FilmStripSettingsService } from '../../services/film-strip-settings.service';
 
@@ -15,10 +20,13 @@ export class FilmStripSettingsDialogComponent {
 
   // Expose service signals
   protected readonly isOpen = this.settingsService.isOpen;
-  protected readonly exportShowTimestamps = this.settingsService.exportShowTimestamps;
-  protected readonly useIntervalFiltering = this.settingsService.useIntervalFiltering;
+  protected readonly exportShowTimestamps =
+    this.settingsService.exportShowTimestamps;
+  protected readonly useIntervalFiltering =
+    this.settingsService.useIntervalFiltering;
   protected readonly minIntervalMs = this.settingsService.minIntervalMs;
-  protected readonly useTimeRangeFilter = this.settingsService.useTimeRangeFilter;
+  protected readonly useTimeRangeFilter =
+    this.settingsService.useTimeRangeFilter;
   protected readonly startTimeMs = this.settingsService.startTimeMs;
   protected readonly endTimeMs = this.settingsService.endTimeMs;
   protected readonly maxTimeMs = this.settingsService.maxTimeMs;
@@ -76,4 +84,3 @@ export class FilmStripSettingsDialogComponent {
     }
   }
 }
-

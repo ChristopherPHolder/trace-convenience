@@ -42,17 +42,17 @@ export class TraceParserService {
    */
   parseTrace(traceContent: unknown): ParsedTrace {
     const screenshots: Screenshot[] = [];
-    
+
     // Handle different trace formats
     const trace = traceContent as ChromeTrace;
-    
+
     if (!trace || typeof trace !== 'object') {
       throw new Error('Invalid trace format');
     }
 
     // Extract trace events array
     const traceEvents = trace.traceEvents || [];
-    
+
     if (!Array.isArray(traceEvents)) {
       throw new Error('Trace events must be an array');
     }
@@ -69,7 +69,10 @@ export class TraceParserService {
       const timestamp = event.ts || 0;
 
       // Check for Screenshot events
-      if (event.name === 'Screenshot' && event.cat?.includes('disabled-by-default-devtools.screenshot')) {
+      if (
+        event.name === 'Screenshot' &&
+        event.cat?.includes('disabled-by-default-devtools.screenshot')
+      ) {
         const snapshot = event.args?.snapshot;
         if (snapshot && typeof snapshot === 'string') {
           screenshots.push({
@@ -81,7 +84,10 @@ export class TraceParserService {
       }
 
       // Check for screencast frame events (when using Chrome's screencast)
-      if (event.name === 'ScreencastFrame' || event.name === 'screencastFrame') {
+      if (
+        event.name === 'ScreencastFrame' ||
+        event.name === 'screencastFrame'
+      ) {
         const data = event.args?.dataUri || event.args?.data;
         if (data && typeof data === 'string') {
           // Extract base64 data from data URI if needed
@@ -113,7 +119,7 @@ export class TraceParserService {
     // Calculate time bounds from screenshots only
     let minTimestamp = 0;
     let maxTimestamp = 0;
-    
+
     if (screenshots.length > 0) {
       minTimestamp = screenshots[0].timestamp;
       maxTimestamp = screenshots[screenshots.length - 1].timestamp;
@@ -152,7 +158,10 @@ export class TraceParserService {
   private detectImageFormat(data: string): string {
     // Check data URI for format
     if (data.startsWith('data:image/')) {
-      if (data.startsWith('data:image/jpeg') || data.startsWith('data:image/jpg')) {
+      if (
+        data.startsWith('data:image/jpeg') ||
+        data.startsWith('data:image/jpg')
+      ) {
         return 'jpeg';
       }
       if (data.startsWith('data:image/png')) {
@@ -165,7 +174,7 @@ export class TraceParserService {
     if (data.startsWith('/9j/')) {
       return 'jpeg';
     }
-    
+
     // PNG starts with iVBOR
     if (data.startsWith('iVBOR')) {
       return 'png';
@@ -189,11 +198,11 @@ export class TraceParserService {
   formatTimestamp(timestamp: number, baseTimestamp = 0): string {
     // Timestamps are in microseconds, convert to milliseconds
     const milliseconds = (timestamp - baseTimestamp) / 1000;
-    
+
     if (milliseconds < 1000) {
       return `${Math.round(milliseconds)}ms`;
     }
-    
+
     // Convert to seconds for display if >= 1 second
     const seconds = milliseconds / 1000;
     return `${seconds.toFixed(2)}s`;
@@ -206,4 +215,3 @@ export class TraceParserService {
     return (current.timestamp - previous.timestamp) / 1000; // Convert to milliseconds
   }
 }
-

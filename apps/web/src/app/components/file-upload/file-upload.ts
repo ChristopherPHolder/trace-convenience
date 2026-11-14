@@ -44,17 +44,25 @@ export class FileUploadComponent {
       name: file.name,
       size: file.size,
       uploadedAt: file.uploadedAt,
-    }))
+    })),
   );
 
   protected readonly hasFiles = computed(() => this.uploadedFiles().length > 0);
   protected readonly fileCount = computed(() => this.uploadedFiles().length);
-  
+
   // Film strip data
-  protected readonly parsedTrace = computed(() => this.traceService.currentParsedTrace());
-  protected readonly screenshots = computed(() => this.parsedTrace()?.screenshots || []);
-  protected readonly traceStartTime = computed(() => this.parsedTrace()?.metadata.startTime || 0);
-  protected readonly traceEndTime = computed(() => this.parsedTrace()?.metadata.endTime || 0);
+  protected readonly parsedTrace = computed(() =>
+    this.traceService.currentParsedTrace(),
+  );
+  protected readonly screenshots = computed(
+    () => this.parsedTrace()?.screenshots || [],
+  );
+  protected readonly traceStartTime = computed(
+    () => this.parsedTrace()?.metadata.startTime || 0,
+  );
+  protected readonly traceEndTime = computed(
+    () => this.parsedTrace()?.metadata.endTime || 0,
+  );
 
   protected onDragOver(event: DragEvent): void {
     event.preventDefault();
@@ -76,7 +84,7 @@ export class FileUploadComponent {
     const files = event.dataTransfer?.files;
     if (files && files.length > 0) {
       // Only process the first file
-      this.processFiles([files[0]]);
+      void this.processFiles([files[0]]);
     }
   }
 
@@ -85,7 +93,7 @@ export class FileUploadComponent {
     const files = input.files;
     if (files && files.length > 0) {
       // Only process the first file
-      this.processFiles([files[0]]);
+      void this.processFiles([files[0]]);
     }
     // Reset input to allow selecting the same file again
     input.value = '';
@@ -169,4 +177,3 @@ export class FileUploadComponent {
     });
   }
 }
-

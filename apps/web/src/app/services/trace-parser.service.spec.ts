@@ -16,13 +16,17 @@ describe('TraceParserService', () => {
   describe('parseTrace', () => {
     it('should throw error for invalid trace format', () => {
       expect(() => service.parseTrace(null)).toThrow('Invalid trace format');
-      expect(() => service.parseTrace(undefined)).toThrow('Invalid trace format');
-      expect(() => service.parseTrace('string')).toThrow('Invalid trace format');
+      expect(() => service.parseTrace(undefined)).toThrow(
+        'Invalid trace format',
+      );
+      expect(() => service.parseTrace('string')).toThrow(
+        'Invalid trace format',
+      );
     });
 
     it('should throw error for trace without events array', () => {
       expect(() => service.parseTrace({ traceEvents: 'not-an-array' })).toThrow(
-        'Trace events must be an array'
+        'Trace events must be an array',
       );
     });
 
@@ -188,4 +192,3 @@ describe('TraceParserService', () => {
     });
   });
 });
-
