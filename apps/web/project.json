@@ -6,70 +6,6 @@
   "sourceRoot": "apps/web/src",
   "tags": [],
   "targets": {
-    "build": {
-      "executor": "@angular/build:application",
-      "outputs": ["{options.outputPath}"],
-      "defaultConfiguration": "production",
-      "options": {
-        "outputPath": "dist/apps/web",
-        "browser": "apps/web/src/main.ts",
-        "polyfills": ["zone.js"],
-        "tsConfig": "apps/web/tsconfig.app.json",
-        "inlineStyleLanguage": "scss",
-        "assets": [
-          {
-            "glob": "**/*",
-            "input": "apps/web/public"
-          }
-        ],
-        "styles": ["apps/web/src/styles.scss"]
-      },
-      "configurations": {
-        "production": {
-          "budgets": [
-            {
-              "type": "initial",
-              "maximumWarning": "500kb",
-              "maximumError": "1mb"
-            },
-            {
-              "type": "anyComponentStyle",
-              "maximumWarning": "8kb",
-              "maximumError": "12kb"
-            }
-          ],
-          "outputHashing": "all",
-          "baseHref": "/trace-convenience/"
-        },
-        "development": {
-          "optimization": false,
-          "extractLicenses": false,
-          "sourceMap": true
-        }
-      }
-    },
-    "serve": {
-      "continuous": true,
-      "executor": "@angular/build:dev-server",
-      "defaultConfiguration": "development",
-      "readyWhen": {
-        "signal": true
-      },
-      "configurations": {
-        "production": {
-          "buildTarget": "web:build:production"
-        },
-        "development": {
-          "buildTarget": "web:build:development"
-        }
-      }
-    },
-    "extract-i18n": {
-      "executor": "@angular/build:extract-i18n",
-      "options": {
-        "buildTarget": "web:build"
-      }
-    },
     "lint": {
       "inputs": [
         "default",
@@ -91,19 +27,6 @@
       "options": {
         "coverage.reportsDirectory": "../../coverage/apps/web"
       }
-    },
-    "serve-static": {
-      "continuous": true,
-      "executor": "@nx/web:file-server",
-      "options": {
-        "buildTarget": "web:build",
-        "staticFilePath": "dist/apps/web/browser",
-        "spa": true
-      },
-      "readyWhen": {
-        "signal": true
-      },
-      "dependsOn": ["build"]
     }
   }
 }

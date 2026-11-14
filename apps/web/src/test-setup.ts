@@ -1,5 +1,5 @@
-import '@angular/compiler';
-import '@analogjs/vitest-angular/setup-zone';
+import 'zone.js';
+import 'zone.js/testing';
 
 import {
   BrowserTestingModule,

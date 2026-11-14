@@ -13,7 +13,7 @@
     "sharedGlobals": ["{workspaceRoot}/.github/workflows/ci.yml"]
   },
   "targetDefaults": {
-    "@angular/build:application": {
+    "build": {
       "cache": true,
       "dependsOn": ["^build"],
       "inputs": ["production", "^production"]
@@ -24,7 +24,7 @@
       "e2eTestRunner": "none",
       "linter": "eslint",
       "style": "scss",
-      "unitTestRunner": "vitest-analog"
+      "unitTestRunner": "none"
     }
   },
   "affected": {
@@ -42,6 +42,16 @@
       "options": {
         "testMode": "watch",
         "testTargetName": "test"
+      }
+    },
+    {
+      "plugin": "@nx/vite/plugin",
+      "options": {
+        "buildTargetName": "build",
+        "devTargetName": "serve",
+        "previewTargetName": "preview",
+        "serveStaticTargetName": "serve-static",
+        "typecheckTargetName": false
       }
     }
   ]
