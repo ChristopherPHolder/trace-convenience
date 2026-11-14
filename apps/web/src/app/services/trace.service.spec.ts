@@ -1,7 +1,7 @@
-import { TestBed } from '@angular/core/testing';
-import { TraceService } from './trace.service';
+import { TestBed } from "@angular/core/testing";
+import { TraceService } from "./trace.service";
 
-describe('TraceService', () => {
+describe("TraceService", () => {
   let service: TraceService;
 
   beforeEach(() => {
@@ -9,30 +9,30 @@ describe('TraceService', () => {
     service = TestBed.inject(TraceService);
   });
 
-  it('should be created', () => {
+  it("should be created", () => {
     expect(service).toBeTruthy();
   });
 
-  describe('Initial State', () => {
-    it('should start with empty files array', () => {
+  describe("Initial State", () => {
+    it("should start with empty files array", () => {
       expect(service.allFiles()).toEqual([]);
     });
 
-    it('should have fileCount of 0 initially', () => {
+    it("should have fileCount of 0 initially", () => {
       expect(service.fileCount()).toBe(0);
     });
 
-    it('should be empty initially', () => {
+    it("should be empty initially", () => {
       expect(service.isEmpty()).toBe(true);
     });
   });
 
-  describe('addFile', () => {
-    it('should add a file to the collection', () => {
-      const mockFile = new File(['{}'], 'test.json', {
-        type: 'application/json',
+  describe("addFile", () => {
+    it("should add a file to the collection", () => {
+      const mockFile = new File(["{}"], "test.json", {
+        type: "application/json",
       });
-      const mockContent = { test: 'data' };
+      const mockContent = { test: "data" };
 
       service.addFile(mockFile, mockContent);
 
@@ -40,26 +40,26 @@ describe('TraceService', () => {
       expect(service.isEmpty()).toBe(false);
     });
 
-    it('should store file with correct properties', () => {
-      const mockFile = new File(['{"key":"value"}'], 'test.json', {
-        type: 'application/json',
+    it("should store file with correct properties", () => {
+      const mockFile = new File(['{"key":"value"}'], "test.json", {
+        type: "application/json",
       });
-      const mockContent = { key: 'value' };
+      const mockContent = { key: "value" };
 
       service.addFile(mockFile, mockContent);
 
       const files = service.allFiles();
       expect(files.length).toBe(1);
-      expect(files[0].name).toBe('test.json');
+      expect(files[0].name).toBe("test.json");
       expect(files[0].content).toEqual(mockContent);
       expect(files[0].size).toBe(mockFile.size);
       expect(files[0].id).toBeDefined();
       expect(files[0].uploadedAt).toBeInstanceOf(Date);
     });
 
-    it('should generate unique IDs for each file', () => {
-      const mockFile1 = new File(['{}'], 'test1.json');
-      const mockFile2 = new File(['{}'], 'test2.json');
+    it("should generate unique IDs for each file", () => {
+      const mockFile1 = new File(["{}"], "test1.json");
+      const mockFile2 = new File(["{}"], "test2.json");
 
       service.addFile(mockFile1, {});
       service.addFile(mockFile2, {});
@@ -68,10 +68,10 @@ describe('TraceService', () => {
       expect(files[0].id).not.toBe(files[1].id);
     });
 
-    it('should add multiple files', () => {
-      const mockFile1 = new File(['{}'], 'test1.json');
-      const mockFile2 = new File(['{}'], 'test2.json');
-      const mockFile3 = new File(['{}'], 'test3.json');
+    it("should add multiple files", () => {
+      const mockFile1 = new File(["{}"], "test1.json");
+      const mockFile2 = new File(["{}"], "test2.json");
+      const mockFile3 = new File(["{}"], "test3.json");
 
       service.addFile(mockFile1, {});
       service.addFile(mockFile2, {});
@@ -82,9 +82,9 @@ describe('TraceService', () => {
     });
   });
 
-  describe('removeFile', () => {
-    it('should remove a file by ID', () => {
-      const mockFile = new File(['{}'], 'test.json');
+  describe("removeFile", () => {
+    it("should remove a file by ID", () => {
+      const mockFile = new File(["{}"], "test.json");
       service.addFile(mockFile, {});
 
       const fileId = service.allFiles()[0].id;
@@ -94,10 +94,10 @@ describe('TraceService', () => {
       expect(service.isEmpty()).toBe(true);
     });
 
-    it('should remove only the specified file', () => {
-      const mockFile1 = new File(['{}'], 'test1.json');
-      const mockFile2 = new File(['{}'], 'test2.json');
-      const mockFile3 = new File(['{}'], 'test3.json');
+    it("should remove only the specified file", () => {
+      const mockFile1 = new File(["{}"], "test1.json");
+      const mockFile2 = new File(["{}"], "test2.json");
+      const mockFile3 = new File(["{}"], "test3.json");
 
       service.addFile(mockFile1, {});
       service.addFile(mockFile2, {});
@@ -107,25 +107,23 @@ describe('TraceService', () => {
       service.removeFile(fileIdToRemove);
 
       expect(service.fileCount()).toBe(2);
-      expect(
-        service.allFiles().find((f) => f.id === fileIdToRemove),
-      ).toBeUndefined();
+      expect(service.allFiles().find((f) => f.id === fileIdToRemove)).toBeUndefined();
     });
 
-    it('should do nothing if file ID does not exist', () => {
-      const mockFile = new File(['{}'], 'test.json');
+    it("should do nothing if file ID does not exist", () => {
+      const mockFile = new File(["{}"], "test.json");
       service.addFile(mockFile, {});
 
-      service.removeFile('non-existent-id');
+      service.removeFile("non-existent-id");
 
       expect(service.fileCount()).toBe(1);
     });
   });
 
-  describe('clearAll', () => {
-    it('should remove all files', () => {
-      const mockFile1 = new File(['{}'], 'test1.json');
-      const mockFile2 = new File(['{}'], 'test2.json');
+  describe("clearAll", () => {
+    it("should remove all files", () => {
+      const mockFile1 = new File(["{}"], "test1.json");
+      const mockFile2 = new File(["{}"], "test2.json");
 
       service.addFile(mockFile1, {});
       service.addFile(mockFile2, {});
@@ -137,7 +135,7 @@ describe('TraceService', () => {
       expect(service.allFiles()).toEqual([]);
     });
 
-    it('should work even when no files exist', () => {
+    it("should work even when no files exist", () => {
       service.clearAll();
 
       expect(service.fileCount()).toBe(0);
@@ -145,10 +143,10 @@ describe('TraceService', () => {
     });
   });
 
-  describe('getFileById', () => {
-    it('should return the correct file by ID', () => {
-      const mockFile = new File(['{}'], 'test.json');
-      const mockContent = { test: 'data' };
+  describe("getFileById", () => {
+    it("should return the correct file by ID", () => {
+      const mockFile = new File(["{}"], "test.json");
+      const mockContent = { test: "data" };
 
       service.addFile(mockFile, mockContent);
 
@@ -157,40 +155,40 @@ describe('TraceService', () => {
 
       expect(retrievedFile).toBeDefined();
       expect(retrievedFile?.id).toBe(fileId);
-      expect(retrievedFile?.name).toBe('test.json');
+      expect(retrievedFile?.name).toBe("test.json");
       expect(retrievedFile?.content).toEqual(mockContent);
     });
 
-    it('should return undefined for non-existent ID', () => {
-      const mockFile = new File(['{}'], 'test.json');
+    it("should return undefined for non-existent ID", () => {
+      const mockFile = new File(["{}"], "test.json");
       service.addFile(mockFile, {});
 
-      const retrievedFile = service.getFileById('non-existent-id');
+      const retrievedFile = service.getFileById("non-existent-id");
 
       expect(retrievedFile).toBeUndefined();
     });
 
-    it('should return undefined when no files exist', () => {
-      const retrievedFile = service.getFileById('any-id');
+    it("should return undefined when no files exist", () => {
+      const retrievedFile = service.getFileById("any-id");
 
       expect(retrievedFile).toBeUndefined();
     });
   });
 
-  describe('Computed Signals', () => {
-    it('should update fileCount when files are added', () => {
+  describe("Computed Signals", () => {
+    it("should update fileCount when files are added", () => {
       expect(service.fileCount()).toBe(0);
 
-      const mockFile = new File(['{}'], 'test.json');
+      const mockFile = new File(["{}"], "test.json");
       service.addFile(mockFile, {});
 
       expect(service.fileCount()).toBe(1);
     });
 
-    it('should update isEmpty when files are added or removed', () => {
+    it("should update isEmpty when files are added or removed", () => {
       expect(service.isEmpty()).toBe(true);
 
-      const mockFile = new File(['{}'], 'test.json');
+      const mockFile = new File(["{}"], "test.json");
       service.addFile(mockFile, {});
 
       expect(service.isEmpty()).toBe(false);
@@ -201,27 +199,27 @@ describe('TraceService', () => {
       expect(service.isEmpty()).toBe(true);
     });
 
-    it('should provide currentFile computed signal', () => {
+    it("should provide currentFile computed signal", () => {
       expect(service.currentFile()).toBeNull();
 
-      const mockFile = new File(['{}'], 'test.json');
+      const mockFile = new File(["{}"], "test.json");
       service.addFile(mockFile, {});
 
       expect(service.currentFile()).toBeDefined();
-      expect(service.currentFile()?.name).toBe('test.json');
+      expect(service.currentFile()?.name).toBe("test.json");
     });
 
-    it('should provide currentParsedTrace computed signal', () => {
+    it("should provide currentParsedTrace computed signal", () => {
       expect(service.currentParsedTrace()).toBeNull();
 
-      const mockFile = new File(['{}'], 'test.json');
+      const mockFile = new File(["{}"], "test.json");
       const traceContent = {
         traceEvents: [
           {
-            name: 'Screenshot',
-            cat: 'disabled-by-default-devtools.screenshot',
+            name: "Screenshot",
+            cat: "disabled-by-default-devtools.screenshot",
             ts: 1000000,
-            args: { snapshot: '/9j/test' },
+            args: { snapshot: "/9j/test" },
           },
         ],
       };
@@ -233,16 +231,16 @@ describe('TraceService', () => {
     });
   });
 
-  describe('Trace Parsing', () => {
-    it('should parse trace data when adding a file', () => {
-      const mockFile = new File(['{}'], 'test.json');
+  describe("Trace Parsing", () => {
+    it("should parse trace data when adding a file", () => {
+      const mockFile = new File(["{}"], "test.json");
       const traceContent = {
         traceEvents: [
           {
-            name: 'Screenshot',
-            cat: 'disabled-by-default-devtools.screenshot',
+            name: "Screenshot",
+            cat: "disabled-by-default-devtools.screenshot",
             ts: 1000000,
-            args: { snapshot: '/9j/testdata' },
+            args: { snapshot: "/9j/testdata" },
           },
         ],
       };
@@ -255,9 +253,9 @@ describe('TraceService', () => {
       expect(file.parsedData?.metadata).toBeDefined();
     });
 
-    it('should handle invalid trace data gracefully', () => {
-      const mockFile = new File(['{}'], 'test.json');
-      const invalidContent = { invalid: 'data' };
+    it("should handle invalid trace data gracefully", () => {
+      const mockFile = new File(["{}"], "test.json");
+      const invalidContent = { invalid: "data" };
 
       // Should not throw
       expect(() => service.addFile(mockFile, invalidContent)).not.toThrow();
@@ -267,13 +265,11 @@ describe('TraceService', () => {
       expect(file.parsedData?.screenshots || []).toEqual([]);
     });
 
-    it('should handle trace parsing errors', () => {
-      const mockFile = new File(['{}'], 'test.json');
-      const consoleWarnSpy = vi
-        .spyOn(console, 'warn')
-        .mockImplementation(() => {
-          // Mock implementation to suppress console warnings during test
-        });
+    it("should handle trace parsing errors", () => {
+      const mockFile = new File(["{}"], "test.json");
+      const consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => {
+        // Mock implementation to suppress console warnings during test
+      });
 
       service.addFile(mockFile, null);
 

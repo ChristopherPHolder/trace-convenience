@@ -1,9 +1,9 @@
-import { Component, input } from '@angular/core';
+import { Component, input } from "@angular/core";
 
-export type BadgeTone = 'done' | 'brand' | 'quiet';
+export type BadgeTone = "done" | "brand" | "quiet";
 
 @Component({
-  selector: 'pb-badge',
+  selector: "pb-badge",
   template: `<ng-content />`,
   styles: `
     :host {
@@ -30,8 +30,8 @@ export type BadgeTone = 'done' | 'brand' | 'quiet';
       --badge-color: var(--accent-soft-text);
     }
   `,
-  host: { class: 'text-caption', '[class]': 'tone()' },
+  host: { class: "text-caption", "[class]": "tone()" },
 })
 export class PbBadge {
-  readonly tone = input<BadgeTone>('quiet');
+  readonly tone = input<BadgeTone>("quiet");
 }

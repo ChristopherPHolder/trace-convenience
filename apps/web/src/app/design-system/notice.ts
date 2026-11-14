@@ -1,9 +1,9 @@
-import { Component, input } from '@angular/core';
+import { Component, input } from "@angular/core";
 
-export type NoticeKind = 'info' | 'error';
+export type NoticeKind = "info" | "error";
 
 @Component({
-  selector: 'pb-notice',
+  selector: "pb-notice",
   template: `<ng-content />`,
   styles: `
     :host {
@@ -21,8 +21,8 @@ export type NoticeKind = 'info' | 'error';
       color: var(--danger-text);
     }
   `,
-  host: { class: 'text-body-sm', '[class.error]': "kind() === 'error'" },
+  host: { class: "text-body-sm", "[class.error]": "kind() === 'error'" },
 })
 export class PbNotice {
-  readonly kind = input<NoticeKind>('info');
+  readonly kind = input<NoticeKind>("info");
 }

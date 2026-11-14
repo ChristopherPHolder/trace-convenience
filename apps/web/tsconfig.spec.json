@@ -1,12 +1,7 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "types": [
-      "vite-plus/test/globals",
-      "vite-plus/test/importMeta",
-      "vite-plus/client",
-      "node"
-    ]
+    "types": ["vite-plus/test/globals", "vite-plus/test/importMeta", "vite-plus/client", "node"]
   },
   "include": ["src/**/*.spec.ts", "src/**/*.d.ts", "src/test-setup.ts"]
 }

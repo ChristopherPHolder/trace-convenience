@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable } from "@angular/core";
 
 export interface Screenshot {
   timestamp: number;
@@ -34,7 +34,7 @@ interface ChromeTrace {
 }
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: "root",
 })
 export class TraceParserService {
   /**
@@ -46,15 +46,15 @@ export class TraceParserService {
     // Handle different trace formats
     const trace = traceContent as ChromeTrace;
 
-    if (!trace || typeof trace !== 'object') {
-      throw new Error('Invalid trace format');
+    if (!trace || typeof trace !== "object") {
+      throw new Error("Invalid trace format");
     }
 
     // Extract trace events array
     const traceEvents = trace.traceEvents || [];
 
     if (!Array.isArray(traceEvents)) {
-      throw new Error('Trace events must be an array');
+      throw new Error("Trace events must be an array");
     }
 
     // Filter for screenshot events
@@ -64,17 +64,17 @@ export class TraceParserService {
     // 3. Embedded snapshots with snapshot data
 
     for (const event of traceEvents) {
-      if (!event || typeof event !== 'object') continue;
+      if (!event || typeof event !== "object") continue;
 
       const timestamp = event.ts || 0;
 
       // Check for Screenshot events
       if (
-        event.name === 'Screenshot' &&
-        event.cat?.includes('disabled-by-default-devtools.screenshot')
+        event.name === "Screenshot" &&
+        event.cat?.includes("disabled-by-default-devtools.screenshot")
       ) {
         const snapshot = event.args?.snapshot;
-        if (snapshot && typeof snapshot === 'string') {
+        if (snapshot && typeof snapshot === "string") {
           screenshots.push({
             timestamp,
             data: snapshot,
@@ -84,12 +84,9 @@ export class TraceParserService {
       }
 
       // Check for screencast frame events (when using Chrome's screencast)
-      if (
-        event.name === 'ScreencastFrame' ||
-        event.name === 'screencastFrame'
-      ) {
+      if (event.name === "ScreencastFrame" || event.name === "screencastFrame") {
         const data = event.args?.dataUri || event.args?.data;
-        if (data && typeof data === 'string') {
+        if (data && typeof data === "string") {
           // Extract base64 data from data URI if needed
           const imageData = this.extractBase64FromDataUri(data);
           screenshots.push({
@@ -101,9 +98,9 @@ export class TraceParserService {
       }
 
       // Check for CaptureFrame events
-      if (event.name === 'CaptureFrame') {
+      if (event.name === "CaptureFrame") {
         const data = event.args?.data;
-        if (data && typeof data === 'string') {
+        if (data && typeof data === "string") {
           screenshots.push({
             timestamp,
             data: this.extractBase64FromDataUri(data),
@@ -141,9 +138,9 @@ export class TraceParserService {
    */
   private extractBase64FromDataUri(dataUri: string): string {
     // Check if it's already a data URI
-    if (dataUri.startsWith('data:image/')) {
+    if (dataUri.startsWith("data:image/")) {
       // Extract the base64 part after the comma
-      const commaIndex = dataUri.indexOf(',');
+      const commaIndex = dataUri.indexOf(",");
       if (commaIndex !== -1) {
         return dataUri.substring(commaIndex + 1);
       }
@@ -157,38 +154,35 @@ export class TraceParserService {
    */
   private detectImageFormat(data: string): string {
     // Check data URI for format
-    if (data.startsWith('data:image/')) {
-      if (
-        data.startsWith('data:image/jpeg') ||
-        data.startsWith('data:image/jpg')
-      ) {
-        return 'jpeg';
+    if (data.startsWith("data:image/")) {
+      if (data.startsWith("data:image/jpeg") || data.startsWith("data:image/jpg")) {
+        return "jpeg";
       }
-      if (data.startsWith('data:image/png')) {
-        return 'png';
+      if (data.startsWith("data:image/png")) {
+        return "png";
       }
     }
 
     // Try to detect from base64 magic numbers
     // JPEG starts with /9j/
-    if (data.startsWith('/9j/')) {
-      return 'jpeg';
+    if (data.startsWith("/9j/")) {
+      return "jpeg";
     }
 
     // PNG starts with iVBOR
-    if (data.startsWith('iVBOR')) {
-      return 'png';
+    if (data.startsWith("iVBOR")) {
+      return "png";
     }
 
     // Default to jpeg
-    return 'jpeg';
+    return "jpeg";
   }
 
   /**
    * Converts a screenshot to a data URI for display
    */
   getDataUri(screenshot: Screenshot): string {
-    const mimeType = screenshot.format === 'png' ? 'image/png' : 'image/jpeg';
+    const mimeType = screenshot.format === "png" ? "image/png" : "image/jpeg";
     return `data:${mimeType};base64,${screenshot.data}`;
   }
 

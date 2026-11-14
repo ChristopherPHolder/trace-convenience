@@ -1,8 +1,8 @@
-import { Component, model } from '@angular/core';
+import { Component, model } from "@angular/core";
 
 /** An on/off switch. Give it an `aria-label` or point `aria-labelledby` at a visible label. */
 @Component({
-  selector: 'button[pbSwitch]',
+  selector: "button[pbSwitch]",
   template: `<span class="thumb"></span>`,
   styles: `
     :host {
@@ -21,7 +21,7 @@ import { Component, model } from '@angular/core';
         box-shadow var(--duration-base) ease-out;
     }
 
-    :host([aria-checked='true']) {
+    :host([aria-checked="true"]) {
       background: var(--btn-primary-bg);
     }
 
@@ -42,15 +42,15 @@ import { Component, model } from '@angular/core';
       transition: transform var(--duration-base) var(--ease-out);
     }
 
-    :host([aria-checked='true']) .thumb {
+    :host([aria-checked="true"]) .thumb {
       transform: translateX(1.25rem);
     }
   `,
   host: {
-    type: 'button',
-    role: 'switch',
-    '[attr.aria-checked]': 'checked()',
-    '(click)': 'checked.set(!checked())',
+    type: "button",
+    role: "switch",
+    "[attr.aria-checked]": "checked()",
+    "(click)": "checked.set(!checked())",
   },
 })
 export class PbSwitch {

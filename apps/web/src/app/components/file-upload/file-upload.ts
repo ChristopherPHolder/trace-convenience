@@ -1,20 +1,7 @@
-import {
-  Component,
-  ChangeDetectionStrategy,
-  signal,
-  computed,
-  inject,
-} from '@angular/core';
-import { TraceService } from '../../services/trace.service';
-import { FilmStripComponent } from '../film-strip/film-strip';
-import {
-  PbBadge,
-  PbCard,
-  PbEyebrow,
-  PbIconButton,
-  PbNotice,
-  PbSpinner,
-} from '../../design-system';
+import { Component, ChangeDetectionStrategy, signal, computed, inject } from "@angular/core";
+import { TraceService } from "../../services/trace.service";
+import { FilmStripComponent } from "../film-strip/film-strip";
+import { PbBadge, PbCard, PbEyebrow, PbIconButton, PbNotice, PbSpinner } from "../../design-system";
 
 interface UploadedFileDisplay {
   id: string;
@@ -29,21 +16,13 @@ interface FileError {
 }
 
 @Component({
-  selector: 'app-file-upload',
-  imports: [
-    FilmStripComponent,
-    PbBadge,
-    PbCard,
-    PbEyebrow,
-    PbIconButton,
-    PbNotice,
-    PbSpinner,
-  ],
-  templateUrl: './file-upload.html',
-  styleUrl: './file-upload.scss',
+  selector: "app-file-upload",
+  imports: [FilmStripComponent, PbBadge, PbCard, PbEyebrow, PbIconButton, PbNotice, PbSpinner],
+  templateUrl: "./file-upload.html",
+  styleUrl: "./file-upload.scss",
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    '[class.drag-over]': 'isDragging()',
+    "[class.drag-over]": "isDragging()",
   },
 })
 export class FileUploadComponent {
@@ -66,18 +45,10 @@ export class FileUploadComponent {
   protected readonly fileCount = computed(() => this.uploadedFiles().length);
 
   // Film strip data
-  protected readonly parsedTrace = computed(() =>
-    this.traceService.currentParsedTrace(),
-  );
-  protected readonly screenshots = computed(
-    () => this.parsedTrace()?.screenshots || [],
-  );
-  protected readonly traceStartTime = computed(
-    () => this.parsedTrace()?.metadata.startTime || 0,
-  );
-  protected readonly traceEndTime = computed(
-    () => this.parsedTrace()?.metadata.endTime || 0,
-  );
+  protected readonly parsedTrace = computed(() => this.traceService.currentParsedTrace());
+  protected readonly screenshots = computed(() => this.parsedTrace()?.screenshots || []);
+  protected readonly traceStartTime = computed(() => this.parsedTrace()?.metadata.startTime || 0);
+  protected readonly traceEndTime = computed(() => this.parsedTrace()?.metadata.endTime || 0);
 
   protected onDragOver(event: DragEvent): void {
     event.preventDefault();
@@ -111,7 +82,7 @@ export class FileUploadComponent {
       void this.processFiles([files[0]]);
     }
     // Reset input to allow selecting the same file again
-    input.value = '';
+    input.value = "";
   }
 
   protected onRemoveFile(id: string): void {
@@ -124,19 +95,19 @@ export class FileUploadComponent {
   }
 
   protected formatFileSize(bytes: number): string {
-    if (bytes === 0) return '0 Bytes';
+    if (bytes === 0) return "0 Bytes";
 
     const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const sizes = ["Bytes", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
 
     return `${Math.round((bytes / Math.pow(k, i)) * 100) / 100} ${sizes[i]}`;
   }
 
   protected formatDate(date: Date): string {
-    return new Intl.DateTimeFormat('en-US', {
-      dateStyle: 'short',
-      timeStyle: 'short',
+    return new Intl.DateTimeFormat("en-US", {
+      dateStyle: "short",
+      timeStyle: "short",
     }).format(date);
   }
 
@@ -151,10 +122,10 @@ export class FileUploadComponent {
     for (const file of files) {
       try {
         // Validate file type
-        if (!file.name.toLowerCase().endsWith('.json')) {
+        if (!file.name.toLowerCase().endsWith(".json")) {
           newErrors.push({
             fileName: file.name,
-            message: 'Only JSON files are accepted',
+            message: "Only JSON files are accepted",
           });
           continue;
         }
@@ -168,10 +139,7 @@ export class FileUploadComponent {
       } catch (error) {
         newErrors.push({
           fileName: file.name,
-          message:
-            error instanceof SyntaxError
-              ? 'Invalid JSON format'
-              : 'Failed to read file',
+          message: error instanceof SyntaxError ? "Invalid JSON format" : "Failed to read file",
         });
       }
     }

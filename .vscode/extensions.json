@@ -1,6 +1,3 @@
 {
-  "recommendations": [
-    "VoidZero.vite-plus-extension-pack",
-    "angular.ng-template"
-  ]
+  "recommendations": ["VoidZero.vite-plus-extension-pack", "angular.ng-template"]
 }

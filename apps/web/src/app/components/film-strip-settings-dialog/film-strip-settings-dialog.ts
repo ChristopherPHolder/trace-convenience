@@ -1,10 +1,5 @@
-import {
-  Component,
-  ChangeDetectionStrategy,
-  inject,
-  computed,
-} from '@angular/core';
-import { FilmStripSettingsService } from '../../services/film-strip-settings.service';
+import { Component, ChangeDetectionStrategy, inject, computed } from "@angular/core";
+import { FilmStripSettingsService } from "../../services/film-strip-settings.service";
 import {
   PbButton,
   PbDescription,
@@ -12,20 +7,13 @@ import {
   PbHeading,
   PbIconButton,
   PbSwitch,
-} from '../../design-system';
+} from "../../design-system";
 
 @Component({
-  selector: 'app-film-strip-settings-dialog',
-  imports: [
-    PbButton,
-    PbDescription,
-    PbEyebrow,
-    PbHeading,
-    PbIconButton,
-    PbSwitch,
-  ],
-  templateUrl: './film-strip-settings-dialog.html',
-  styleUrl: './film-strip-settings-dialog.scss',
+  selector: "app-film-strip-settings-dialog",
+  imports: [PbButton, PbDescription, PbEyebrow, PbHeading, PbIconButton, PbSwitch],
+  templateUrl: "./film-strip-settings-dialog.html",
+  styleUrl: "./film-strip-settings-dialog.scss",
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FilmStripSettingsDialogComponent {
@@ -33,13 +21,10 @@ export class FilmStripSettingsDialogComponent {
 
   // Expose service signals
   protected readonly isOpen = this.settingsService.isOpen;
-  protected readonly exportShowTimestamps =
-    this.settingsService.exportShowTimestamps;
-  protected readonly useIntervalFiltering =
-    this.settingsService.useIntervalFiltering;
+  protected readonly exportShowTimestamps = this.settingsService.exportShowTimestamps;
+  protected readonly useIntervalFiltering = this.settingsService.useIntervalFiltering;
   protected readonly minIntervalMs = this.settingsService.minIntervalMs;
-  protected readonly useTimeRangeFilter =
-    this.settingsService.useTimeRangeFilter;
+  protected readonly useTimeRangeFilter = this.settingsService.useTimeRangeFilter;
   protected readonly startTimeMs = this.settingsService.startTimeMs;
   protected readonly endTimeMs = this.settingsService.endTimeMs;
   protected readonly maxTimeMs = this.settingsService.maxTimeMs;

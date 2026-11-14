@@ -135,11 +135,11 @@ vp test --coverage
 ### In a Component
 
 ```typescript
-import { Component, inject } from '@angular/core';
-import { TraceService } from './services/trace.service';
+import { Component, inject } from "@angular/core";
+import { TraceService } from "./services/trace.service";
 
 @Component({
-  selector: 'app-my-component',
+  selector: "app-my-component",
   template: `
     <h2>Total Files: {{ fileCount() }}</h2>
     <ul>
@@ -158,8 +158,8 @@ export class MyComponent {
 
   processFiles() {
     this.files().forEach((file) => {
-      console.log('File:', file.name);
-      console.log('Content:', file.content);
+      console.log("File:", file.name);
+      console.log("Content:", file.content);
     });
   }
 }
@@ -168,10 +168,10 @@ export class MyComponent {
 ### In a Service
 
 ```typescript
-import { inject, Injectable } from '@angular/core';
-import { TraceService } from './trace.service';
+import { inject, Injectable } from "@angular/core";
+import { TraceService } from "./trace.service";
 
-@Injectable({ providedIn: 'root' })
+@Injectable({ providedIn: "root" })
 export class DataProcessorService {
   private traceService = inject(TraceService);
 
