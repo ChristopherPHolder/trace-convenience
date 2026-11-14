@@ -7,7 +7,7 @@
 - Each project has its own `project.json` configuration file
 
 ## Nx Commands
-- Always use `nx` commands instead of `npm` scripts when possible
+- Always use `nx` commands instead of `pnpm` scripts when possible
 - Run commands with: `nx [target] [project]` (e.g., `nx build web`, `nx test web`)
 - Use `nx affected` commands to run tasks only on affected projects
 - Use `nx graph` to visualize project dependencies

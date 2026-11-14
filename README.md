@@ -31,7 +31,7 @@ Trace Convenience is a powerful browser-based tool that helps developers analyze
 ### Prerequisites
 
 - Node.js 20.x or higher
-- npm 10.x or higher
+- pnpm 10.x (the exact version is pinned in `package.json#packageManager`; see [pnpm installation](https://pnpm.io/installation))
 
 ### Installation
 
@@ -43,10 +43,10 @@ git clone https://github.com/ChristopherPHolder/trace-convenience.git
 cd trace-convenience
 
 # Install dependencies
-npm install
+pnpm install
 
 # Start the development server
-npx nx serve web
+pnpm nx serve web
 ```
 
 The application will be available at `http://localhost:4200`
@@ -99,13 +99,13 @@ Built with modern web technologies and best practices:
 
 ```bash
 # Run all tests
-npx nx test web
+pnpm nx test web
 
 # Run tests in watch mode
-npx nx test web --watch
+pnpm nx test web --watch
 
 # Run with coverage report
-npx nx test web --coverage
+pnpm nx test web --coverage
 ```
 
 Current test coverage: **98 tests passing** across all components and services.
@@ -114,13 +114,13 @@ Current test coverage: **98 tests passing** across all components and services.
 
 ```bash
 # Development build
-npx nx build web
+pnpm nx build web
 
 # Production build
-npx nx build web --configuration=production
+pnpm nx build web --configuration=production
 
 # Serve production build locally
-npx nx serve-static web
+pnpm nx serve-static web
 ```
 
 ## 🌐 Browser Support
@@ -146,7 +146,7 @@ Contributions are welcome! Please read our [Developer Guide](DEVELOPER_GUIDE.md)
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
 3. Make your changes
-4. Run tests (`npx nx test web`)
+4. Run tests (`pnpm nx test web`)
 5. Commit your changes (`git commit -m 'Add amazing feature'`)
 6. Push to the branch (`git push origin feature/amazing-feature`)
 7. Open a Pull Request

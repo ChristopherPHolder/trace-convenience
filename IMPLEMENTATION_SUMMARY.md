@@ -79,7 +79,7 @@ Integrated the film strip component into the upload interface.
 ## Dependencies Added
 
 ### devtools-protocol
-- **Version:** Latest (installed via npm)
+- **Version:** Latest (installed via the package manager)
 - **Purpose:** Provides TypeScript types for Chrome DevTools Protocol
 - **License:** BSD-3-Clause
 - **Size:** ~155 packages added to node_modules

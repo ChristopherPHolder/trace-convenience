@@ -4,6 +4,7 @@
   "license": "MIT",
   "scripts": {},
   "private": true,
+  "packageManager": "pnpm@10.15.0",
   "dependencies": {
     "@angular/common": "~22.2.6",
     "@angular/compiler": "~22.2.6",
@@ -54,5 +55,15 @@
     "typescript-eslint": "8.72.2",
     "vite": "8.3.8",
     "vitest": "4.1.9"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@parcel/watcher",
+      "@swc/core",
+      "esbuild",
+      "lmdb",
+      "msgpackr-extract",
+      "nx"
+    ]
   }
 }

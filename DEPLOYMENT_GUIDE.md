@@ -60,10 +60,10 @@ Before deploying, you can test the production build locally:
 
 ```bash
 # Build for production
-npx nx build web --configuration=production
+pnpm nx build web --configuration=production
 
 # Serve the built files
-npx nx serve-static web
+pnpm nx serve-static web
 ```
 
 Then open http://localhost:4200 to test the production build.
@@ -74,7 +74,7 @@ Then open http://localhost:4200 to test the production build.
 
 - Check the Actions tab for error logs
 - Ensure all dependencies are listed in `package.json`
-- Try building locally first: `npx nx build web --configuration=production`
+- Try building locally first: `pnpm nx build web --configuration=production`
 
 ### Site Shows 404
 
