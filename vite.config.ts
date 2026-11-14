@@ -3,7 +3,7 @@ import { defineConfig } from "vite-plus";
 export default defineConfig({
   // `vp test` from the root runs every workspace package's tests.
   test: {
-    projects: ["apps/*"],
+    projects: ["apps/*", "packages/*"],
   },
   run: {
     cache: true,
@@ -56,6 +56,30 @@ export default defineConfig({
               { type: "element", prefix: "pb", style: "kebab-case" },
               { type: "attribute", prefix: "pb", style: "camelCase" },
             ],
+          ],
+        },
+      },
+      {
+        // trace-core is shared by the web app, CLI and MCP server, so it must
+        // stay framework- and runtime-agnostic. Its tsconfig has no DOM or Node
+        // types; this blocks the imports.
+        files: ["packages/trace-core/**"],
+        rules: {
+          "no-restricted-imports": [
+            "error",
+            {
+              patterns: [
+                {
+                  group: ["@angular/*", "rxjs", "rxjs/*", "zone.js", "zone.js/*"],
+                  message: "trace-core must not depend on Angular or its runtime.",
+                },
+                {
+                  group: ["node:*"],
+                  message:
+                    "trace-core must run in the browser too; keep Node APIs in the CLI/MCP apps.",
+                },
+              ],
+            },
           ],
         },
       },

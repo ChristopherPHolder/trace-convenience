@@ -86,13 +86,21 @@ Built with modern web technologies and best practices:
 - **Framework**: Angular 22.3 with standalone components
 - **State Management**: Angular Signals for reactive data flow
 - **Toolchain**: [Vite+](https://viteplus.dev) (`vp`) for dev, build, test, lint (Oxlint) and format (Oxfmt); Angular compiled by [vite-plugin-ngp](https://push-based.github.io/vite-plugin-ngp/) (Angular compiled per module by ngp)
-- **Testing**: Vitest with comprehensive test coverage (98 tests passing)
+- **Testing**: Vitest (`vp test`), 111 tests across the app and `trace-core`
 - **Styling**: Modern CSS with component-scoped SCSS
 - **Type Safety**: TypeScript 6.0 in strict mode, templates type-checked on every build
 
+### Workspace Layout
+
+A pnpm workspace managed by Vite+:
+
+- **`packages/trace-core`** (`@trace-convenience/trace-core`): framework-agnostic trace parsing and film-strip frame selection, shared by every front end (the web app today, a CLI and an MCP server next). No Angular, DOM or Node APIs.
+- **`apps/web`**: the Angular UI. It holds UI state and rendering and calls into `trace-core` for the logic.
+
 ### Key Components
 
-- **TraceParserService**: Extracts screenshots from Chrome DevTools trace events
+- **`parseTrace`** (`trace-core`): Extracts screenshots from Chrome DevTools trace events
+- **`selectFilmStripFrames`** (`trace-core`): Time-range filtering and fixed-interval sampling of film-strip frames
 - **FilmStripComponent**: Interactive UI for displaying and navigating screenshots
 - **TraceService**: Manages uploaded trace files with signal-based state
 - **FileUploadComponent**: Drag-and-drop interface for trace file uploads
@@ -116,7 +124,7 @@ vp check
 vp run ready
 ```
 
-Current test coverage: **98 tests passing** across all components and services.
+`vp test` from the root runs every package's tests (111 across `apps/web` and `packages/trace-core`).
 
 ## 🔨 Building
 

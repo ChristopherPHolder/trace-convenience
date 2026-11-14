@@ -7,13 +7,15 @@ import {
   inject,
   effect,
 } from "@angular/core";
-import { TraceParserService, Screenshot } from "../../services/trace-parser.service";
+import {
+  formatTimestamp,
+  screenshotSpanMs,
+  selectFilmStripFrames,
+  toDataUri,
+  type Screenshot,
+} from "@trace-convenience/trace-core";
 import { FilmStripSettingsService } from "../../services/film-strip-settings.service";
 import { PbBadge, PbButton, PbDescription, PbIconButton } from "../../design-system";
-
-interface ScreenshotWithSyntheticTime extends Screenshot {
-  syntheticTimestamp?: number;
-}
 
 @Component({
   selector: "app-film-strip",
@@ -23,7 +25,6 @@ interface ScreenshotWithSyntheticTime extends Screenshot {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FilmStripComponent {
-  private readonly traceParser = inject(TraceParserService);
   private readonly settingsService = inject(FilmStripSettingsService);
 
   // Input properties
@@ -62,188 +63,18 @@ export class FilmStripComponent {
   protected readonly hasScreenshots = computed(() => this.screenshots().length > 0);
 
   // Calculate the total duration in milliseconds
-  protected readonly totalDurationMs = computed(() => {
-    const shots = this.screenshots();
-    if (shots.length === 0) return 0;
-    const startTime = shots[0].timestamp;
-    const endTime = shots[shots.length - 1].timestamp;
-    return (endTime - startTime) / 1000; // Convert microseconds to milliseconds
-  });
+  protected readonly totalDurationMs = computed(() => screenshotSpanMs(this.screenshots()));
 
-  // Track the intended start time for the filtered range (used for interval calculations)
-  protected readonly filteredRangeStartTime = computed(() => {
-    const useTimeRange = this.useTimeRangeFilter();
-    const shots = this.screenshots();
-
-    if (!useTimeRange || shots.length === 0) {
-      return null;
-    }
-
-    const startTimeMs = this.startTimeMs();
-    const absoluteStartTime = shots[0].timestamp;
-    return absoluteStartTime + startTimeMs * 1000; // Convert ms to microseconds
-  });
-
-  // First, filter by time range if enabled
-  protected readonly timeRangeFilteredScreenshots = computed(() => {
-    const shots = this.screenshots();
-    const useTimeRange = this.useTimeRangeFilter();
-
-    if (!useTimeRange || shots.length === 0) {
-      return shots;
-    }
-
-    const startTimeMs = this.startTimeMs();
-    const endTimeMs = this.endTimeMs();
-
-    const absoluteStartTime = shots[0].timestamp;
-
-    const filterStartTime = absoluteStartTime + startTimeMs * 1000; // Convert ms to microseconds
-    const filterEndTime = absoluteStartTime + endTimeMs * 1000; // Convert ms to microseconds
-
-    // Find the most recent screenshot at or before the filter start time
-    let startScreenshotIndex = 0;
-    for (let i = 0; i < shots.length; i++) {
-      if (shots[i].timestamp <= filterStartTime) {
-        startScreenshotIndex = i;
-      } else {
-        break;
-      }
-    }
-
-    // Find the first screenshot at or after the filter end time.
-    // Screenshots are captured at discrete moments, so the frame that shows the
-    // visual result of an event at the end boundary is often captured just after
-    // it. Mirror the start-boundary behavior and keep this closing context frame.
-    let endScreenshotIndex = shots.length - 1;
-    for (let i = 0; i < shots.length; i++) {
-      if (shots[i].timestamp >= filterEndTime) {
-        endScreenshotIndex = i;
-        break;
-      }
-    }
-
-    // Include the screenshot before the start time and after the end time (as
-    // context frames) plus all screenshots within the range
-    const filtered = shots.filter(
-      (shot, index) =>
-        (index === startScreenshotIndex || shot.timestamp >= filterStartTime) &&
-        (index === endScreenshotIndex || shot.timestamp <= filterEndTime),
-    );
-
-    return filtered;
-  });
-
-  // Then, apply interval filtering if enabled
-  protected readonly filteredScreenshots = computed(() => {
-    const shots = this.timeRangeFilteredScreenshots();
-    const intervalMs = this.minIntervalMs();
-    const useFiltering = this.useIntervalFiltering();
-
-    if (!useFiltering || shots.length === 0) {
-      return shots;
-    }
-
-    if (shots.length === 1) {
-      return shots;
-    }
-
-    const filtered: ScreenshotWithSyntheticTime[] = [];
-
-    // Use the intended start time (from time range filter) or the actual first screenshot time
-    const useTimeRange = this.useTimeRangeFilter();
-    const intendedStartTime = this.filteredRangeStartTime();
-    const startTime = intendedStartTime ?? shots[0].timestamp;
-
-    // Bound the synthetic timeline by the explicit window end when the range
-    // filter is active; otherwise run to the last actual screenshot. Using the
-    // last frame's timestamp here would ignore the requested end time and emit
-    // interval frames past the window (e.g. an 8400-8600 window running to the
-    // next real frame at 9118ms).
-    let endTime: number;
-    if (useTimeRange) {
-      const absoluteStartTime = this.screenshots()[0].timestamp;
-      endTime = absoluteStartTime + this.endTimeMs() * 1000; // Convert ms to microseconds
-    } else {
-      endTime = shots[shots.length - 1].timestamp;
-    }
-    const durationMs = (endTime - startTime) / 1000; // Convert to milliseconds
-
-    let shotIndex = 0;
-    let currentTime = 0; // milliseconds from intended start
-
-    // Generate screenshots at regular intervals starting from 0
-    while (currentTime <= durationMs) {
-      const syntheticTimestamp = startTime + currentTime * 1000; // Convert back to microseconds
-
-      // Find the most recent screenshot at or before this time
-      while (shotIndex < shots.length - 1 && shots[shotIndex + 1].timestamp <= syntheticTimestamp) {
-        shotIndex++;
-      }
-
-      // Add the screenshot with a synthetic timestamp for display
-      filtered.push({
-        ...shots[shotIndex],
-        syntheticTimestamp,
-      });
-
-      currentTime += intervalMs;
-    }
-
-    // Check if we need to add one more screenshot at the next interval after the last actual screenshot.
-    // Only relevant without the range filter: there the timeline ends on the last
-    // actual frame and interval steps may not land on it. With the range filter the
-    // window end is explicit, so we must not append frames beyond it.
-    if (!useTimeRange) {
-      const lastFiltered = filtered[filtered.length - 1];
-      const nextIntervalTime = startTime + currentTime * 1000;
-
-      // If the last filtered screenshot doesn't represent the final actual screenshot, add it at the next interval
-      if (
-        lastFiltered &&
-        lastFiltered.syntheticTimestamp !== undefined &&
-        shots[shots.length - 1].timestamp > lastFiltered.syntheticTimestamp
-      ) {
-        filtered.push({
-          ...shots[shotIndex],
-          syntheticTimestamp: nextIntervalTime,
-        });
-      }
-    }
-
-    return filtered;
-  });
-
-  protected readonly screenshotsWithMetadata = computed(() => {
-    const shots = this.filteredScreenshots() as ScreenshotWithSyntheticTime[];
-    let base = this.startTime();
-
-    // If time range filter is active, use the intended start time as the base
-    const intendedStartTime = this.filteredRangeStartTime();
-    if (intendedStartTime !== null) {
-      base = intendedStartTime;
-    }
-
-    return shots.map((screenshot, index) => {
-      // Use synthetic timestamp if available (when interval filtering is active), otherwise use original
-      const displayTimestamp = screenshot.syntheticTimestamp ?? screenshot.timestamp;
-      const prevDisplayTimestamp =
-        index > 0
-          ? (shots[index - 1].syntheticTimestamp ?? shots[index - 1].timestamp)
-          : displayTimestamp;
-
-      return {
-        ...screenshot,
-        index,
-        relativeTime: this.traceParser.formatTimestamp(displayTimestamp, base),
-        dataUri: this.traceParser.getDataUri(screenshot),
-        delta:
-          index > 0
-            ? (displayTimestamp - prevDisplayTimestamp) / 1000 // Convert to milliseconds
-            : 0,
-      };
-    });
-  });
+  // Time-range filtering and interval sampling live in trace-core.
+  protected readonly screenshotsWithMetadata = computed(() =>
+    selectFilmStripFrames(this.screenshots(), {
+      timeRange: this.useTimeRangeFilter()
+        ? { startMs: this.startTimeMs(), endMs: this.endTimeMs() }
+        : undefined,
+      intervalMs: this.useIntervalFiltering() ? this.minIntervalMs() : undefined,
+      baseTimestamp: this.startTime(),
+    }).map((frame) => ({ ...frame, dataUri: toDataUri(frame) })),
+  );
 
   protected readonly selectedScreenshot = computed(() => {
     const index = this.selectedIndex();
@@ -254,10 +85,10 @@ export class FilmStripComponent {
   protected readonly totalDuration = computed(() => {
     const start = this.startTime();
     const end = this.endTime();
-    return this.traceParser.formatTimestamp(end, start);
+    return formatTimestamp(end, start);
   });
 
-  protected readonly displayedCount = computed(() => this.filteredScreenshots().length);
+  protected readonly displayedCount = computed(() => this.screenshotsWithMetadata().length);
 
   protected readonly totalCount = computed(() => this.screenshots().length);
 
@@ -291,7 +122,7 @@ export class FilmStripComponent {
 
   protected onNavigateNext(): void {
     const current = this.selectedIndex();
-    const max = this.filteredScreenshots().length - 1;
+    const max = this.screenshotsWithMetadata().length - 1;
     if (current !== null && current < max) {
       this.selectedIndex.set(current + 1);
     }
