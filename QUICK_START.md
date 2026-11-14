@@ -5,7 +5,7 @@
 ### 1. Start the Development Server
 
 ```bash
-npx nx serve web
+pnpm nx serve web
 ```
 
 The application will be available at: `http://localhost:4200`
@@ -116,13 +116,13 @@ Create test files to try the feature:
 
 ```bash
 # Run all tests
-npx nx test web
+pnpm nx test web
 
 # Run tests in watch mode
-npx nx test web --watch
+pnpm nx test web --watch
 
 # Run with coverage
-npx nx test web --coverage
+pnpm nx test web --coverage
 ```
 
 ## 💻 Accessing Uploaded Files Programmatically

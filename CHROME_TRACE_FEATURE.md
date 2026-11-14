@@ -138,7 +138,7 @@ All components and services include comprehensive test suites:
 
 Run tests with:
 ```bash
-npx nx test web
+pnpm nx test web
 ```
 
 ## Browser Support

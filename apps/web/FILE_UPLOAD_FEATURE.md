@@ -146,13 +146,13 @@ The component follows WCAG AA standards:
 
 ```bash
 # Run all tests
-npx nx test web
+pnpm nx test web
 
 # Run tests in watch mode
-npx nx test web --watch
+pnpm nx test web --watch
 
 # Run tests with coverage
-npx nx test web --coverage
+pnpm nx test web --coverage
 ```
 
 ### Test Coverage
@@ -232,19 +232,19 @@ Potential improvements:
 
 ```bash
 # Serve the application
-npx nx serve web
+pnpm nx serve web
 
 # Build for production
-npx nx build web
+pnpm nx build web
 
 # Run linter
-npx nx lint web
+pnpm nx lint web
 
 # Run tests
-npx nx test web
+pnpm nx test web
 
 # View dependency graph
-npx nx graph
+pnpm nx graph
 ```
 
 ## Troubleshooting
@@ -262,8 +262,8 @@ npx nx graph
 - Try using file picker as alternative
 
 **Tests failing:**
-- Run `npm install` to ensure dependencies are up to date
-- Clear Nx cache: `npx nx reset`
+- Run `pnpm install` to ensure dependencies are up to date
+- Clear Nx cache: `pnpm nx reset`
 - Check Node version compatibility
 
 ## Support

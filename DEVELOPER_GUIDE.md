@@ -4,13 +4,13 @@
 
 ### Prerequisites
 - Node.js (v18+)
-- npm or yarn
+- pnpm 10.x (pinned in `package.json#packageManager`)
 - Chrome browser (for capturing traces)
 
 ### Installation
 ```bash
 # Install dependencies
-npm install
+pnpm install
 
 # The devtools-protocol package is already included
 ```
@@ -18,16 +18,16 @@ npm install
 ### Development
 ```bash
 # Start development server
-npx nx serve web
+pnpm nx serve web
 
 # Run tests
-npx nx test web
+pnpm nx test web
 
 # Run tests in watch mode
-npx nx test web --watch
+pnpm nx test web --watch
 
 # Build for production
-npx nx build web
+pnpm nx build web
 ```
 
 ## Capturing a Test Trace
@@ -190,12 +190,12 @@ To display additional information about screenshots:
 
 Run all tests:
 ```bash
-npx nx test web
+pnpm nx test web
 ```
 
 Run specific test file:
 ```bash
-npx nx test web --testFile=trace-parser.service.spec.ts
+pnpm nx test web --testFile=trace-parser.service.spec.ts
 ```
 
 ### Writing New Tests
@@ -287,7 +287,7 @@ Use Angular DevTools browser extension:
 - Check browser console for security errors
 
 **Issue: Tests failing**
-- Clear node_modules and reinstall: `rm -rf node_modules && npm install`
+- Clear node_modules and reinstall: `rm -rf node_modules && pnpm install`
 - Check that all imports are correct
 - Verify test data matches expected format
 
@@ -299,7 +299,7 @@ For traces with many screenshots (100+):
 
 1. **Implement Virtual Scrolling**
    ```bash
-   npm install @angular/cdk
+   pnpm add @angular/cdk
    ```
 
 2. **Add to film-strip component:**
