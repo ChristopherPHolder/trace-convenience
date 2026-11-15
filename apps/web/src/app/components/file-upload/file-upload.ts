@@ -1,7 +1,18 @@
 import { Component, ChangeDetectionStrategy, signal, computed, inject } from "@angular/core";
 import { TraceService } from "../../services/trace.service";
 import { TraceToolsComponent } from "../trace-tools/trace-tools";
-import { PbBadge, PbCard, PbEyebrow, PbIconButton, PbNotice, PbSpinner } from "../../design-system";
+import {
+  PbBadge,
+  PbButton,
+  PbCard,
+  PbEyebrow,
+  PbIconButton,
+  PbNotice,
+  PbSpinner,
+} from "../../design-system";
+
+/** A short trace of this app loading, served from `public/`. Resolved against the base href. */
+const SAMPLE_TRACE = "sample-trace.json";
 
 interface UploadedFileDisplay {
   id: string;
@@ -17,7 +28,16 @@ interface FileError {
 
 @Component({
   selector: "app-file-upload",
-  imports: [TraceToolsComponent, PbBadge, PbCard, PbEyebrow, PbIconButton, PbNotice, PbSpinner],
+  imports: [
+    TraceToolsComponent,
+    PbBadge,
+    PbButton,
+    PbCard,
+    PbEyebrow,
+    PbIconButton,
+    PbNotice,
+    PbSpinner,
+  ],
   templateUrl: "./file-upload.html",
   styleUrl: "./file-upload.scss",
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -31,6 +51,12 @@ export class FileUploadComponent {
   protected readonly isDragging = signal(false);
   protected readonly errors = signal<FileError[]>([]);
   protected readonly isProcessing = signal(false);
+
+  /**
+   * Counts loads, uploads and the sample alike. A load only touches state while it is the latest,
+   * so a slow sample download can't replace a trace the user dropped in the meantime.
+   */
+  private latestLoad = 0;
 
   protected readonly uploadedFiles = computed<UploadedFileDisplay[]>(() =>
     this.traceService.allFiles().map((file) => ({
@@ -79,6 +105,28 @@ export class FileUploadComponent {
     input.value = "";
   }
 
+  /** Loads the bundled sample through the same path as an upload, so the rest of the app can't tell the difference. */
+  protected async onLoadSampleTrace(): Promise<void> {
+    const load = ++this.latestLoad;
+    this.isProcessing.set(true);
+    this.errors.set([]);
+
+    let file: File;
+    try {
+      const response = await fetch(SAMPLE_TRACE);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      file = new File([await response.blob()], SAMPLE_TRACE, { type: "application/json" });
+    } catch {
+      if (load !== this.latestLoad) return;
+      this.errors.set([{ fileName: SAMPLE_TRACE, message: "Could not load the sample trace" }]);
+      this.isProcessing.set(false);
+      return;
+    }
+
+    if (load !== this.latestLoad) return;
+    await this.processFiles([file], load);
+  }
+
   protected onRemoveFile(id: string): void {
     this.traceService.removeFile(id);
   }
@@ -105,7 +153,7 @@ export class FileUploadComponent {
     }).format(date);
   }
 
-  private async processFiles(files: File[]): Promise<void> {
+  private async processFiles(files: File[], load = ++this.latestLoad): Promise<void> {
     this.isProcessing.set(true);
     this.errors.set([]);
 
@@ -126,6 +174,7 @@ export class FileUploadComponent {
 
         // Read and parse JSON
         const content = await this.readFileAsText(file);
+        if (load !== this.latestLoad) return;
         const jsonContent = JSON.parse(content);
 
         // Add to trace service
@@ -137,6 +186,8 @@ export class FileUploadComponent {
         });
       }
     }
+
+    if (load !== this.latestLoad) return;
 
     if (newErrors.length > 0) {
       this.errors.set(newErrors);

@@ -129,6 +129,15 @@ An agent connected through [Chrome DevTools MCP](https://github.com/ChromeDevToo
 3. Change state through the services the UI uses, so the page shows what the tool did.
 4. Add cases to `film-strip-tools.spec.ts`, and the tool to the table in [Architecture](architecture.md#webmcp-tools).
 
+### Re-record the sample trace
+
+"Try a sample trace" on the upload screen loads `apps/web/public/sample-trace.json`, a recording of the app's own production build. It is published with the app, so record only pages we own.
+
+1. Run `vp run web#build` and `vp run web#preview`.
+2. Record the page loading in the DevTools Performance panel, with **Screenshots** on, 4× CPU slowdown and a slow 4G network, so the film strip shows the page building up.
+3. Save only the events, without Chrome's `metadata` block, which describes your machine: `node -e 'const fs=require("fs");const t=JSON.parse(fs.readFileSync(process.argv[1]));fs.writeFileSync(process.argv[2],JSON.stringify({traceEvents:t.traceEvents}))' Trace.json apps/web/public/sample-trace.json`
+4. Keep it under about 1 MB gzipped. The formatter skips the file, so it stays as Chrome wrote it.
+
 ### Record a decision
 
 Add an ADR when a change picks one option over another and the reason will not be obvious from the code. See [the ADR index](adr/README.md).

@@ -96,5 +96,9 @@ export default defineConfig({
       typeCheck: true,
     },
   },
-  fmt: {},
+  fmt: {
+    // A trace recorded by Chrome, kept byte for byte. Formatting it would
+    // multiply its size for nothing.
+    ignorePatterns: ["apps/web/public/sample-trace.json"],
+  },
 });
