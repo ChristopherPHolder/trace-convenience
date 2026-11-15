@@ -111,7 +111,7 @@ apps/web/src/
 └── app/
     ├── app.ts, app.html         Shell: header and the upload screen
     ├── components/
-    │   ├── file-upload/                  Drop zone, validation, file card; hosts the tools
+    │   ├── file-upload/                  Drop zone, sample trace, validation, file card; hosts the tools
     │   ├── trace-tools/                  One tab per tool; renders the selected one
     │   ├── film-strip/                   Strip, preview, PNG and GIF export
     │   ├── film-strip-settings-dialog/   Interval, time range and timestamp settings

@@ -115,6 +115,18 @@
   color: var(--text-subtle);
 }
 
+.sample-prompt {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1-5);
+  margin-top: var(--space-3);
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--text-muted);
+}
+
 .processing-indicator {
   display: inline-flex;
   align-items: center;

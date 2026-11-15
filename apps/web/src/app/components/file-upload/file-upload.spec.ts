@@ -430,4 +430,59 @@ describe("FileUploadComponent", () => {
       expect(fileName?.textContent).toBe("test.json");
     });
   });
+
+  describe("Sample trace", () => {
+    afterEach(() => {
+      vi.unstubAllGlobals();
+    });
+
+    function sampleButton(): HTMLButtonElement {
+      const buttons = Array.from(
+        (fixture.nativeElement as HTMLElement).querySelectorAll<HTMLButtonElement>("button"),
+      );
+      const button = buttons.find((b) => b.textContent?.includes("Try a sample trace"));
+      if (!button) throw new Error("Sample trace button not found");
+      return button;
+    }
+
+    it("should offer the sample trace on the upload screen", () => {
+      expect(sampleButton()).toBeTruthy();
+    });
+
+    it("should load the sample trace like an upload", async () => {
+      const fetchMock = vi
+        .fn()
+        .mockResolvedValue(new Response(JSON.stringify({ traceEvents: [] })));
+      vi.stubGlobal("fetch", fetchMock);
+
+      await component["onLoadSampleTrace"]();
+      fixture.detectChanges();
+
+      expect(fetchMock).toHaveBeenCalledWith("sample-trace.json");
+      expect(traceService.fileCount()).toBe(1);
+      expect(traceService.currentFile()?.name).toBe("sample-trace.json");
+      expect(component["errors"]()).toEqual([]);
+      expect(component["isProcessing"]()).toBe(false);
+    });
+
+    it("should show an error when the sample trace cannot be fetched", async () => {
+      vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response("", { status: 404 })));
+
+      await component["onLoadSampleTrace"]();
+      fixture.detectChanges();
+
+      expect(traceService.fileCount()).toBe(0);
+      expect(component["errors"]()).toEqual([
+        { fileName: "sample-trace.json", message: "Could not load the sample trace" },
+      ]);
+      expect(component["isProcessing"]()).toBe(false);
+    });
+
+    it("should disable the sample button while a file is processing", () => {
+      component["isProcessing"].set(true);
+      fixture.detectChanges();
+
+      expect(sampleButton().getAttribute("aria-disabled")).toBe("true");
+    });
+  });
 });

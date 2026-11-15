@@ -68,6 +68,18 @@
           <span class="pb-btn pb-btn-primary">Browse files</span>
         </label>
         <p class="drop-hint">Only JSON files are accepted</p>
+        <p class="sample-prompt">
+          No trace handy?
+          <button
+            pbButton
+            variant="tertiary"
+            type="button"
+            [disabled]="isProcessing()"
+            (click)="onLoadSampleTrace()"
+          >
+            Try a sample trace <span aria-hidden="true">→</span>
+          </button>
+        </p>
       </div>
       } @if (isProcessing()) {
       <pb-notice class="processing-indicator" role="status" aria-live="polite">

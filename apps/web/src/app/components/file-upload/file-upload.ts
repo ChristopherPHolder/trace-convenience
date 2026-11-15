@@ -1,7 +1,18 @@
 import { Component, ChangeDetectionStrategy, signal, computed, inject } from "@angular/core";
 import { TraceService } from "../../services/trace.service";
 import { TraceToolsComponent } from "../trace-tools/trace-tools";
-import { PbBadge, PbCard, PbEyebrow, PbIconButton, PbNotice, PbSpinner } from "../../design-system";
+import {
+  PbBadge,
+  PbButton,
+  PbCard,
+  PbEyebrow,
+  PbIconButton,
+  PbNotice,
+  PbSpinner,
+} from "../../design-system";
+
+/** A short trace of this app loading, served from `public/`. Resolved against the base href. */
+const SAMPLE_TRACE = "sample-trace.json";
 
 interface UploadedFileDisplay {
   id: string;
@@ -17,7 +28,16 @@ interface FileError {
 
 @Component({
   selector: "app-file-upload",
-  imports: [TraceToolsComponent, PbBadge, PbCard, PbEyebrow, PbIconButton, PbNotice, PbSpinner],
+  imports: [
+    TraceToolsComponent,
+    PbBadge,
+    PbButton,
+    PbCard,
+    PbEyebrow,
+    PbIconButton,
+    PbNotice,
+    PbSpinner,
+  ],
   templateUrl: "./file-upload.html",
   styleUrl: "./file-upload.scss",
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -77,6 +97,22 @@ export class FileUploadComponent {
     }
     // Reset input to allow selecting the same file again
     input.value = "";
+  }
+
+  /** Loads the bundled sample through the same path as an upload, so the rest of the app can't tell the difference. */
+  protected async onLoadSampleTrace(): Promise<void> {
+    this.isProcessing.set(true);
+    this.errors.set([]);
+
+    try {
+      const response = await fetch(SAMPLE_TRACE);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const file = new File([await response.blob()], SAMPLE_TRACE, { type: "application/json" });
+      await this.processFiles([file]);
+    } catch {
+      this.errors.set([{ fileName: SAMPLE_TRACE, message: "Could not load the sample trace" }]);
+      this.isProcessing.set(false);
+    }
   }
 
   protected onRemoveFile(id: string): void {
