@@ -484,5 +484,38 @@ describe("FileUploadComponent", () => {
 
       expect(sampleButton().getAttribute("aria-disabled")).toBe("true");
     });
+
+    it("should keep a trace the user uploads while the sample is downloading", async () => {
+      let respond!: (response: Response) => void;
+      vi.stubGlobal(
+        "fetch",
+        vi.fn(() => new Promise<Response>((resolve) => (respond = resolve))),
+      );
+
+      const sample = component["onLoadSampleTrace"]();
+      await component["processFiles"]([new File([JSON.stringify({})], "mine.json")]);
+      respond(new Response(JSON.stringify({ traceEvents: [] })));
+      await sample;
+
+      expect(traceService.fileCount()).toBe(1);
+      expect(traceService.currentFile()?.name).toBe("mine.json");
+      expect(component["isProcessing"]()).toBe(false);
+    });
+
+    it("should not report a failed sample download after the user uploads a trace", async () => {
+      let respond!: (response: Response) => void;
+      vi.stubGlobal(
+        "fetch",
+        vi.fn(() => new Promise<Response>((resolve) => (respond = resolve))),
+      );
+
+      const sample = component["onLoadSampleTrace"]();
+      await component["processFiles"]([new File([JSON.stringify({})], "mine.json")]);
+      respond(new Response("", { status: 500 }));
+      await sample;
+
+      expect(component["errors"]()).toEqual([]);
+      expect(traceService.currentFile()?.name).toBe("mine.json");
+    });
   });
 });

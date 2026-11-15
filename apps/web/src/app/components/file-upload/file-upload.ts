@@ -52,6 +52,12 @@ export class FileUploadComponent {
   protected readonly errors = signal<FileError[]>([]);
   protected readonly isProcessing = signal(false);
 
+  /**
+   * Counts loads, uploads and the sample alike. A load only touches state while it is the latest,
+   * so a slow sample download can't replace a trace the user dropped in the meantime.
+   */
+  private latestLoad = 0;
+
   protected readonly uploadedFiles = computed<UploadedFileDisplay[]>(() =>
     this.traceService.allFiles().map((file) => ({
       id: file.id,
@@ -101,18 +107,24 @@ export class FileUploadComponent {
 
   /** Loads the bundled sample through the same path as an upload, so the rest of the app can't tell the difference. */
   protected async onLoadSampleTrace(): Promise<void> {
+    const load = ++this.latestLoad;
     this.isProcessing.set(true);
     this.errors.set([]);
 
+    let file: File;
     try {
       const response = await fetch(SAMPLE_TRACE);
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const file = new File([await response.blob()], SAMPLE_TRACE, { type: "application/json" });
-      await this.processFiles([file]);
+      file = new File([await response.blob()], SAMPLE_TRACE, { type: "application/json" });
     } catch {
+      if (load !== this.latestLoad) return;
       this.errors.set([{ fileName: SAMPLE_TRACE, message: "Could not load the sample trace" }]);
       this.isProcessing.set(false);
+      return;
     }
+
+    if (load !== this.latestLoad) return;
+    await this.processFiles([file], load);
   }
 
   protected onRemoveFile(id: string): void {
@@ -141,7 +153,7 @@ export class FileUploadComponent {
     }).format(date);
   }
 
-  private async processFiles(files: File[]): Promise<void> {
+  private async processFiles(files: File[], load = ++this.latestLoad): Promise<void> {
     this.isProcessing.set(true);
     this.errors.set([]);
 
@@ -162,6 +174,7 @@ export class FileUploadComponent {
 
         // Read and parse JSON
         const content = await this.readFileAsText(file);
+        if (load !== this.latestLoad) return;
         const jsonContent = JSON.parse(content);
 
         // Add to trace service
@@ -173,6 +186,8 @@ export class FileUploadComponent {
         });
       }
     }
+
+    if (load !== this.latestLoad) return;
 
     if (newErrors.length > 0) {
       this.errors.set(newErrors);
